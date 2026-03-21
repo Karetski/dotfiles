@@ -36,7 +36,7 @@ Roles are applied in sequence by `site.yml`. All share variables from `vars/main
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `git_name` | `Alexey Karetski` | Git commit author name |
-| `git_email` | `alexey@karetski.com` | Git commit author email |
+| `git_email` | `karetski@gmail.com` | Git commit author email |
 | `homebrew_formulae` | `[zsh-autocomplete, lazygit, terminal-notifier]` | CLI tools to install |
 | `homebrew_casks` | `[ghostty]` | GUI apps to install |
 | `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
