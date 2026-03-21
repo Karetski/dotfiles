@@ -156,6 +156,8 @@ Ghostty itself is installed via the `homebrew_casks` list.
 
 **Shell integration**: Disabled for cursor, sudo, and title — minimal overhead, no unwanted prompt decoration.
 
+**Splits**: Inactive splits are not dimmed (`unfocused-split-opacity = 1`).
+
 ---
 
 ### fresh
