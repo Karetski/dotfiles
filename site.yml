@@ -25,3 +25,6 @@
 
     - import_tasks: fresh/main.yml
       tags: [fresh]
+
+    - import_tasks: tmux/main.yml
+      tags: [tmux]

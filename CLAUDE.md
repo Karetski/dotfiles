@@ -31,6 +31,7 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 | `claude/` | `~/.claude/settings.json` (template), `~/.claude/hooks/notify.sh` |
 | `ghostty/` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
 | `fresh/` | `~/.config/fresh/config.json` |
+| `tmux/` | `~/.tmux.conf` |
 
 ## Variables
 
