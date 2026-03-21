@@ -90,7 +90,7 @@ Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes),
 
 ### git
 
-Deploys git configuration across three files.
+Deploys git configuration across two files.
 
 **`~/.gitconfig`** (templated):
 - Sets `user.name` and `user.email` from variables
