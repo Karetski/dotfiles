@@ -22,4 +22,5 @@
   homebrew_cask:
     name: "{{ homebrew_casks }}"
     state: present
+    install_options: adopt
   when: homebrew_casks | length > 0

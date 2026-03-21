@@ -20,5 +20,8 @@
     - import_tasks: claude/main.yml
       tags: [claude]
 
+    - import_tasks: ghostty/main.yml
+      tags: [ghostty]
+
     - import_tasks: fresh/main.yml
       tags: [fresh]

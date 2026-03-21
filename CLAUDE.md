@@ -29,6 +29,7 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 | `git/` | `~/.gitconfig` (template), `~/.config/git/attributes` and `ignore` |
 | `lazygit/` | `~/.config/lazygit/config.yml`, optional `git-image-diff` script |
 | `claude/` | `~/.claude/settings.json` (template), `~/.claude/hooks/notify.sh` |
+| `ghostty/` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
 | `fresh/` | `~/.config/fresh/config.json` |
 
 ## Variables
@@ -46,6 +47,6 @@ Key variables:
 
 `~/.zshrc.local` is sourced at the end of `.zshrc` if it exists. Use it for machine-specific aliases and ad-hoc config that doesn't belong in either repo.
 
-## iTerm2
+## Ghostty
 
-No config file to deploy — setup is manual. See `Developer/playground/iterm2-setup.md` for key binding and tab behavior instructions.
+Installed via Homebrew cask (`ghostty` in `homebrew_casks`). Config deployed by the `ghostty/` role to `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`.
