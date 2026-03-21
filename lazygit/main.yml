@@ -1,0 +1,26 @@
+---
+- name: Ensure ~/.config/lazygit exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit"
+    state: directory
+    mode: '0755'
+
+- name: Deploy lazygit config
+  template:
+    src: templates/config.yml.j2
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/config.yml"
+    mode: '0644'
+    backup: yes
+
+- name: Ensure ~/.local/bin exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
+    state: directory
+    mode: '0755'
+
+- name: Deploy git-image-diff script
+  copy:
+    src: files/git-image-diff
+    dest: "{{ ansible_facts['env']['HOME'] }}/.local/bin/git-image-diff"
+    mode: '0755'
+  when: lazygit_image_preview | default(false)
