@@ -60,7 +60,7 @@ Deploys `~/.zshrc` from a Jinja2 template.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
-**tmux auto-attach**: On shell startup, if not already inside tmux, attaches to an existing session or creates a new one.
+**tmux auto-attach**: On shell startup, if not already inside tmux, creates a new tmux session. Sessions are not reused — each terminal tab gets its own session and it is destroyed when the tab closes.
 
 **Plugin**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion.
 
@@ -220,9 +220,14 @@ Deploys `~/.tmux.conf`.
 
 **Mouse**: Enabled.
 
-**Pane splitting**:
+**Sessions**: Each terminal tab creates a fresh session (`destroy-unattached on`). Sessions are destroyed when the tab closes.
+
+**True color**: Enabled via `default-terminal tmux-256color` and `Tc` terminal override so 24-bit color works inside tmux.
+
+**Pane splitting**: New windows and panes always open in the current pane's working directory.
 
 | Key | Action |
 |-----|--------|
-| `prefix` + `\|` | Split horizontally (left/right panes) |
-| `prefix` + `-` | Split vertically (top/bottom panes) |
+| `prefix` + `c` | New window (inherits current path) |
+| `prefix` + `\|` | Split horizontally (inherits current path) |
+| `prefix` + `-` | Split vertically (inherits current path) |

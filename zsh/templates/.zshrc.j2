@@ -3,7 +3,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Auto-attach or start tmux
 if [[ -z "$TMUX" ]]; then
-  tmux attach 2>/dev/null || tmux
+  tmux new-session
 fi
 
 
