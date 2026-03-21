@@ -12,12 +12,6 @@
     mode: '0644'
     backup: yes
 
-- name: Deploy git attributes
-  copy:
-    src: files/attributes
-    dest: "{{ ansible_facts['env']['HOME'] }}/.config/git/attributes"
-    mode: '0644'
-
 - name: Deploy git ignore
   copy:
     src: files/ignore

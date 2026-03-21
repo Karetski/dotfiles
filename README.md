@@ -40,9 +40,8 @@ Roles are applied in sequence by `site.yml`. All share variables from `vars/main
 | `homebrew_formulae` | see below | CLI tools to install |
 | `homebrew_casks` | `[ghostty]` | GUI apps to install |
 | `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
-| `lazygit_image_preview` | `false` | Enables chafa-based image diffs in lazygit |
 
-Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`, `chafa`, `tmux`.
+Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`, `tmux`.
 
 ## Roles
 
@@ -97,20 +96,6 @@ Deploys git configuration across three files.
 
 **`~/.gitconfig`** (templated):
 - Sets `user.name` and `user.email` from variables
-- Registers an image diff handler: `diff.image.command = git-image-diff` (used by lazygit's external diff)
-
-**`~/.config/git/attributes`**:
-
-Maps common image extensions to the `diff=image` handler:
-
-```
-*.png  diff=image
-*.jpg  diff=image
-*.jpeg diff=image
-*.gif  diff=image
-*.webp diff=image
-*.svg  diff=image
-```
 
 **`~/.config/git/ignore`**:
 
@@ -120,27 +105,7 @@ Globally ignores `.claude/settings.local.json` so per-machine Claude overrides a
 
 ### lazygit
 
-Deploys lazygit's config and an optional image diff script.
-
-**`~/.config/lazygit/config.yml`** (templated):
-
-When `lazygit_image_preview: true`, sets `git.paging.externalDiffCommand: git-image-diff`. Otherwise the config is empty (lazygit uses its own defaults).
-
-**`~/.local/bin/git-image-diff`** (deployed only when `lazygit_image_preview: true`):
-
-A shell script that acts as git's external diff driver for image files.
-
-- For image files (`.png`, `.jpg`, `.jpeg`, `.gif`, `.webp`, `.bmp`, `.tiff`, `.ico`, `.svg`): renders each side using `chafa` as ANSI art in the terminal. Rendered output is cached in `/tmp/gid-*.cache` by MD5 hash to avoid re-rendering the same image repeatedly.
-- For deleted files: prints `(deleted)`.
-- For all other files: falls back to standard `diff -u`.
-
-Requires `chafa` and `terminal-notifier` installed (both included in `homebrew_formulae`).
-
-To enable image preview on a machine, set in `host_vars/<hostname>.yml`:
-
-```yaml
-lazygit_image_preview: true
-```
+Deploys `~/.config/lazygit/config.yml`. The config is empty — lazygit uses its own defaults.
 
 ---
 

@@ -26,8 +26,8 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 |------|---------|
 | `homebrew/` | Verifies brew is installed, installs formulae and casks |
 | `zsh/` | `~/.zshrc` via Jinja2 template |
-| `git/` | `~/.gitconfig` (template), `~/.config/git/attributes` and `ignore` |
-| `lazygit/` | `~/.config/lazygit/config.yml`, optional `git-image-diff` script |
+| `git/` | `~/.gitconfig` (template), `~/.config/git/ignore` |
+| `lazygit/` | `~/.config/lazygit/config.yml` |
 | `claude/` | `~/.claude/settings.json` (template), `~/.claude/hooks/notify.sh` |
 | `ghostty/` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
 | `fresh/` | `~/.config/fresh/config.json` |
@@ -40,7 +40,6 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 - `host_vars/<hostname>.yml` (private repo) — machine-specific overrides (proxy, etc.)
 
 Key variables:
-- `lazygit_image_preview` — set to `true` in `host_vars` to enable chafa-based image diffs (requires `chafa` installed separately)
 - `git_name` / `git_email` — injected into `~/.gitconfig` via template
 - `claude_sandbox_enabled` — controls sandbox in `settings.json`
 
