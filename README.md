@@ -1,6 +1,6 @@
 # dotfiles
 
-Ansible-based configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, Fresh, and tmux via idempotent playbooks.
+Ansible-based configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Fresh via idempotent playbooks.
 
 ## Prerequisites
 
@@ -41,7 +41,7 @@ Roles are applied in sequence by `site.yml`. All share variables from `vars/main
 | `homebrew_casks` | `[ghostty]` | GUI apps to install |
 | `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
 
-Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`, `tmux`.
+Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`.
 
 ## Roles
 
@@ -58,8 +58,6 @@ Casks use the `adopt` option so existing installations are adopted rather than r
 Deploys `~/.zshrc` from a Jinja2 template.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
-
-**tmux auto-attach**: On shell startup, if not already inside tmux, creates a new tmux session. Sessions are not reused — each terminal tab gets its own session and it is destroyed when the tab closes.
 
 **Plugin**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion.
 
@@ -175,24 +173,3 @@ Deploys the [Fresh](https://www.freshcode.app) editor config to `~/.config/fresh
 
 **File explorer**: Shows hidden files.
 
----
-
-### tmux
-
-Deploys `~/.tmux.conf`.
-
-**Prefix**: Changed from the default `Ctrl+B` to `Ctrl+Space`.
-
-**Mouse**: Enabled.
-
-**Sessions**: Each terminal tab creates a fresh session (`destroy-unattached on`). Sessions are destroyed when the tab closes.
-
-**True color**: Enabled via `default-terminal tmux-256color` and `Tc` terminal override so 24-bit color works inside tmux.
-
-**Pane splitting**: New windows and panes always open in the current pane's working directory.
-
-| Key | Action |
-|-----|--------|
-| `prefix` + `c` | New window (inherits current path) |
-| `prefix` + `\|` | Split horizontally (inherits current path) |
-| `prefix` + `-` | Split vertically (inherits current path) |
