@@ -1,13 +1,13 @@
 ---
-- name: Ensure ~/.config/lazygit exists
+- name: Ensure lazygit config dir exists
   file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit"
+    path: "{{ ansible_facts['env']['HOME'] }}/Library/Application Support/lazygit"
     state: directory
     mode: '0755'
 
 - name: Deploy lazygit config
   template:
     src: templates/config.yml.j2
-    dest: "{{ ansible_facts['env']['HOME'] }}/.config/lazygit/config.yml"
+    dest: "{{ ansible_facts['env']['HOME'] }}/Library/Application Support/lazygit/config.yml"
     mode: '0644'
     backup: yes

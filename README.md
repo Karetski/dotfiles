@@ -103,7 +103,16 @@ Globally ignores `.claude/settings.local.json` so per-machine Claude overrides a
 
 ### lazygit
 
-Deploys `~/.config/lazygit/config.yml`. The config is empty — lazygit uses its own defaults.
+Deploys `~/Library/Application Support/lazygit/config.yml`.
+
+**Theme**: White selected-line background.
+
+**Custom commands**:
+
+| Key | Context | Action |
+|-----|---------|--------|
+| `p` | files | Quick Look the selected file |
+| `p` | commitFiles | Quick Look the selected commit file |
 
 ---
 
