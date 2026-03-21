@@ -1,0 +1,14 @@
+# Shared across all profiles
+
+claude_sandbox_enabled: true
+lazygit_image_preview: false  # set to true in host_vars if chafa is installed
+
+homebrew_formulae:
+  - zsh-autocomplete
+  - lazygit
+  - terminal-notifier
+
+homebrew_casks: []
+
+git_name: Alexey Karetski
+git_email: alexey@karetski.com
