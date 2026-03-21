@@ -3,7 +3,7 @@
 install:
 	ansible-playbook site.yml
 
-test:
+plan:
 	ansible-playbook site.yml --check --diff
 
 install-tag:
