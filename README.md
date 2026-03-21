@@ -124,6 +124,7 @@ Deploys Claude Code settings and a macOS notification hook.
 
 **`~/.claude/settings.json`** (templated):
 
+- **Model**: `claude-opus-4-6`
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Sandbox**: Controlled by `claude_sandbox_enabled` (default: `true`).
 - **Hooks**:
