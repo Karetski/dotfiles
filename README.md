@@ -122,6 +122,8 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 Deploys Claude Code settings and a macOS notification hook.
 
+**Installation**: Checks for `claude` in PATH; installs via the official install script if missing.
+
 **`~/.claude/settings.json`** (templated):
 
 - **Model**: `claude-opus-4-6`

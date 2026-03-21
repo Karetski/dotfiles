@@ -1,4 +1,16 @@
 ---
+- name: Check if claude is installed
+  shell: "which claude"
+  register: claude_check
+  ignore_errors: true
+  changed_when: false
+  tags: [claude]
+
+- name: Install claude if not present
+  shell: "curl -sSL https://claude.ai/install.sh | sh"
+  when: claude_check.rc != 0
+  tags: [claude]
+
 - name: Ensure ~/.claude/hooks exists
   file:
     path: "{{ ansible_facts['env']['HOME'] }}/.claude/hooks"
