@@ -37,11 +37,9 @@ Roles are applied in sequence by `site.yml`. All share variables from `vars/main
 |----------|---------|-------------|
 | `git_name` | `Alexey Karetski` | Git commit author name |
 | `git_email` | `alexey@karetski.com` | Git commit author email |
-| `homebrew_formulae` | see below | CLI tools to install |
+| `homebrew_formulae` | `[zsh-autocomplete, lazygit, terminal-notifier]` | CLI tools to install |
 | `homebrew_casks` | `[ghostty]` | GUI apps to install |
 | `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
-
-Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`.
 
 ## Roles
 
@@ -50,6 +48,10 @@ Default formulae: `zsh-autocomplete`, `lazygit`, `terminal-notifier`.
 Verifies that Homebrew is installed (fails with instructions if not), then installs all formulae and casks declared in `vars/main.yml`.
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
+
+**Formulae**: `zsh-autocomplete`, `lazygit`, `terminal-notifier`
+
+**Casks**: `ghostty`
 
 ---
 
