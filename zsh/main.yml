@@ -1,0 +1,13 @@
+---
+- name: Ensure ~/.local/bin exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.local/bin"
+    state: directory
+    mode: '0755'
+
+- name: Deploy .zshrc
+  template:
+    src: templates/.zshrc.j2
+    dest: "{{ ansible_facts['env']['HOME'] }}/.zshrc"
+    mode: '0644'
+    backup: yes

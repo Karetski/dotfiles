@@ -1,0 +1,136 @@
+{% raw %}
+export PATH="$HOME/.local/bin:$PATH"
+
+
+# --------------------------------------------------------
+# TOOL CONFIGURATION
+# --------------------------------------------------------
+
+# zsh-autocomplete
+source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+
+
+# --------------------------------------------------------
+# ALIAS
+# --------------------------------------------------------
+
+
+# LS ENHANCEMENTS
+
+# ls split into sections
+lssplit() {
+    local target="${1:-.}"
+    local bold='\033[1m'
+    local cyan='\033[36m'
+    local reset='\033[0m'
+    local width=${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}
+    local listing out
+
+    _lssplit_header() {
+        local title=" $1 "
+        local tlen=${#title}
+        local left=$(( (width - tlen) / 2 ))
+        local right=$(( width - tlen - left ))
+        printf "${bold}${cyan}"
+        printf '─%.0s' $(seq 1 $left)
+        printf '%s' "$title"
+        printf '─%.0s' $(seq 1 $right)
+        printf "${reset}\n"
+    }
+
+    listing=$(ls -la "$target")
+
+    out=$(echo "$listing" | awk '$1 ~ /^d/')
+    if [[ -n "$out" ]]; then
+        _lssplit_header "Directories"
+        printf "%s\n" "$out"
+    fi
+
+    out=$(echo "$listing" | awk '$1 ~ /^-/' | awk '{
+        n = split($NF, a, ".");
+        ext = (n > 1) ? tolower(a[n]) : "";
+        print ext "\t" tolower($NF) "\t" $0
+    }' | sort -k1,2 | cut -f3-)
+    if [[ -n "$out" ]]; then
+        _lssplit_header "Files"
+        printf "%s\n" "$out"
+    fi
+
+    out=$(echo "$listing" | awk '$1 ~ /^l/')
+    if [[ -n "$out" ]]; then
+        _lssplit_header "Symlinks"
+        printf "%s\n" "$out"
+    fi
+
+    unfunction _lssplit_header
+}
+
+alias ll='lssplit'
+
+
+# CAFFEINATE
+
+alias caff='caffeinate'
+alias caffd='caffeinate -d'
+
+
+# --------------------------------------------------------
+# KEY BINDINGS
+# --------------------------------------------------------
+
+# Cmd+Left/Right → beginning/end of line (iTerm2 Natural Text Editing)
+bindkey "^[[H"  beginning-of-line
+bindkey "^[[F"  end-of-line
+# Option+Delete → delete word backward (covers both encodings iTerm2 may send)
+bindkey "^[^?"  backward-kill-word
+bindkey "^[^H"  backward-kill-word
+
+
+# --------------------------------------------------------
+# PROMPT
+# --------------------------------------------------------
+
+# Autoload zsh's `add-zsh-hook` and `vcs_info` functions
+# (-U autoload w/o substition, -z use zsh style)
+autoload -Uz add-zsh-hook vcs_info
+
+# Set prompt substitution so we can use the vcs_info_message variable
+setopt prompt_subst
+
+# Run the `vcs_info` hook to grab git info before displaying the prompt
+add-zsh-hook precmd vcs_info
+
+# Set psvar[1] based on whether vcs_info found anything
+vcs_info_availability() {
+    if [[ -n ${vcs_info_msg_0_} ]]; then
+        psvar[1]="1"
+    else
+        psvar[1]=""
+    fi
+}
+add-zsh-hook precmd vcs_info_availability
+
+# Style the vcs_info message
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git*' formats '%F{cyan}⎇ %b%f %F{blue}%u%c%f'
+zstyle ':vcs_info:git*' actionformats '%F{cyan}⎇ %b%f %F{blue}%u%c%f %F{red}[%a]%f'
+zstyle ':vcs_info:git*' unstagedstr '□'
+zstyle ':vcs_info:git*' stagedstr '■'
+zstyle ':vcs_info:*:*' check-for-changes true
+
+# Left:
+# Version control status on first line (only if present)
+# Success/Failure Path User/Root on second line
+PROMPT='%(1V.$vcs_info_msg_0_
+.)%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+
+# Right:
+RPROMPT='%F{240}%*%f'
+
+
+# --------------------------------------------------------
+# LOCAL OVERRIDES
+# --------------------------------------------------------
+
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+{% endraw %}
