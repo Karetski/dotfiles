@@ -71,7 +71,7 @@ Deploys `~/.zshrc` from a Jinja2 template.
 | `caff` | `caffeinate` | Prevent system sleep |
 | `caffd` | `caffeinate -d` | Prevent display sleep only |
 
-**Key bindings** (iTerm2 Natural Text Editing style):
+**Key bindings**:
 
 | Key | Action |
 |-----|--------|
