@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-Shared Ansible configuration for macOS development environment. Manages zsh, git, lazygit, Claude Code, and Fresh editor configs via idempotent playbooks.
+Shared Ansible configuration for macOS development environment. Manages zsh, git, lazygit, Claude Code, and Micro editor configs via idempotent playbooks.
 
 This is the **shared/public** half of a two-repo setup. Machine-specific config (hostnames, proxies, work git identity) lives in a separate private repo that points `roles_path` here.
 
@@ -30,8 +30,7 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 | `lazygit/` | `~/.config/lazygit/config.yml` |
 | `claude/` | `~/.claude/settings.json` (template), `~/.claude/hooks/notify.sh` |
 | `ghostty/` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
-| `fresh/` | `~/.config/fresh/config.json` |
-| `tmux/` | `~/.tmux.conf` |
+| `micro/` | `~/.config/micro/settings.json`, `~/.config/micro/bindings.json` |
 
 ## Variables
 
