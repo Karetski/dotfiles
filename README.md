@@ -126,8 +126,8 @@ Deploys Claude Code settings and a macOS notification hook.
 
 **`~/.claude/settings.json`** (templated):
 
-- **Model**: `claude-opus-4-6`
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
+- **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `claude_sandbox_enabled` (default: `true`).
 - **Hooks**:
   - `Stop` — fires when Claude finishes a task; runs `notify.sh` with "Task completed"
