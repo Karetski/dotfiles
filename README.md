@@ -1,6 +1,6 @@
 # dotfiles
 
-Ansible-based configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Fresh via idempotent playbooks.
+Ansible-based configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Micro via idempotent playbooks.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ Roles are applied in sequence by `site.yml`. All share variables from `vars/main
 |----------|---------|-------------|
 | `git_name` | `Alexey Karetski` | Git commit author name |
 | `git_email` | `karetski@gmail.com` | Git commit author email |
-| `homebrew_formulae` | `[zsh-autocomplete, lazygit, terminal-notifier]` | CLI tools to install |
+| `homebrew_formulae` | `[zsh-autocomplete, lazygit, terminal-notifier, micro]` | CLI tools to install |
 | `homebrew_casks` | `[ghostty]` | GUI apps to install |
 | `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
 
@@ -49,7 +49,7 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-**Formulae**: `zsh-autocomplete`, `lazygit`, `terminal-notifier`
+**Formulae**: `zsh-autocomplete`, `lazygit`, `terminal-notifier`, `micro`
 
 **Casks**: `ghostty`
 
@@ -165,27 +165,9 @@ Ghostty itself is installed via the `homebrew_casks` list.
 
 ---
 
-### fresh
+### micro
 
-Deploys the [Fresh](https://www.freshcode.app) editor config to `~/.config/fresh/config.json`.
+Deploys [Micro](https://micro-editor.github.io) editor config to `~/.config/micro/`.
 
-**Keymap**: macOS.
-
-**Editor settings**: Enables keyboard disambiguation of escape codes and alternate key reporting for accurate key detection in the terminal.
-
-**Custom keybindings**:
-
-| Key | Context | Action |
-|-----|---------|--------|
-| Alt+F | global | Move word right |
-| Alt+B | global | Move word left |
-| Ctrl+B | global | Disabled (noop) |
-| Ctrl+E | file_explorer, normal | Disabled (noop) |
-| Alt+] | file_explorer | Disabled (noop) |
-| Alt+J | global | Focus editor |
-| Ctrl+Alt+J | global | Focus file explorer |
-
-**Theme**: Light.
-
-**File explorer**: Shows hidden files.
+**Colorscheme**: `simple`.
 

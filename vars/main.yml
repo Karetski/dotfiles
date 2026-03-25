@@ -6,6 +6,7 @@ homebrew_formulae:
   - zsh-autocomplete
   - lazygit
   - terminal-notifier
+  - micro
 
 homebrew_casks:
   - ghostty

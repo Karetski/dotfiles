@@ -1,0 +1,20 @@
+---
+- name: Ensure ~/.config/micro exists
+  file:
+    path: "{{ ansible_facts['env']['HOME'] }}/.config/micro"
+    state: directory
+    mode: '0755'
+
+- name: Deploy Micro settings
+  copy:
+    src: files/settings.json
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/micro/settings.json"
+    mode: '0644'
+    backup: yes
+
+- name: Deploy Micro keybindings
+  copy:
+    src: files/bindings.json
+    dest: "{{ ansible_facts['env']['HOME'] }}/.config/micro/bindings.json"
+    mode: '0644'
+    backup: yes
