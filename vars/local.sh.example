@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Machine-specific variables. Copy to vars/local.sh and fill in your values.
+# This file is NOT committed to the repo.
+
+export GIT_NAME="Your Name"
+export GIT_EMAIL="your@email.com"

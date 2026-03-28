@@ -26,19 +26,19 @@ Each tool is a top-level directory (no nesting). Every role follows the same lay
   files/          # static files copied as-is
 ```
 
-Roles are applied in sequence by `install.sh`. All share variables from `vars/main.sh`.
+Roles are applied in sequence by `install.sh`. All share variables from `vars/main.sh`, with optional per-machine overrides from `vars/local.sh`.
 
 ## Variables
 
-`vars/main.sh` holds shared defaults:
+`vars/main.sh` holds shared defaults. `vars/local.sh` is sourced after it if present — use it for machine-specific values. It is gitignored; see `vars/local.sh.example` for a template.
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `GIT_NAME` | `Alexey Karetski` | Git commit author name |
-| `GIT_EMAIL` | `karetski@gmail.com` | Git commit author email |
-| `HOMEBREW_FORMULAE` | `(zsh-autocomplete lazygit micro jq)` | CLI tools to install |
-| `HOMEBREW_CASKS` | `(ghostty)` | GUI apps to install |
-| `CLAUDE_SANDBOX_ENABLED` | `true` | Enables Claude Code sandbox |
+| Variable | Where | Description |
+|----------|-------|-------------|
+| `GIT_NAME` | `vars/local.sh` | Git commit author name |
+| `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
+| `HOMEBREW_FORMULAE` | `vars/main.sh` | CLI tools to install |
+| `HOMEBREW_CASKS` | `vars/main.sh` | GUI apps to install |
+| `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 
 ## Roles
 
@@ -94,7 +94,7 @@ Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes),
 Deploys git configuration across two files.
 
 **`~/.gitconfig`** (templated):
-- Sets `user.name` and `user.email` from variables
+- Sets `user.name` and `user.email` from `GIT_NAME` / `GIT_EMAIL` — both must be set in `vars/local.sh`
 
 **`~/.config/git/ignore`**:
 

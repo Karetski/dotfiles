@@ -35,11 +35,13 @@ Flat role layout. Each tool is a top-level directory with `install.sh`, `templat
 All shared variables live in `vars/main.sh` and are sourced by `install.sh` before any role runs.
 
 Key variables:
-- `GIT_NAME` / `GIT_EMAIL` — injected into `~/.gitconfig` via `envsubst`
+- `GIT_NAME` / `GIT_EMAIL` — injected into `~/.gitconfig` via `envsubst`; set in `vars/local.sh` (not committed)
 - `CLAUDE_SANDBOX_ENABLED` — controls sandbox in `settings.json`
 - `HOMEBREW_FORMULAE` / `HOMEBREW_CASKS` — package lists
 
 ## Per-machine overrides
+
+`vars/local.sh` is sourced after `vars/main.sh` if it exists. It is gitignored. Use it to set `GIT_NAME`, `GIT_EMAIL`, and any other machine-specific values. See `vars/local.sh.example`.
 
 `~/.zshrc.local` is sourced at the end of `.zshrc` if it exists. Use it for machine-specific aliases and ad-hoc config.
 

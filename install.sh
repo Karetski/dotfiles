@@ -6,6 +6,9 @@ export DOTFILES_DIR
 
 . "$DOTFILES_DIR/lib/utils.sh"
 . "$DOTFILES_DIR/vars/main.sh"
+if [ -f "$DOTFILES_DIR/vars/local.sh" ]; then
+  . "$DOTFILES_DIR/vars/local.sh"
+fi
 
 ROLES=(homebrew zsh git lazygit claude ghostty micro)
 TAG="${TAG:-}"
