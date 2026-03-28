@@ -1,12 +1,11 @@
 # dotfiles
 
-Ansible-based configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Micro via idempotent playbooks.
+Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Micro via idempotent install scripts.
 
 ## Prerequisites
 
 - macOS
 - [Homebrew](https://brew.sh) installed
-- Ansible installed (`brew install ansible`)
 
 ## Usage
 
@@ -18,34 +17,34 @@ make install-tag TAG=git  # apply a single role by tag
 
 ## Structure
 
-Each tool is a top-level directory (no `roles/` nesting). Every role follows the same layout:
+Each tool is a top-level directory (no nesting). Every role follows the same layout:
 
 ```
 <role>/
-  main.yml        # tasks
-  templates/      # Jinja2 templates (when variables are injected)
+  install.sh      # tasks
+  templates/      # envsubst templates (when variables are injected)
   files/          # static files copied as-is
 ```
 
-Roles are applied in sequence by `site.yml`. All share variables from `vars/main.yml`.
+Roles are applied in sequence by `install.sh`. All share variables from `vars/main.sh`.
 
 ## Variables
 
-`vars/main.yml` holds shared defaults:
+`vars/main.sh` holds shared defaults:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `git_name` | `Alexey Karetski` | Git commit author name |
-| `git_email` | `karetski@gmail.com` | Git commit author email |
-| `homebrew_formulae` | `[zsh-autocomplete, lazygit, terminal-notifier, micro]` | CLI tools to install |
-| `homebrew_casks` | `[ghostty]` | GUI apps to install |
-| `claude_sandbox_enabled` | `true` | Enables Claude Code sandbox |
+| `GIT_NAME` | `Alexey Karetski` | Git commit author name |
+| `GIT_EMAIL` | `karetski@gmail.com` | Git commit author email |
+| `HOMEBREW_FORMULAE` | `(zsh-autocomplete lazygit terminal-notifier micro jq)` | CLI tools to install |
+| `HOMEBREW_CASKS` | `(ghostty)` | GUI apps to install |
+| `CLAUDE_SANDBOX_ENABLED` | `true` | Enables Claude Code sandbox |
 
 ## Roles
 
 ### homebrew
 
-Verifies that Homebrew is installed (fails with instructions if not), then installs all formulae and casks declared in `vars/main.yml`.
+Verifies that Homebrew is installed (fails with instructions if not), then installs all formulae and casks declared in `vars/main.sh`.
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
@@ -57,7 +56,7 @@ Casks use the `adopt` option so existing installations are adopted rather than r
 
 ### zsh
 
-Deploys `~/.zshrc` from a Jinja2 template.
+Deploys `~/.zshrc` as a static file.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
@@ -120,22 +119,25 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 ### claude
 
-Deploys Claude Code settings and a macOS notification hook.
+Deploys Claude Code settings and a status line script.
 
 **Installation**: Checks for `claude` in PATH; installs via the official install script if missing.
 
-**`~/.claude/settings.json`** (templated):
+**`~/.claude/settings.json`** (templated via `envsubst`):
 
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
-- **Sandbox**: Controlled by `claude_sandbox_enabled` (default: `true`).
+- **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
+
+**`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
+
 ---
 
 ### ghostty
 
 Deploys the Ghostty terminal emulator config to `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`.
 
-Ghostty itself is installed via the `homebrew_casks` list.
+Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 
 **Theme**: Separate light and dark variants using Apple System Colors (adapts to macOS appearance).
 
