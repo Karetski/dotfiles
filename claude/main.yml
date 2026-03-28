@@ -18,3 +18,9 @@
     mode: '0644'
     backup: yes
 
+- name: Deploy Claude status line script
+  copy:
+    src: files/statusline.sh
+    dest: "{{ ansible_facts['env']['HOME'] }}/.claude/statusline.sh"
+    mode: '0755'
+
