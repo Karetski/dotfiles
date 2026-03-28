@@ -36,7 +36,7 @@ Roles are applied in sequence by `install.sh`. All share variables from `vars/ma
 |----------|---------|-------------|
 | `GIT_NAME` | `Alexey Karetski` | Git commit author name |
 | `GIT_EMAIL` | `karetski@gmail.com` | Git commit author email |
-| `HOMEBREW_FORMULAE` | `(zsh-autocomplete lazygit terminal-notifier micro jq)` | CLI tools to install |
+| `HOMEBREW_FORMULAE` | `(zsh-autocomplete lazygit micro jq)` | CLI tools to install |
 | `HOMEBREW_CASKS` | `(ghostty)` | GUI apps to install |
 | `CLAUDE_SANDBOX_ENABLED` | `true` | Enables Claude Code sandbox |
 
@@ -48,7 +48,7 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-**Formulae**: `zsh-autocomplete`, `lazygit`, `terminal-notifier`, `micro`
+**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`
 
 **Casks**: `ghostty`
 

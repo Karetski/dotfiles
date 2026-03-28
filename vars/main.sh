@@ -9,7 +9,6 @@ export CLAUDE_SANDBOX_ENABLED=true
 HOMEBREW_FORMULAE=(
   zsh-autocomplete
   lazygit
-  terminal-notifier
   micro
   jq
 )
