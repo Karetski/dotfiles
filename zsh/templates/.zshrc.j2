@@ -94,36 +94,30 @@ bindkey "^[^H"  backward-kill-word
 # (-U autoload w/o substition, -z use zsh style)
 autoload -Uz add-zsh-hook vcs_info
 
-
-# Set prompt substitution so we can use the vcs_info_message variable
+# Set prompt substitution so we can use variables in PROMPT
 setopt prompt_subst
 
 # Run the `vcs_info` hook to grab git info before displaying the prompt
 add-zsh-hook precmd vcs_info
 
-# Set psvar[1] based on whether vcs_info found anything
-vcs_info_availability() {
-    if [[ -n ${vcs_info_msg_0_} ]]; then
-        psvar[1]="1"
-    else
-        psvar[1]=""
-    fi
-}
-add-zsh-hook precmd vcs_info_availability
-
-# Style the vcs_info message
+# Style the vcs_info message — no color codes here; colors are applied in
+# PROMPT directly so zsh treats them as zero-width (avoids cursor drift)
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' formats '%F{cyan}⎇ %b%f %F{blue}%u%c%f'
-zstyle ':vcs_info:git*' actionformats '%F{cyan}⎇ %b%f %F{blue}%u%c%f %F{red}[%a]%f'
+zstyle ':vcs_info:git*' formats '⎇ %b %u%c'
+zstyle ':vcs_info:git*' actionformats '⎇ %b %u%c [%a]'
 zstyle ':vcs_info:git*' unstagedstr '□'
 zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
 
-# Left:
-# Version control status on first line (only if present)
-# Success/Failure Path User/Root on second line
-PROMPT='%(1V.$vcs_info_msg_0_
-.)%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+# Rebuild PROMPT before each command so vcs line only appears in git repos
+_set_prompt() {
+    if [[ -n $vcs_info_msg_0_ ]]; then
+        PROMPT=$'%F{cyan}${vcs_info_msg_0_}%f\n%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+    else
+        PROMPT='%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+    fi
+}
+add-zsh-hook precmd _set_prompt
 
 # Right:
 RPROMPT='%F{240}%*%f'
