@@ -22,11 +22,6 @@ n=$((used_pct_int * 10 / 100))
 bar=""
 for i in $(seq 1 10); do [ "$i" -le "$n" ] && bar="${bar}▓" || bar="${bar}░"; done
 
-# Cost
-cents=$(echo "$input" | jq '.cost.total_cost_usd // 0 | . * 100 | round' 2>/dev/null)
-cents=${cents:-0}
-cost="$((cents / 100)).$(printf '%02d' $((cents % 100)))"
-
 # Rate limits
 five_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
 
@@ -37,7 +32,6 @@ parts=()
 [ -n "$model" ] && parts+=("$model")
 [ -n "$used_pct" ] && parts+=("$bar ${used_pct_int}%")
 [ -n "$five_pct" ] && parts+=("5h: $(printf '%.0f' "$five_pct")%")
-parts+=("\$$cost")
 
 result=""
 for part in "${parts[@]}"; do
