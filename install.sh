@@ -12,7 +12,9 @@ TAG="${TAG:-}"
 
 for role in "${ROLES[@]}"; do
   [ -n "$TAG" ] && [ "$role" != "$TAG" ] && continue
-  echo "==> $role"
+  _log_section "$role"
   # shellcheck source=/dev/null
   . "$DOTFILES_DIR/$role/install.sh"
 done
+
+_log_summary
