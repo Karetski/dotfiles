@@ -5,7 +5,7 @@
     "pr": ""
   },
   "sandbox": {
-    "enabled": {{ claude_sandbox_enabled | lower }}
+    "enabled": $CLAUDE_SANDBOX_ENABLED
   },
   "hooks": {},
   "statusLine": {

@@ -1,4 +1,3 @@
-{% raw %}
 export PATH="$HOME/.local/bin:$PATH"
 
 
@@ -128,4 +127,3 @@ RPROMPT='%F{240}%*%f'
 # --------------------------------------------------------
 
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-{% endraw %}

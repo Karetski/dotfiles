@@ -1,10 +1,10 @@
 .PHONY: install plan install-tag
 
 install:
-	ansible-playbook site.yml
+	./install.sh
 
 plan:
-	ansible-playbook site.yml --check --diff
+	DRY_RUN=1 ./install.sh
 
 install-tag:
-	ansible-playbook site.yml --tags $(TAG)
+	TAG=$(TAG) ./install.sh

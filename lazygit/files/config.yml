@@ -3,7 +3,6 @@ gui:
     selectedLineBgColor:
       - white
 customCommands:
-{% raw %}
   - key: "p"
     context: "files"
     command: 'ext="{{.SelectedFile.Name}}"; [[ "$ext" =~ \.(png|jpg|jpeg|gif|webp|pdf|mp4|mov|avi|mkv|heic|tiff|bmp|svg)$ ]] && qlmanage -p "$ext" &>/dev/null'
@@ -12,4 +11,3 @@ customCommands:
     context: "commitFiles"
     command: 'ext="{{.SelectedCommitFile.Name}}"; [[ "$ext" =~ \.(png|jpg|jpeg|gif|webp|pdf|mp4|mov|avi|mkv|heic|tiff|bmp|svg)$ ]] && qlmanage -p "$ext" &>/dev/null'
     description: "Quick Look"
-{% endraw %}
