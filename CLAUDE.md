@@ -28,7 +28,7 @@ Flat role layout (no `roles/` subdirectory). Each tool is a top-level directory 
 | `zsh/` | `~/.zshrc` via Jinja2 template |
 | `git/` | `~/.gitconfig` (template), `~/.config/git/ignore` |
 | `lazygit/` | `~/.config/lazygit/config.yml` |
-| `claude/` | `~/.claude/settings.json` (template), `~/.claude/hooks/notify.sh` |
+| `claude/` | `~/.claude/settings.json` (template) |
 | `ghostty/` | `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty` |
 | `micro/` | `~/.config/micro/settings.json`, `~/.config/micro/bindings.json` |
 

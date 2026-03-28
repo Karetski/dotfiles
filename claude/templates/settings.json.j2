@@ -7,30 +7,5 @@
   "sandbox": {
     "enabled": {{ claude_sandbox_enabled | lower }}
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "{{ ansible_facts['env']['HOME'] }}/.claude/hooks/notify.sh 'Task completed'",
-            "timeout": 5
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "permission_prompt|idle_prompt",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "{{ ansible_facts['env']['HOME'] }}/.claude/hooks/notify.sh 'Action needed'",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

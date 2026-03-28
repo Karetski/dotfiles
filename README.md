@@ -129,22 +129,6 @@ Deploys Claude Code settings and a macOS notification hook.
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `claude_sandbox_enabled` (default: `true`).
-- **Hooks**:
-  - `Stop` — fires when Claude finishes a task; runs `notify.sh` with "Task completed"
-  - `Notification` — fires on permission prompts or when Claude is waiting; runs `notify.sh` with "Action needed"
-  - Both hooks time out after 5 seconds.
-
-**`~/.claude/hooks/notify.sh`**:
-
-Sends a macOS notification via `terminal-notifier`.
-
-Smart skip: the script checks the currently focused application. If Terminal, iTerm2, Alacritty, Kitty, WezTerm, Hyper, Warp, or Ghostty is in the foreground, the notification is suppressed — the assumption being you're already watching Claude work.
-
-Notification content priority:
-1. Message passed directly in the hook JSON (if present)
-2. Last assistant response extracted from the Claude session transcript (truncated to 80 characters)
-3. Fallback: "Task completed"
-
 ---
 
 ### ghostty

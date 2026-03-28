@@ -11,12 +11,6 @@
   when: claude_check.rc != 0
   tags: [claude]
 
-- name: Ensure ~/.claude/hooks exists
-  file:
-    path: "{{ ansible_facts['env']['HOME'] }}/.claude/hooks"
-    state: directory
-    mode: '0755'
-
 - name: Deploy Claude settings
   template:
     src: templates/settings.json.j2
@@ -24,9 +18,3 @@
     mode: '0644'
     backup: yes
 
-- name: Deploy notify hook
-  copy:
-    src: files/notify.sh
-    dest: "{{ ansible_facts['env']['HOME'] }}/.claude/hooks/notify.sh"
-    mode: '0755'
-    backup: yes
