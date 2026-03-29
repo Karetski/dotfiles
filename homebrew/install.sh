@@ -7,7 +7,9 @@ fi
 
 for formula in "${HOMEBREW_FORMULAE[@]}"; do
   if _contains "$formula" "${OPTIONAL_HOMEBREW_FORMULAE[@]+"${OPTIONAL_HOMEBREW_FORMULAE[@]}"}"; then
-    _optional_selected "$formula" "formula" "$formula" || continue
+    if ! brew list --formula "$formula" > /dev/null 2>&1; then
+      _optional_selected "$formula" "formula" "$formula" || continue
+    fi
   fi
   if brew list --formula "$formula" > /dev/null 2>&1; then
     _log_skip "$formula" "already installed"
@@ -23,7 +25,9 @@ done
 
 for cask in "${HOMEBREW_CASKS[@]}"; do
   if _contains "$cask" "${OPTIONAL_HOMEBREW_CASKS[@]+"${OPTIONAL_HOMEBREW_CASKS[@]}"}"; then
-    _optional_selected "$cask" "cask" "$cask" || continue
+    if ! brew list --cask "$cask" > /dev/null 2>&1; then
+      _optional_selected "$cask" "cask" "$cask" || continue
+    fi
   fi
   if brew list --cask "$cask" > /dev/null 2>&1; then
     _log_skip "$cask" "already installed  (cask)"

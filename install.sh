@@ -16,6 +16,14 @@ TAG="${TAG:-}"
 _TOTAL=${#ROLES[@]}
 _INDEX=0
 
+_role_is_configured() {
+  case "$1" in
+    claude) command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
+    codex)  [ -d "$HOME/.codex" ] ;;
+    *)      return 1 ;;
+  esac
+}
+
 for role in "${ROLES[@]}"; do
   [ -n "$TAG" ] && [ "$role" != "$TAG" ] && continue
   _INDEX=$(( _INDEX + 1 ))
@@ -27,6 +35,8 @@ for role in "${ROLES[@]}"; do
   if _contains "$role" "${OPTIONAL_ROLES[@]+"${OPTIONAL_ROLES[@]}"}"; then
     if [ -n "$TAG" ] && [ "$role" = "$TAG" ]; then
       :
+    elif _role_is_configured "$role"; then
+      _log_note "$role" "optional — already configured"
     elif ! _optional_selected "$role" "role" "$role"; then
       continue
     fi

@@ -58,6 +58,10 @@ _log_dry() {
   _SECTION_CHANGED+=("$1")
 }
 
+_log_note() {
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}◆  %-42s  %s${_C_RST}\n" "$1" "$2"
+}
+
 _log_err() {
   printf "  ${_C_GRN}│${_C_RST}  ${_C_RED}✗  %s${_C_RST}\n" "$1" >&2
 }
