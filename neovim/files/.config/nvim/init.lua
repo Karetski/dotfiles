@@ -77,10 +77,12 @@ require("lazy").setup({
   },
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    opts = {
-      options = { theme = "catppuccin" },
-    },
+    dependencies = { "nvim-tree/nvim-web-devicons", "catppuccin/nvim" },
+    config = function()
+      require("lualine").setup({
+        options = { globalstatus = true },
+      })
+    end,
   },
   {
     "nvim-telescope/telescope.nvim",
