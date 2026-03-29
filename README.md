@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Codex, Ghostty, and Micro via idempotent install scripts.
+Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Codex, Ghostty, and Neovim via idempotent install scripts.
 
 ## Prerequisites
 
@@ -86,7 +86,7 @@ Casks use the `adopt` option so existing installations are adopted rather than r
 
 `codex` is an optional cask: `make install` will prompt before applying it unless `ENABLE_OPTIONAL_CODEX=1` is set in `vars/local.sh`.
 
-**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`, `fzf`, `neovim`
+**Formulae**: `zsh-autocomplete`, `lazygit`, `jq`, `fzf`, `neovim`
 
 **Casks**: `codex`, `ghostty`
 
@@ -235,10 +235,3 @@ Deploys `~/.config/nvim/init.lua`.
 
 **neo-tree** follows the current file automatically and replaces netrw.
 
----
-
-### micro
-
-Deploys [Micro](https://micro-editor.github.io) editor config to `~/.config/micro/`.
-
-**Colorscheme**: `simple`.

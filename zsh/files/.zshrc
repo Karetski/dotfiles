@@ -72,7 +72,6 @@ alias ll='lssplit'
 
 # FZF
 
-alias mf='micro $(fzf)'
 alias vf='nvim $(fzf)'
 
 

@@ -11,7 +11,6 @@ OPTIONAL_ROLES=(
 HOMEBREW_FORMULAE=(
   zsh-autocomplete
   lazygit
-  micro
   jq
   fzf
   neovim

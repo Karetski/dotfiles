@@ -10,7 +10,7 @@ if [ -f "$DOTFILES_DIR/vars/local.sh" ]; then
   . "$DOTFILES_DIR/vars/local.sh"
 fi
 
-ROLES=(homebrew zsh git lazygit claude codex ghostty micro neovim)
+ROLES=(homebrew zsh git lazygit claude codex ghostty neovim)
 TAG="${TAG:-}"
 
 _TOTAL=${#ROLES[@]}
