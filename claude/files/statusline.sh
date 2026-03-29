@@ -21,15 +21,12 @@ if [ -n "$branch" ]; then
   branch="⎇ ${branch}${dirty_flag:+ $dirty_flag}"
 fi
 
-# Model (strip date suffix like -20241022)
-model=$(echo "$input" | jq -r '.model.display_name // empty' | sed 's/ [0-9].*$//')
+# Model (strip "Claude " prefix and date suffix like -20241022)
+model=$(echo "$input" | jq -r '.model.display_name // empty' | sed 's/^Claude //; s/ [0-9].*$//')
 
 # Context usage + progress bar
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
 used_pct_int=$(printf '%.0f' "${used_pct:-0}")
-n=$((used_pct_int * 10 / 100))
-bar=""
-for i in $(seq 1 10); do [ "$i" -le "$n" ] && bar="${bar}▓" || bar="${bar}░"; done
 
 # Rate limits
 five_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
@@ -44,7 +41,7 @@ if [ -n "$five_resets_at" ]; then
     hrs=$(( remaining / 3600 ))
     mins=$(( (remaining % 3600) / 60 ))
     if [ "$hrs" -gt 0 ]; then
-      five_reset_str="${hrs}h ${mins}m"
+      five_reset_str="${hrs}h${mins}m"
     else
       five_reset_str="${mins}m"
     fi
@@ -54,16 +51,16 @@ if [ -n "$five_resets_at" ]; then
 fi
 
 # Assemble
-sep="  │  "
+sep=" │ "
 parts=()
 [ -n "$current_dir" ] && parts+=("$current_dir")
 [ -n "$branch" ] && parts+=("$branch")
 [ -n "$model" ] && parts+=("$model")
-[ -n "$used_pct" ] && parts+=("$bar ${used_pct_int}%")
+[ -n "$used_pct" ] && parts+=("ctx:${used_pct_int}%")
 if [ -n "$five_pct" ] && [ -n "$five_reset_str" ]; then
-  parts+=("5h: $(printf '%.0f' "$five_pct")% ↻ ${five_reset_str}")
+  parts+=("5h:$(printf '%.0f' "$five_pct")% | ${five_reset_str}")
 elif [ -n "$five_pct" ]; then
-  parts+=("5h: $(printf '%.0f' "$five_pct")%")
+  parts+=("5h:$(printf '%.0f' "$five_pct")%")
 fi
 
 result=""
