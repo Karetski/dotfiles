@@ -107,13 +107,14 @@ _log_section_end() {
   fi
   if [ -z "$s" ]; then s="${_C_DIM}—${_C_RST}"; s_plain="—"; fi
 
-  # Size dashes so footer fits exactly in terminal width:
-  # "  └" (3) + dashes + "  " (2) + summary = TERM_W  →  dashes = TBL_W - 1 - 2 - len(summary)
-  local dash_count=$(( _TBL_W - 1 - 2 - ${#s_plain} ))
-  [ "$dash_count" -lt 1 ] && dash_count=1
-  local _footer
-  _footer=$(printf '─%.0s' $(seq 1 "$dash_count"))
-  printf "  ${_C_GRN}└%s${_C_RST}  %s\n\n" "$_footer" "$s"
+  # Footer: "  └─ SUMMARY ────────────────────────────────┘" = TERM_W chars
+  # "  └─" (4) + " " + summary + " " + right_dashes + "┘" (1) = TERM_W
+  # right_dashes = TBL_W - 5 - len(summary)
+  local right_dashes=$(( _TBL_W - 5 - ${#s_plain} ))
+  [ "$right_dashes" -lt 1 ] && right_dashes=1
+  local _right
+  _right=$(printf '─%.0s' $(seq 1 "$right_dashes"))
+  printf "  ${_C_GRN}└─${_C_RST} %s ${_C_GRN}%s┘${_C_RST}\n\n" "$s" "$_right"
 }
 
 _log_section() {
@@ -131,12 +132,13 @@ _log_section() {
     title="$name"
   fi
 
-  local fill_len=$(( _TBL_W - 4 - ${#title} ))
+  # fill_len reserves 1 char for the closing ┐
+  local fill_len=$(( _TBL_W - 5 - ${#title} ))
   [ "$fill_len" -lt 1 ] && fill_len=1
   local fill
   fill=$(printf '─%.0s' $(seq 1 "$fill_len"))
 
-  printf "\n  ${_C_GRN}┌─${_C_RST} ${_C_BLD}%s${_C_RST} ${_C_GRN}%s${_C_RST}\n" "$title" "$fill"
+  printf "\n  ${_C_GRN}┌─${_C_RST} ${_C_BLD}%s${_C_RST} ${_C_GRN}%s┐${_C_RST}\n" "$title" "$fill"
 }
 
 _log_summary() {
