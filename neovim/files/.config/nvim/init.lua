@@ -15,6 +15,7 @@ vim.opt.relativenumber = true
 vim.opt.scrolloff = 8
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
+vim.opt.timeoutlen = 300
 
 -- Leader
 vim.g.mapleader = " "
@@ -27,7 +28,14 @@ vim.keymap.set("n", "K", "gg")
 vim.keymap.set("n", "w", "b")
 vim.keymap.set("n", "W", "B")
 vim.keymap.set("i", "jk", "<Esc>")
-vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>")
+vim.keymap.set("n", "<leader>e", "<C-w>l")
+vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>")
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.cmd("Neotree show")
+  end,
+})
+vim.keymap.set("n", "<leader>j", "<cmd>Neotree reveal<cr>")
 
 -- Highlights
 vim.api.nvim_set_hl(0, "MatchParen", { underline = true, bg = "none" })
@@ -46,6 +54,7 @@ require("lazy").setup({
       filesystem = {
         follow_current_file = { enabled = true },
         hijack_netrw_behavior = "open_current",
+        filtered_items = { visible = true },
       },
       window = { width = 30 },
     },
