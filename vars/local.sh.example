@@ -4,3 +4,8 @@
 
 export GIT_NAME="Your Name"
 export GIT_EMAIL="your@email.com"
+
+# Set to 1 to auto-apply optional components without an interactive prompt.
+# Example:
+# export ENABLE_OPTIONAL_CLAUDE=1
+# export ENABLE_OPTIONAL_CODEX=1

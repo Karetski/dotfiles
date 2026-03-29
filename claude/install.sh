@@ -11,3 +11,5 @@ else
 fi
 deploy_template "$DOTFILES_DIR/claude/templates/settings.json" "$HOME/.claude/settings.json" "0644" '$CLAUDE_SANDBOX_ENABLED'
 deploy_file "$DOTFILES_DIR/claude/files/statusline.sh" "$HOME/.claude/statusline.sh" "0755"
+_sanitize_bak "$HOME/.claude/settings.json"
+_sanitize_bak "$HOME/.claude/statusline.sh"

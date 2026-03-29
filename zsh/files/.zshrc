@@ -8,6 +8,9 @@ export PATH="$HOME/.local/bin:$PATH"
 # zsh-autocomplete
 source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
+# fzf
+source <(fzf --zsh)
+
 
 # --------------------------------------------------------
 # ALIAS
@@ -65,6 +68,12 @@ lssplit() {
 }
 
 alias ll='lssplit'
+
+
+# FZF
+
+alias mf='micro $(fzf)'
+alias vf='nvim $(fzf)'
 
 
 # CAFFEINATE

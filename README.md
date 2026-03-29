@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Micro via idempotent install scripts.
+Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Codex, Ghostty, and Micro via idempotent install scripts.
 
 ## Prerequisites
 
@@ -14,6 +14,37 @@ make install              # apply all roles; prompts to remove stale backups and
 make plan                 # dry-run: show what would change, including sanitize findings
 make install-tag TAG=git  # apply a single role by tag
 ```
+
+## Optional Components
+
+Some roles and Homebrew packages can be marked optional. During `make install`, optional items prompt before they are applied. During `make plan`, they show as `would prompt to apply`.
+
+This repo currently treats these items as optional:
+
+- `claude` role
+- `codex` Homebrew cask
+- `codex` role
+
+To auto-apply an optional item without an interactive prompt, set the matching variable in `vars/local.sh`:
+
+```bash
+export ENABLE_OPTIONAL_CLAUDE=1
+export ENABLE_OPTIONAL_CODEX=1
+```
+
+Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_CODEX=1` enables both the `codex` Homebrew install and the `codex` role.
+
+To mark more items as optional:
+
+- Add role names to `OPTIONAL_ROLES` in `vars/main.sh`
+- Add formula names to `OPTIONAL_HOMEBREW_FORMULAE` in `vars/main.sh`
+- Add cask names to `OPTIONAL_HOMEBREW_CASKS` in `vars/main.sh`
+
+The corresponding override variable name is derived from the item name:
+
+- `claude` -> `ENABLE_OPTIONAL_CLAUDE`
+- `codex` -> `ENABLE_OPTIONAL_CODEX`
+- `some-tool` -> `ENABLE_OPTIONAL_SOME_TOOL`
 
 ## Structure
 
@@ -36,6 +67,11 @@ Roles are applied in sequence by `install.sh`. All share variables from `vars/ma
 |----------|-------|-------------|
 | `GIT_NAME` | `vars/local.sh` | Git commit author name |
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
+| `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
+| `ENABLE_OPTIONAL_CODEX` | `vars/local.sh` | Auto-apply the optional Codex cask and role instead of prompting |
+| `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
+| `OPTIONAL_HOMEBREW_FORMULAE` | `vars/main.sh` | Formulae that should prompt before installing |
+| `OPTIONAL_HOMEBREW_CASKS` | `vars/main.sh` | Casks that should prompt before installing |
 | `HOMEBREW_FORMULAE` | `vars/main.sh` | CLI tools to install |
 | `HOMEBREW_CASKS` | `vars/main.sh` | GUI apps to install |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
@@ -48,9 +84,11 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`, `fzf`
+`codex` is an optional cask: `make install` will prompt before applying it unless `ENABLE_OPTIONAL_CODEX=1` is set in `vars/local.sh`.
 
-**Casks**: `ghostty`
+**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`, `fzf`, `neovim`
+
+**Casks**: `codex`, `ghostty`
 
 ---
 
@@ -119,9 +157,11 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 ### claude
 
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CLAUDE=1` is set in `vars/local.sh`.
+
 Deploys Claude Code settings and a status line script.
 
-**Installation**: Checks for `claude` in PATH; installs via the official install script if missing.
+**Installation**: Checks for `claude` in PATH; installs via the official install script if missing. Anthropic’s current documented installs are npm or their native installer, so it remains separate from the Homebrew role.
 
 **`~/.claude/settings.json`** (templated via `envsubst`):
 
@@ -146,6 +186,26 @@ Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 **Cursor**: Block style.
 
 **Shell integration**: Disabled for cursor, sudo, and title — minimal overhead, no unwanted prompt decoration.
+
+---
+
+### codex
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CODEX=1` is set in `vars/local.sh`.
+
+Deploys a Codex instruction file and updates `~/.codex/config.toml` in place without removing existing project trust entries. Installation is handled by the `homebrew` role via the `codex` cask.
+
+**`~/.codex/instructions.md`**:
+
+- Mirrors the Claude guidance to stay analytical, concise, and implementation-focused.
+- Explicitly forbids AI signatures, attribution lines, co-author tags, and similar metadata in commits, files, comments, or docs.
+
+**`~/.codex/config.toml`**:
+
+- Sets `commit_attribution = ""` to disable Codex co-author trailers.
+- Pins `approval_policy = "untrusted"` and `sandbox_mode = "workspace-write"` to match the current workflow.
+- Points `model_instructions_file` at the deployed instruction file.
+- Adds the OpenAI developer docs MCP server at `https://developers.openai.com/mcp`.
 
 
 ---
@@ -182,4 +242,3 @@ Deploys `~/.config/nvim/init.lua`.
 Deploys [Micro](https://micro-editor.github.io) editor config to `~/.config/micro/`.
 
 **Colorscheme**: `simple`.
-
