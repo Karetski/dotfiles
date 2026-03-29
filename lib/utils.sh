@@ -87,18 +87,32 @@ _log_section_end() {
     printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}changed: %s${_C_RST}\n" "$names"
   fi
 
-  local s=""
+  local s="" s_plain=""
   if [ "$DRY_RUN" = "1" ]; then
-    [ "$_SECTION_DRY" -gt 0 ]  && s="${_C_AMB}${_SECTION_DRY} plan${_C_RST}"
-    [ "$_SECTION_SKIP" -gt 0 ] && s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
+    if [ "$_SECTION_DRY" -gt 0 ]; then
+      s="${_C_AMB}${_SECTION_DRY} plan${_C_RST}"; s_plain="${_SECTION_DRY} plan"
+    fi
+    if [ "$_SECTION_SKIP" -gt 0 ]; then
+      s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
+      s_plain="${s_plain:+${s_plain}  ·  }${_SECTION_SKIP} skip"
+    fi
   else
-    [ "$_SECTION_OK" -gt 0 ]   && s="${_C_GRN_B}${_SECTION_OK} ok${_C_RST}"
-    [ "$_SECTION_SKIP" -gt 0 ] && s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
+    if [ "$_SECTION_OK" -gt 0 ]; then
+      s="${_C_GRN_B}${_SECTION_OK} ok${_C_RST}"; s_plain="${_SECTION_OK} ok"
+    fi
+    if [ "$_SECTION_SKIP" -gt 0 ]; then
+      s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
+      s_plain="${s_plain:+${s_plain}  ·  }${_SECTION_SKIP} skip"
+    fi
   fi
-  [ -z "$s" ] && s="${_C_DIM}—${_C_RST}"
+  if [ -z "$s" ]; then s="${_C_DIM}—${_C_RST}"; s_plain="—"; fi
 
+  # Size dashes so footer fits exactly in terminal width:
+  # "  └" (3) + dashes + "  " (2) + summary = TERM_W  →  dashes = TBL_W - 1 - 2 - len(summary)
+  local dash_count=$(( _TBL_W - 1 - 2 - ${#s_plain} ))
+  [ "$dash_count" -lt 1 ] && dash_count=1
   local _footer
-  _footer=$(printf '─%.0s' $(seq 1 $(( _TBL_W - 1 ))))
+  _footer=$(printf '─%.0s' $(seq 1 "$dash_count"))
   printf "  ${_C_GRN}└%s${_C_RST}  %s\n\n" "$_footer" "$s"
 }
 
