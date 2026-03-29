@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This repository previously used Claude Code as its primary agent workflow.
-
 The canonical contributor and agent instructions now live in [AGENTS.md](/Users/karetski/Developer/dotfiles/AGENTS.md). Use that file for repository structure, commands, coding style, testing expectations, and PR guidance.
 
 ## Claude-Specific Note
