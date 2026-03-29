@@ -68,6 +68,7 @@ require("lazy").setup({
         "python", "javascript", "typescript",
         "bash", "json", "yaml", "toml",
         "markdown", "markdown_inline",
+        "swift", "rust", "c", "cpp", "objc", "go",
       },
       auto_install = true,
       highlight = { enable = true },
