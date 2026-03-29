@@ -10,8 +10,8 @@ Plain shell script configuration management for a macOS development environment.
 ## Usage
 
 ```bash
-make install              # apply all roles
-make plan                 # dry-run, show what would change
+make install              # apply all roles; prompts to remove stale backups and unmanaged configs
+make plan                 # dry-run: show what would change, including sanitize findings
 make install-tag TAG=git  # apply a single role by tag
 ```
 
@@ -48,7 +48,7 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`
+**Formulae**: `zsh-autocomplete`, `lazygit`, `micro`, `jq`, `fzf`
 
 **Casks**: `ghostty`
 
@@ -147,7 +147,33 @@ Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 
 **Shell integration**: Disabled for cursor, sudo, and title — minimal overhead, no unwanted prompt decoration.
 
-**Splits**: Inactive splits are not dimmed (`unfocused-split-opacity = 1`).
+
+---
+
+### neovim
+
+Deploys `~/.config/nvim/init.lua`.
+
+**Plugin manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch).
+
+**Plugins**:
+
+| Plugin | Purpose |
+|--------|---------|
+| `neo-tree.nvim` | File manager sidebar |
+| `catppuccin` | Colorscheme (latte flavour) |
+
+**Key bindings**:
+
+| Key | Action |
+|-----|--------|
+| `<Space>e` | Toggle file manager (neo-tree) |
+| `H` / `L` | Start / end of line |
+| `J` / `K` | Bottom / top of file |
+| `w` / `W` | Previous word (b / B) |
+| `jk` (insert) | Escape to normal mode |
+
+**neo-tree** follows the current file automatically and replaces netrw.
 
 ---
 
