@@ -33,6 +33,25 @@ for i in $(seq 1 10); do [ "$i" -le "$n" ] && bar="${bar}▓" || bar="${bar}░"
 
 # Rate limits
 five_pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty')
+five_resets_at=$(echo "$input" | jq -r '.rate_limits.five_hour.resets_at // empty')
+
+# 5h reset countdown
+five_reset_str=""
+if [ -n "$five_resets_at" ]; then
+  now=$(date +%s)
+  remaining=$(( five_resets_at - now ))
+  if [ "$remaining" -gt 0 ]; then
+    hrs=$(( remaining / 3600 ))
+    mins=$(( (remaining % 3600) / 60 ))
+    if [ "$hrs" -gt 0 ]; then
+      five_reset_str="${hrs}h ${mins}m"
+    else
+      five_reset_str="${mins}m"
+    fi
+  else
+    five_reset_str="now"
+  fi
+fi
 
 # Assemble
 sep="  │  "
@@ -41,7 +60,11 @@ parts=()
 [ -n "$branch" ] && parts+=("$branch")
 [ -n "$model" ] && parts+=("$model")
 [ -n "$used_pct" ] && parts+=("$bar ${used_pct_int}%")
-[ -n "$five_pct" ] && parts+=("5h: $(printf '%.0f' "$five_pct")%")
+if [ -n "$five_pct" ] && [ -n "$five_reset_str" ]; then
+  parts+=("5h: $(printf '%.0f' "$five_pct")% ↻ ${five_reset_str}")
+elif [ -n "$five_pct" ]; then
+  parts+=("5h: $(printf '%.0f' "$five_pct")%")
+fi
 
 result=""
 for part in "${parts[@]}"; do
