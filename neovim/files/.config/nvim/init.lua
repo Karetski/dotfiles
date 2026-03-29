@@ -60,6 +60,39 @@ require("lazy").setup({
     },
   },
   {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    opts = {
+      ensure_installed = {
+        "lua", "vim", "vimdoc",
+        "python", "javascript", "typescript",
+        "bash", "json", "yaml", "toml",
+        "markdown", "markdown_inline",
+      },
+      auto_install = true,
+      highlight = { enable = true },
+      indent = { enable = true },
+    },
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = { theme = "catppuccin" },
+    },
+  },
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      local builtin = require("telescope.builtin")
+      vim.keymap.set("n", "<C-p>",      builtin.find_files,  { desc = "Find files" })
+      vim.keymap.set("n", "<leader>p",  builtin.commands,    { desc = "Command palette" })
+      vim.keymap.set("n", "<leader>fg", builtin.live_grep,   { desc = "Live grep" })
+      vim.keymap.set("n", "<leader>fb", builtin.buffers,     { desc = "Buffers" })
+    end,
+  },
+  {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
