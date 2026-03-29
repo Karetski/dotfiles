@@ -42,34 +42,68 @@ _shorten() {
   fi
 }
 
+# Visible (ANSI-stripped) length of a string
+_vis_len() {
+  local ESC=$'\033' s
+  s=$(printf '%s' "$1" | sed "s/${ESC}\[[0-9;]*m//g")
+  printf '%s' "${#s}"
+}
+
+# Right-border padding: spaces to fill a row from current width to _TBL_W, leaving 1 col for │
+# $1 = path display string (plain, already shorten'd)
+# $2 = visible length of status string
+_rpad() {
+  local pcol pad
+  pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
+  pad=$(( _TBL_W - 9 - pcol - $2 ))
+  [ "$pad" -lt 0 ] && pad=0
+  printf '%*s' "$pad" ''
+}
+
 # ── Log functions ─────────────────────────────────────────────────────────────
 
 _log_ok() {
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_GRN_B}✓${_C_RST}  %-42s  ${_C_GRN_B}%s${_C_RST}\n" "$1" "$2"
+  local slen pad
+  slen=$(_vis_len "$2")
+  pad=$(_rpad "$1" "$slen")
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_GRN_B}✓${_C_RST}  %-42s  ${_C_GRN_B}%s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$2" "$pad"
   _COUNT_OK=$(( _COUNT_OK + 1 ))
   _SECTION_OK=$(( _SECTION_OK + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_skip() {
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}·  %-42s  %s${_C_RST}\n" "$1" "$2"
+  local pad
+  pad=$(_rpad "$1" "${#2}")
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}·  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$2" "$pad"
   _COUNT_SKIP=$(( _COUNT_SKIP + 1 ))
   _SECTION_SKIP=$(( _SECTION_SKIP + 1 ))
 }
 
 _log_dry() {
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}→  %-42s  %s${_C_RST}\n" "$1" "$2"
+  local pad
+  pad=$(_rpad "$1" "${#2}")
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}→  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$2" "$pad"
   _COUNT_DRY=$(( _COUNT_DRY + 1 ))
   _SECTION_DRY=$(( _SECTION_DRY + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_note() {
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}◆  %-42s  %s${_C_RST}\n" "$1" "$2"
+  local pad
+  pad=$(_rpad "$1" "${#2}")
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}◆  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$2" "$pad"
 }
 
 _log_err() {
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_RED}✗  %s${_C_RST}\n" "$1" >&2
+  local pad=$(( _TBL_W - 7 - ${#1} ))
+  [ "$pad" -lt 0 ] && pad=0
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_RED}✗  %s${_C_RST}%*s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$pad" "" >&2
 }
 
 # ── Section layout ────────────────────────────────────────────────────────────
@@ -83,8 +117,11 @@ _log_section_end() {
     for item in "${_SECTION_CHANGED[@]}"; do
       [ -z "$names" ] && names="$item" || names="$names, $item"
     done
-    printf "  ${_C_GRN}│${_C_RST}\n"
-    printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}changed: %s${_C_RST}\n" "$names"
+    local npad=$(( _TBL_W - 13 - ${#names} ))
+    [ "$npad" -lt 0 ] && npad=0
+    printf "  ${_C_GRN}│%*s│${_C_RST}\n" $(( _TBL_W - 2 )) ""
+    printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}changed: %s${_C_RST}%*s${_C_GRN}│${_C_RST}\n" \
+      "$names" "$npad" ""
   fi
 
   local s="" s_plain=""
@@ -157,16 +194,18 @@ _log_summary() {
 # ── Brew output helpers ───────────────────────────────────────────────────────
 
 _log_brew_start() {
-  local _bdiv
-  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 3 ))))
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}↓${_C_RST}  %-42s  ${_C_AMB}installing...${_C_RST}\n" "$1"
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_RST}\n" "$_bdiv"
+  local _bdiv pad
+  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
+  pad=$(_rpad "$1" 13)  # "installing..." = 13 chars
+  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}↓${_C_RST}  %-42s  ${_C_AMB}installing...${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
+    "$1" "$pad"
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_bdiv"
 }
 
 _log_brew_end() {
   local _bdiv
-  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 3 ))))
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_RST}\n" "$_bdiv"
+  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_bdiv"
 }
 
 _brew_pipe() {
