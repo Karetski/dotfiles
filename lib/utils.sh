@@ -56,8 +56,22 @@ _rpad() {
   local pcol pad
   pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
   pad=$(( _TBL_W - 9 - pcol - $2 ))
-  [ "$pad" -lt 0 ] && pad=0
+  [ "$pad" -lt 1 ] && pad=1
   printf '%*s' "$pad" ''
+}
+
+# Truncate plain-text status to always fit within the row (ensures _rpad returns ≥ 1 space).
+# $1 = path display, $2 = status plain text
+_fit_plain() {
+  local pcol max
+  pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
+  max=$(( _TBL_W - 10 - pcol ))  # 10 = 9 prefix overhead + 1 min gap before │
+  if [ "$max" -lt 1 ]; then max=1; fi
+  if [ "${#2}" -gt "$max" ]; then
+    printf '%s…' "${2:0:$(( max - 1 ))}"
+  else
+    printf '%s' "$2"
+  fi
 }
 
 # ── Log functions ─────────────────────────────────────────────────────────────
@@ -74,29 +88,32 @@ _log_ok() {
 }
 
 _log_skip() {
-  local pad
-  pad=$(_rpad "$1" "${#2}")
+  local status pad
+  status=$(_fit_plain "$1" "$2")
+  pad=$(_rpad "$1" "${#status}")
   printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}·  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$2" "$pad"
+    "$1" "$status" "$pad"
   _COUNT_SKIP=$(( _COUNT_SKIP + 1 ))
   _SECTION_SKIP=$(( _SECTION_SKIP + 1 ))
 }
 
 _log_dry() {
-  local pad
-  pad=$(_rpad "$1" "${#2}")
+  local status pad
+  status=$(_fit_plain "$1" "$2")
+  pad=$(_rpad "$1" "${#status}")
   printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}→  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$2" "$pad"
+    "$1" "$status" "$pad"
   _COUNT_DRY=$(( _COUNT_DRY + 1 ))
   _SECTION_DRY=$(( _SECTION_DRY + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_note() {
-  local pad
-  pad=$(_rpad "$1" "${#2}")
+  local status pad
+  status=$(_fit_plain "$1" "$2")
+  pad=$(_rpad "$1" "${#status}")
   printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}◆  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$2" "$pad"
+    "$1" "$status" "$pad"
 }
 
 _log_err() {
