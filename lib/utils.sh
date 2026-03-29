@@ -3,6 +3,12 @@
 
 DRY_RUN="${DRY_RUN:-0}"
 
+# ── Terminal / table width ─────────────────────────────────────────────────────
+_TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
+_TBL_W=$(( _TERM_W - 2 ))
+[ "$_TBL_W" -lt 58 ]  && _TBL_W=58
+[ "$_TBL_W" -gt 120 ] && _TBL_W=120
+
 # ── Colors (light-background safe) ───────────────────────────────────────────
 _C_GRN=$'\033[32m'      # green — borders, structure
 _C_GRN_B=$'\033[1;32m'  # bold green — ok status
@@ -91,7 +97,9 @@ _log_section_end() {
   fi
   [ -z "$s" ] && s="${_C_DIM}—${_C_RST}"
 
-  printf "  ${_C_GRN}└──────────────────────────────────────────────────────${_C_RST}  %s\n\n" "$s"
+  local _footer
+  _footer=$(printf '─%.0s' $(seq 1 $(( _TBL_W - 1 ))))
+  printf "  ${_C_GRN}└%s${_C_RST}  %s\n\n" "$_footer" "$s"
 }
 
 _log_section() {
@@ -109,7 +117,7 @@ _log_section() {
     title="$name"
   fi
 
-  local fill_len=$(( 51 - ${#title} ))
+  local fill_len=$(( _TBL_W - 4 - ${#title} ))
   [ "$fill_len" -lt 1 ] && fill_len=1
   local fill
   fill=$(printf '─%.0s' $(seq 1 "$fill_len"))
@@ -120,7 +128,9 @@ _log_section() {
 _log_summary() {
   [ "$_SECTION_OPEN" = "1" ] && _log_section_end
 
-  printf "  ${_C_GRN}══════════════════════════════════════════════════════${_C_RST}\n"
+  local _sep
+  _sep=$(printf '═%.0s' $(seq 1 "$_TBL_W"))
+  printf "  ${_C_GRN}%s${_C_RST}\n" "$_sep"
   if [ "$DRY_RUN" = "1" ]; then
     printf "  ${_C_AMB}● %d plan${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_DRY" "$_COUNT_SKIP"
   else
@@ -131,12 +141,16 @@ _log_summary() {
 # ── Brew output helpers ───────────────────────────────────────────────────────
 
 _log_brew_start() {
+  local _bdiv
+  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 3 ))))
   printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}↓${_C_RST}  %-42s  ${_C_AMB}installing...${_C_RST}\n" "$1"
-  printf "  ${_C_GRN}│  ${_C_DIM}┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄${_C_RST}\n"
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_RST}\n" "$_bdiv"
 }
 
 _log_brew_end() {
-  printf "  ${_C_GRN}│  ${_C_DIM}┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄${_C_RST}\n"
+  local _bdiv
+  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 3 ))))
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_RST}\n" "$_bdiv"
 }
 
 _brew_pipe() {
