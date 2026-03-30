@@ -51,6 +51,13 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
     },
     opts = {
+      source_selector = {
+        winbar = true,
+        sources = {
+          { source = "filesystem", display_name = " Files" },
+          { source = "git_status", display_name = " Git" },
+        },
+      },
       filesystem = {
         follow_current_file = { enabled = true },
         hijack_netrw_behavior = "open_current",
@@ -94,6 +101,19 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>fg", builtin.live_grep,   { desc = "Live grep" })
       vim.keymap.set("n", "<leader>fb", builtin.buffers,     { desc = "Buffers" })
     end,
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {
+      on_attach = function(bufnr)
+        local gs = require("gitsigns")
+        vim.keymap.set("n", "]h", gs.next_hunk,  { buffer = bufnr, desc = "Next hunk" })
+        vim.keymap.set("n", "[h", gs.prev_hunk,  { buffer = bufnr, desc = "Prev hunk" })
+        vim.keymap.set("n", "<leader>gS", gs.stage_hunk,  { buffer = bufnr, desc = "Stage hunk" })
+        vim.keymap.set("n", "<leader>gr", gs.reset_hunk,  { buffer = bufnr, desc = "Reset hunk" })
+        vim.keymap.set("n", "<leader>gp", gs.preview_hunk, { buffer = bufnr, desc = "Preview hunk" })
+      end,
+    },
   },
   {
     "catppuccin/nvim",
