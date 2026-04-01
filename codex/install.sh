@@ -4,12 +4,19 @@ ensure_dir "$HOME/.codex"
 deploy_file "$DOTFILES_DIR/codex/files/instructions.md" "$HOME/.codex/instructions.md"
 _sanitize_bak "$HOME/.codex/instructions.md"
 
+# ── Merge managed keys into config.toml without losing user additions ─────────
+# Strategy: strip managed sections/keys from the existing config, then prepend
+# the managed header template. This preserves any project trust entries or custom
+# settings the user has added outside the managed keys.
 config_path="$HOME/.codex/config.toml"
 managed_header="$DOTFILES_DIR/codex/templates/config-header.toml"
 tmp_filtered=$(mktemp)
 tmp_merged=$(mktemp)
 
 if [ -f "$config_path" ]; then
+  # Remove managed sections and keys so the header can re-declare them cleanly:
+  #  - [mcp_servers.openaiDeveloperDocs] block (entire section until next [header])
+  #  - Top-level keys: approval_policy, sandbox_mode, commit_attribution, model_instructions_file
   awk '
     BEGIN { skip_docs_mcp = 0 }
     {
@@ -34,6 +41,7 @@ else
   : > "$tmp_filtered"
 fi
 
+# Combine: managed header (with $HOME expanded) + remaining user config
 {
   envsubst '$HOME' < "$managed_header"
   if [ -s "$tmp_filtered" ]; then

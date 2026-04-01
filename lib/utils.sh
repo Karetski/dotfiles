@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 # Shared utilities for install scripts.
 
+# When DRY_RUN=1, deploy functions show what would change without writing files
 DRY_RUN="${DRY_RUN:-0}"
 
 # ── Terminal / table width ─────────────────────────────────────────────────────
 _TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
+# Table width is terminal minus outer margins, clamped to 58–120 columns
 _TBL_W=$(( _TERM_W - 2 ))
 [ "$_TBL_W" -lt 58 ]  && _TBL_W=58
 [ "$_TBL_W" -gt 120 ] && _TBL_W=120
@@ -19,17 +21,22 @@ _C_BLD=$'\033[1m'       # bold — section titles
 _C_RST=$'\033[0m'       # reset
 
 # ── Counters ──────────────────────────────────────────────────────────────────
+# Global counters (across all roles) shown in the final summary
 _COUNT_OK=0
 _COUNT_SKIP=0
 _COUNT_DRY=0
 
+# Per-section counters reset at each _log_section call
 _SECTION_OK=0
 _SECTION_SKIP=0
 _SECTION_DRY=0
 _SECTION_OPEN=0
-_SECTION_CHANGED=()
+_SECTION_CHANGED=()  # tracks filenames that changed within the current section
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
+# Shorten a path for display: replace $HOME with ~, and if still >50 chars
+# collapse to ../parent/basename (e.g. ../lazygit/config.yml)
 _shorten() {
   local s="${1/#$HOME/\~}"
   if [ "${#s}" -gt 50 ]; then
@@ -42,16 +49,16 @@ _shorten() {
   fi
 }
 
-# Visible (ANSI-stripped) length of a string
+# Visible (ANSI-stripped) length of a string — needed because ANSI escape
+# codes inflate ${#s} but don't occupy display columns
 _vis_len() {
   local ESC=$'\033' s
   s=$(printf '%s' "$1" | sed "s/${ESC}\[[0-9;]*m//g")
   printf '%s' "${#s}"
 }
 
-# Right-border padding: spaces to fill a row from current width to _TBL_W, leaving 1 col for │
-# $1 = path display string (plain, already shorten'd)
-# $2 = visible length of status string
+# Right-border padding: fill the gap between the status text and the trailing │
+# so every row ends at the same column.  $1 = path display, $2 = status length
 _rpad() {
   local pcol pad
   pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
@@ -60,8 +67,8 @@ _rpad() {
   printf '%*s' "$pad" ''
 }
 
-# Truncate plain-text status to always fit within the row (ensures _rpad returns ≥ 1 space).
-# $1 = path display, $2 = status plain text
+# Truncate status text so it never overflows the row width.
+# Returns the original or a truncated-with-ellipsis version.
 _fit_plain() {
   local pcol max
   pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
@@ -231,6 +238,7 @@ _brew_pipe() {
   done
 }
 
+# Check if a value exists in a list: _contains "foo" "${array[@]}"
 _contains() {
   local needle="$1" item
   shift || true
@@ -240,10 +248,15 @@ _contains() {
   return 1
 }
 
+# Convert an item name to its ENABLE_OPTIONAL_* suffix: "some-tool" → "SOME_TOOL"
 _optional_token() {
   printf '%s' "$1" | tr '[:lower:]-' '[:upper:]_'
 }
 
+# Determine whether an optional item should be applied.
+# Checks (in order): cached choice from earlier in this run, ENABLE_OPTIONAL_*
+# env override, dry-run skip, interactive prompt. The result is cached so the
+# same item (e.g. codex cask + codex role) only prompts once per run.
 _optional_selected() {
   local key="$1" kind="$2" display="$3"
   local token cache_var override_var cached override reply=""
@@ -251,6 +264,7 @@ _optional_selected() {
   cache_var="_OPTIONAL_CHOICE_${token}"
   override_var="ENABLE_OPTIONAL_${token}"
 
+  # Return cached decision from earlier in this run
   eval "cached=\${$cache_var:-}"
   if [ -n "$cached" ]; then
     if [ "$cached" = "1" ]; then
@@ -260,6 +274,7 @@ _optional_selected() {
     return 1
   fi
 
+  # Check for an explicit override in vars/local.sh
   eval "override=\${$override_var:-}"
   case "$override" in
     1|true|TRUE|yes|YES|on|ON)
@@ -273,11 +288,13 @@ _optional_selected() {
       ;;
   esac
 
+  # Dry runs can't prompt interactively
   if [ "$DRY_RUN" = "1" ]; then
     _log_dry "$display" "optional ${kind} — would prompt to apply"
     return 1
   fi
 
+  # Interactive prompt; reads from /dev/tty so piped input doesn't interfere
   printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}?${_C_RST}  %-42s  ${_C_AMB}optional ${kind} — apply? ${_C_BLD}[y/N]${_C_RST} " "$display"
   read -r reply < /dev/tty 2>/dev/null || true
   if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
@@ -292,8 +309,8 @@ _optional_selected() {
 
 # ── Diff display ─────────────────────────────────────────────────────────────
 
-# Print a unified diff between two files, colored and framed within the table.
-# $1 = old file (current destination), $2 = new file (source)
+# Print a unified diff between two files, colored and framed within the table border.
+# Used by deploy functions to show what changed in an existing file.
 _log_diff() {
   local udiff
   udiff=$(diff -u "$1" "$2" 2>/dev/null || true)
@@ -302,7 +319,7 @@ _log_diff() {
 }
 
 # Print pre-computed unified diff output within the table border.
-# $1 = raw unified diff string
+# Skips --- / +++ headers and context lines; shows only hunks, adds, and deletes.
 _log_diff_raw() {
   local line color
   local _ddiv
@@ -339,6 +356,8 @@ ensure_dir() {
   fi
 }
 
+# Core deploy logic shared by deploy_file and deploy_template.
+# Compares src against dest; skips if identical, otherwise backs up and copies.
 _deploy() {
   local src="$1" dest="$2" mode="${3:-0644}"
   local display
@@ -346,12 +365,14 @@ _deploy() {
   if [ ! -f "$dest" ] || ! diff -q "$src" "$dest" > /dev/null 2>&1; then
     if [ "$DRY_RUN" = "1" ]; then
       _log_dry "$display" "would deploy"
+      # Show the diff so the user can review planned changes
       if [ -f "$dest" ]; then
         _log_diff "$dest" "$src"
       fi
     else
       local status="deployed" udiff=""
       if [ -f "$dest" ]; then
+        # Count added/removed lines for the status summary
         local diff_out added removed
         diff_out=$(diff "$src" "$dest" 2>/dev/null || true)
         added=$(printf '%s\n' "$diff_out" | grep -c '^<' || true)
@@ -361,9 +382,11 @@ _deploy() {
         status="deployed  ${_C_DIM}(+${added} -${removed})${_C_RST}"
         udiff=$(diff -u "$dest" "$src" 2>/dev/null || true)
       fi
+      # Back up the previous version before overwriting
       [ -f "$dest" ] && cp "$dest" "${dest}.bak"
       cp "$src" "$dest" && chmod "$mode" "$dest"
       _log_ok "$display" "$status"
+      # Show inline diff of what changed
       if [ -n "$udiff" ]; then
         _log_diff_raw "$udiff"
       fi
@@ -378,6 +401,7 @@ deploy_file() {
 }
 
 # Offer to remove a stale .bak file left by a previous deploy.
+# Called after deploy_file/deploy_template to clean up backups from prior runs.
 _sanitize_bak() {
   local dest="$1"
   local bak="${dest}.bak"
@@ -398,9 +422,10 @@ _sanitize_bak() {
 }
 
 # Offer to remove files in DIR that are not in the managed list.
-# Usage: _sanitize_dir DIR IGNORE_FILE MANAGED_FILE...
-#   IGNORE_FILE: path to a file listing additional filenames to ignore (one per line,
-#                # comments allowed), or "" to skip.
+# Catches config files created outside this repo (e.g. by an app's own settings UI).
+# IGNORE_FILE: path to a newline-delimited allowlist of extra filenames to keep
+#              (# comments allowed), or "" to skip. Used by roles like lazygit and
+#              neovim where the app creates its own state files alongside our config.
 _sanitize_dir() {
   local dir="$1" ignore_file="$2"; shift 2
   [ ! -d "$dir" ] && return
@@ -434,6 +459,9 @@ _sanitize_dir() {
   done < <(find "$dir" -maxdepth 1 -type f 2>/dev/null)
 }
 
+# Expand envsubst variables in a template, then deploy the result.
+# $4 (optional) restricts which variables are substituted (e.g. '$GIT_NAME $GIT_EMAIL')
+# to avoid clobbering literal $ signs in the template.
 deploy_template() {
   local src="$1" dest="$2" mode="${3:-0644}" vars="${4:-}"
   local tmp
