@@ -59,6 +59,93 @@ Each tool is a top-level directory (no nesting). Every role follows the same lay
 
 Roles are applied in sequence by `install.sh`. All share variables from `vars/main.sh`, with optional per-machine overrides from `vars/local.sh`.
 
+## Scripts
+
+### Makefile
+
+Entry point for all operations. Wraps `install.sh` with convenience targets.
+
+| Target | Command | Description |
+|--------|---------|-------------|
+| `install` | `./install.sh` | Apply all roles in sequence |
+| `plan` | `DRY_RUN=1 ./install.sh` | Dry run — show intended changes without modifying files |
+| `install-tag` | `TAG=$(TAG) ./install.sh` | Apply a single role by name |
+
+### install.sh
+
+Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, codex, ghostty, neovim.
+
+- Each role is sourced from `<role>/install.sh`
+- Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
+- Optional roles that are already configured (e.g. `~/.claude/settings.json` exists) are noted and skipped without prompting
+- `TAG` filters to a single role; tagged runs skip the optional prompt
+- Prints a summary of all changes at the end via `_log_summary`
+
+### lib/utils.sh
+
+Shared utility library sourced by all install scripts. Provides:
+
+**Logging** — styled, table-framed output with status indicators:
+
+| Function | Indicator | Purpose |
+|----------|-----------|---------|
+| `_log_ok` | `✓` | Successful action (deployed, created, removed) |
+| `_log_skip` | `·` | No action needed (exists, no change, already installed) |
+| `_log_dry` | `→` | Dry-run planned action |
+| `_log_note` | `◆` | Informational note |
+| `_log_err` | `✗` | Error message |
+
+**Section layout** — `_log_section` opens a bordered section for a role (with optional `[n/total]` counter), `_log_section_end` closes it with a per-section summary, and `_log_summary` prints the final totals.
+
+**Brew helpers** — `_log_brew_start` / `_log_brew_end` frame Homebrew install output, `_brew_pipe` indents brew output within the table border.
+
+**File deployment:**
+
+| Function | Purpose |
+|----------|---------|
+| `ensure_dir DIR [MODE]` | Create directory if missing (default `0755`) |
+| `deploy_file SRC DEST [MODE]` | Copy file if changed, show inline diff, back up previous version |
+| `deploy_template SRC DEST [MODE] [VARS]` | Run `envsubst` on a template then deploy the result |
+
+Both `deploy_file` and `deploy_template` are idempotent — they skip when the destination matches and show an inline unified diff when updating.
+
+**Sanitize:**
+
+| Function | Purpose |
+|----------|---------|
+| `_sanitize_bak DEST` | Prompt to remove stale `.bak` files left by previous deploys |
+| `_sanitize_dir DIR IGNORE_FILE MANAGED...` | Prompt to remove files in a directory that are not in the managed list or ignore file |
+
+**Diff display** — `_log_diff` and `_log_diff_raw` render unified diffs inside the table border with color-coded additions/removals.
+
+**Helpers** — `_shorten` abbreviates paths for display, `_contains` checks array membership, `_optional_selected` handles interactive opt-in prompts with caching and `ENABLE_OPTIONAL_*` overrides.
+
+### vars/main.sh
+
+Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED`, `OPTIONAL_ROLES`, `HOMEBREW_FORMULAE`, `HOMEBREW_CASKS`, and `OPTIONAL_HOMEBREW_CASKS`. See [Variables](#variables) for the full list.
+
+### vars/local.sh
+
+Machine-specific overrides, sourced after `vars/main.sh`. Gitignored — see `vars/local.sh.example` for a template. Holds values like `GIT_NAME`, `GIT_EMAIL`, and `ENABLE_OPTIONAL_*` flags.
+
+### claude/files/statusline.sh
+
+Status line script deployed to `~/.claude/statusline.sh` for the Claude Code terminal UI. Receives JSON on stdin from the Claude Code harness and outputs a single pipe-separated status string containing:
+
+| Segment | Source | Example |
+|---------|--------|---------|
+| Directory | `workspace.current_dir` | `dotfiles/neovim` |
+| Git branch | `git symbolic-ref` + porcelain status | `⎇ main □■` |
+| Model | `model.display_name` (stripped) | `Opus 4.6` |
+| Context | `context_window.used_percentage` | `ctx:42%` |
+| Rate limit | `rate_limits.five_hour` + countdown | `5h:15% \| 3h12m` |
+
+Dirty indicators: `□` = unstaged changes, `■` = staged changes.
+
+### Role install scripts
+
+Each role has an `install.sh` sourced by the main orchestrator. These scripts use the `lib/utils.sh` helpers and are not standalone — they inherit the shell environment (variables, functions, `set -euo pipefail`) from the parent. See [Roles](#roles) for what each one deploys.
+
 ## Variables
 
 `vars/main.sh` holds shared defaults. `vars/local.sh` is sourced after it if present — use it for machine-specific values. It is gitignored; see `vars/local.sh.example` for a template.
