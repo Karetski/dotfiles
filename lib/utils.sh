@@ -290,6 +290,37 @@ _optional_selected() {
   return 1
 }
 
+# ── Diff display ─────────────────────────────────────────────────────────────
+
+# Print a unified diff between two files, colored and framed within the table.
+# $1 = old file (current destination), $2 = new file (source)
+_log_diff() {
+  local udiff
+  udiff=$(diff -u "$1" "$2" 2>/dev/null || true)
+  [ -z "$udiff" ] && return
+  _log_diff_raw "$udiff"
+}
+
+# Print pre-computed unified diff output within the table border.
+# $1 = raw unified diff string
+_log_diff_raw() {
+  local line color
+  local _ddiv
+  _ddiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_ddiv"
+  while IFS= read -r line; do
+    case "$line" in
+      ---*|+++*) continue ;;
+      @@*)  color="$_C_DIM" ;;
+      +*)   color="$_C_GRN_B" ;;
+      -*)   color="$_C_RED" ;;
+      *)    continue ;;
+    esac
+    printf "  ${_C_GRN}│${_C_RST}     ${color}%s${_C_RST}\n" "$line"
+  done <<< "$1"
+  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_ddiv"
+}
+
 # ── File deployment ───────────────────────────────────────────────────────────
 
 ensure_dir() {
@@ -315,8 +346,11 @@ _deploy() {
   if [ ! -f "$dest" ] || ! diff -q "$src" "$dest" > /dev/null 2>&1; then
     if [ "$DRY_RUN" = "1" ]; then
       _log_dry "$display" "would deploy"
+      if [ -f "$dest" ]; then
+        _log_diff "$dest" "$src"
+      fi
     else
-      local status="deployed"
+      local status="deployed" udiff=""
       if [ -f "$dest" ]; then
         local diff_out added removed
         diff_out=$(diff "$src" "$dest" 2>/dev/null || true)
@@ -325,10 +359,14 @@ _deploy() {
         [ -z "$added" ] && added=0
         [ -z "$removed" ] && removed=0
         status="deployed  ${_C_DIM}(+${added} -${removed})${_C_RST}"
+        udiff=$(diff -u "$dest" "$src" 2>/dev/null || true)
       fi
       [ -f "$dest" ] && cp "$dest" "${dest}.bak"
       cp "$src" "$dest" && chmod "$mode" "$dest"
       _log_ok "$display" "$status"
+      if [ -n "$udiff" ]; then
+        _log_diff_raw "$udiff"
+      fi
     fi
   else
     _log_skip "$display" "no change"
