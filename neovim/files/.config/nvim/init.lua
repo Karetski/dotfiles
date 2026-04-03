@@ -209,7 +209,7 @@ require("lazy").setup({
         end
 
         -- Collect user commands
-        for name, cmd in pairs(vim.api.nvim_get_commands({})) do
+        for name, _ in pairs(vim.api.nvim_get_commands({})) do
           table.insert(items, {
             label = name,
             kind = "command",
