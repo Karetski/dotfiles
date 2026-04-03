@@ -133,6 +133,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>p",  builtin.commands,    { desc = "Command palette" })
       vim.keymap.set("n", "<leader>fg", builtin.live_grep,   { desc = "Live grep" })
       vim.keymap.set("n", "<leader>fb", builtin.buffers,     { desc = "Buffers" })
+      vim.keymap.set("n", "<leader>fs", builtin.lsp_document_symbols, { desc = "Document symbols" })
     end,
   },
   {
@@ -197,6 +198,10 @@ require("lazy").setup({
         end,
       })
     end,
+  },
+  {
+    "lewis6991/satellite.nvim",
+    opts = {},
   },
   {
     "catppuccin/nvim",

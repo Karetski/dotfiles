@@ -314,6 +314,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `telescope.nvim` | Fuzzy finder for files, commands, grep, and buffers |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
+| `satellite.nvim` | Scrollbar with diagnostics, search, and git markers |
 | `catppuccin` | Colorscheme (latte flavour) |
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`. `sourcekit` is configured directly (pre-installed on macOS).
@@ -336,6 +337,7 @@ Navigation keys (`H`, `L`, `J`, `K`, `e`, `w`, `W`) work in both normal and visu
 | `<Space>p` | Command palette (Telescope) |
 | `<Space>fg` | Live grep (Telescope) |
 | `<Space>fb` | Buffers (Telescope) |
+| `<Space>fs` | Document symbols (Telescope) |
 | `]h` / `[h` | Next / previous git hunk |
 | `<Space>gS` | Stage hunk |
 | `<Space>gr` | Reset hunk |
