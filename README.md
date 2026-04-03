@@ -311,9 +311,10 @@ Deploys `~/.config/nvim/init.lua`.
 | `neo-tree.nvim` | File manager sidebar |
 | `nvim-treesitter` | Syntax highlighting and indentation |
 | `lualine.nvim` | Statusline with LSP client info |
-| `telescope.nvim` | Fuzzy finder for files, commands, grep, and buffers |
+| `telescope.nvim` | Fuzzy finder for files, grep, buffers, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
+| `blink.cmp` | Autocompletion (LSP, path, buffer sources) |
 | `satellite.nvim` | Scrollbar with diagnostics, search, and git markers |
 | `catppuccin` | Colorscheme (latte flavour) |
 
@@ -326,6 +327,8 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>e` | Move cursor to right window |
 | `<Space>E` | Toggle file manager (neo-tree) |
 | `<Space>j` | Reveal current file in neo-tree |
+| `<Space>J` | Join lines (default `J` behaviour) |
+| `<Space>k` | Hover docs (LSP) |
 | `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
 | `Alt+l` / `Alt+h` | Next word / previous word |
@@ -335,7 +338,7 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 | `jk` (insert) | Escape to normal mode |
 | `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
 | `Ctrl+p` | Find files (Telescope) |
-| `<Space>p` | Command palette (Telescope) |
+| `<Space>p` | Command palette (keymaps, LSP actions, commands) |
 | `<Space>fg` | Live grep (Telescope) |
 | `<Space>fb` | Buffers (Telescope) |
 | `<Space>fs` | Document symbols (Telescope) |

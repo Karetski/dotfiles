@@ -32,6 +32,8 @@ vim.keymap.set({ "n", "v" }, "J", "G")              -- Jump to file end
 vim.keymap.set({ "n", "v" }, "K", "gg")             -- Jump to file start
 vim.keymap.set({ "n", "v" }, "<M-l>", "w")          -- Next word
 vim.keymap.set({ "n", "v" }, "<M-h>", "b")          -- Previous word
+vim.keymap.set({ "n", "v" }, "<leader>J", "J")       -- Join lines
+vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)  -- Hover docs
 vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
 vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")      -- Previous buffer
 vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")      -- Next buffer
@@ -128,8 +130,88 @@ require("lazy").setup({
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       local builtin = require("telescope.builtin")
+      local pickers = require("telescope.pickers")
+      local finders = require("telescope.finders")
+      local conf = require("telescope.config").values
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
+      local function command_palette()
+        local items = {}
+
+        -- Collect user keymaps with descriptions
+        for _, mode in ipairs({ "n", "v", "x", "i" }) do
+          for _, km in ipairs(vim.api.nvim_get_keymap(mode)) do
+            if km.desc and km.desc ~= "" then
+              table.insert(items, {
+                label = km.desc,
+                kind = "keymap",
+                display = km.desc .. "  [" .. mode .. " " .. km.lhs .. "]",
+                action = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(km.lhs, true, false, true), mode, false) end,
+              })
+            end
+          end
+        end
+
+        -- Collect LSP actions
+        local lsp_actions = {
+          { label = "Rename symbol",         action = vim.lsp.buf.rename },
+          { label = "Code action",           action = vim.lsp.buf.code_action },
+          { label = "Go to definition",      action = vim.lsp.buf.definition },
+          { label = "Go to declaration",     action = vim.lsp.buf.declaration },
+          { label = "Go to implementation",  action = vim.lsp.buf.implementation },
+          { label = "Go to type definition", action = vim.lsp.buf.type_definition },
+          { label = "Find references",       action = vim.lsp.buf.references },
+          { label = "Hover documentation",   action = vim.lsp.buf.hover },
+          { label = "Signature help",        action = vim.lsp.buf.signature_help },
+          { label = "Format buffer",         action = function() vim.lsp.buf.format({ async = true }) end },
+        }
+        for _, a in ipairs(lsp_actions) do
+          table.insert(items, { label = a.label, kind = "lsp", display = a.label .. "  [lsp]", action = a.action })
+        end
+
+        -- Collect user commands
+        for name, cmd in pairs(vim.api.nvim_get_commands({})) do
+          table.insert(items, {
+            label = name,
+            kind = "command",
+            display = name .. "  [cmd]",
+            action = function() vim.cmd(name) end,
+          })
+        end
+
+        -- Deduplicate by display string
+        local seen = {}
+        local unique = {}
+        for _, item in ipairs(items) do
+          if not seen[item.display] then
+            seen[item.display] = true
+            table.insert(unique, item)
+          end
+        end
+
+        pickers.new({}, {
+          prompt_title = "Command Palette",
+          finder = finders.new_table({
+            results = unique,
+            entry_maker = function(item)
+              return { value = item, display = item.display, ordinal = item.label }
+            end,
+          }),
+          sorter = conf.generic_sorter({}),
+          attach_mappings = function(prompt_bufnr)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local entry = action_state.get_selected_entry()
+              if entry then entry.value.action() end
+            end)
+            return true
+          end,
+        }):find()
+      end
+
       vim.keymap.set("n", "<C-p>",      builtin.find_files,  { desc = "Find files" })
-      vim.keymap.set("n", "<leader>p",  builtin.commands,    { desc = "Command palette" })
+      vim.keymap.set("n", "<leader>p",  command_palette,     { desc = "Command palette" })
       vim.keymap.set("n", "<leader>fg", builtin.live_grep,   { desc = "Live grep" })
       vim.keymap.set("n", "<leader>fb", builtin.buffers,     { desc = "Buffers" })
       vim.keymap.set("n", "<leader>fs", builtin.lsp_document_symbols, { desc = "Document symbols" })
@@ -164,7 +246,9 @@ require("lazy").setup({
 
       local servers = { "lua_ls", "rust_analyzer", "clangd", "sourcekit" }
       for _, server in ipairs(servers) do
-        vim.lsp.config(server, {})
+        vim.lsp.config(server, {
+          capabilities = require("blink.cmp").get_lsp_capabilities(),
+        })
       end
       vim.lsp.enable(servers)
 
@@ -197,6 +281,22 @@ require("lazy").setup({
         end,
       })
     end,
+  },
+  {
+    "saghen/blink.cmp",
+    version = "1.*",
+    opts = {
+      keymap = { preset = "default" },
+      completion = {
+        documentation = { auto_show = true },
+      },
+      sources = {
+        default = { "lsp", "path", "buffer" },
+      },
+      cmdline = {
+        enabled = true,
+      },
+    },
   },
   {
     "lewis6991/satellite.nvim",
