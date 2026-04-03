@@ -308,7 +308,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 | Plugin | Purpose |
 |--------|---------|
-| `neo-tree.nvim` | File manager sidebar |
+| `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with diagnostics panel |
 | `nvim-treesitter` | Syntax highlighting and indentation |
 | `lualine.nvim` | Statusline with LSP client info |
 | `telescope.nvim` | Fuzzy finder for files, grep, buffers, and command palette |
@@ -329,6 +329,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>j` | Reveal current file in neo-tree |
 | `<Space>J` | Join lines (default `J` behaviour) |
 | `<Space>k` | Hover docs (LSP) |
+| `<Space>b` | Build project (`:make`) |
 | `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
 | `Alt+l` / `Alt+h` | Next word / previous word |
@@ -352,5 +353,13 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 | `<Space>r` | Rename symbol (LSP) |
 | `<Space>a` | Code action (LSP) |
 
-**neo-tree** follows the current file automatically and replaces netrw.
+**Disabled defaults**: `s`, `S` (substitute — use `cl`/`cc`), `q`, `Q` (macro recording/replay) are mapped to `<Nop>` to prevent accidental triggers.
+
+**Auto save**: Files are saved automatically on every text change, leaving insert mode, switching buffers, and losing focus. Only applies to named, modified file buffers (skips special buffers like terminals or neo-tree).
+
+**neo-tree** follows the current file automatically and replaces netrw. The sidebar includes Files, Git, and Issues (diagnostics) tabs.
+
+**Diagnostics** are displayed inline below each offending line (`virtual_lines`). LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
+
+**Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root. Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
 

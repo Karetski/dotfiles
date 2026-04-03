@@ -18,11 +18,19 @@ vim.opt.cursorline = true
 vim.opt.timeoutlen = 300
 vim.opt.updatetime = 250
 vim.opt.virtualedit = "onemore"
+vim.opt.exrc = true
+
+-- Diagnostics
+vim.diagnostic.config({
+  virtual_lines = true,
+  virtual_text = false,
+  signs = true,
+})
 
 -- Leader
 vim.g.mapleader = " "
 
--- Keymaps
+-- Keymaps: Navigation
 vim.keymap.set({ "n", "v" }, "H", "0")              -- Jump to line start
 vim.keymap.set({ "n", "v" }, "L", function()         -- Jump past line end
   local col = vim.fn.col("$")
@@ -32,22 +40,44 @@ vim.keymap.set({ "n", "v" }, "J", "G")              -- Jump to file end
 vim.keymap.set({ "n", "v" }, "K", "gg")             -- Jump to file start
 vim.keymap.set({ "n", "v" }, "<M-l>", "w")          -- Next word
 vim.keymap.set({ "n", "v" }, "<M-h>", "b")          -- Previous word
-vim.keymap.set({ "n", "v" }, "<leader>J", "J")       -- Join lines
-vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)  -- Hover docs
-vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
+
+-- Keymaps: Buffers and splits
 vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")      -- Previous buffer
 vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")      -- Next buffer
 vim.keymap.set("n", "<leader>e", "<C-w>l")           -- Focus right split
+
+-- Keymaps: Editing
+vim.keymap.set({ "n", "v" }, "<leader>J", "J")       -- Join lines
+vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)  -- Hover docs
+vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
+vim.keymap.set("n", "<leader>b", "<cmd>make<cr>",     { desc = "Build (make)" })
+
+-- Keymaps: File tree
 vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>") -- Toggle file tree
+vim.keymap.set("n", "<leader>j", function()          -- Reveal current file in tree
+  vim.cmd("Neotree reveal")
+  vim.cmd("Neotree focus")
+end)
 vim.api.nvim_create_autocmd("VimEnter", {            -- Open file tree on startup
   callback = function()
     vim.cmd("Neotree show")
   end,
 })
-vim.keymap.set("n", "<leader>j", function()          -- Reveal current file in tree
-  vim.cmd("Neotree reveal")
-  vim.cmd("Neotree focus")
-end)
+
+-- Keymaps: Disabled defaults
+vim.keymap.set("n", "s",     "<Nop>")               -- Disable substitute char (use cl)
+vim.keymap.set("n", "S",     "<Nop>")               -- Disable substitute line (use cc)
+vim.keymap.set("n", "q",     "<Nop>")               -- Disable macro recording
+vim.keymap.set("n", "Q",     "<Nop>")               -- Disable replay macro
+
+-- Auto save
+vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "BufLeave", "FocusLost" }, {
+  callback = function(ev)
+    if vim.bo[ev.buf].modified and vim.bo[ev.buf].buftype == "" and vim.fn.bufname(ev.buf) ~= "" then
+      vim.api.nvim_buf_call(ev.buf, function() vim.cmd("silent! write") end)
+    end
+  end,
+})
 
 -- Highlights
 vim.api.nvim_create_autocmd("ColorScheme", {
@@ -66,13 +96,16 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
       "MunifTanjim/nui.nvim",
+      "mrbjarksen/neo-tree-diagnostics.nvim",
     },
     opts = {
+      sources = { "filesystem", "git_status", "diagnostics" },
       source_selector = {
         winbar = true,
         sources = {
-          { source = "filesystem", display_name = " Files" },
-          { source = "git_status", display_name = " Git" },
+          { source = "filesystem", display_name = "󰉓 Files" },
+          { source = "git_status", display_name = "󰊢 Git" },
+          { source = "diagnostics", display_name = "󰒡 Issues" },
         },
       },
       filesystem = {
