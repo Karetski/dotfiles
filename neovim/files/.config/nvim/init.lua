@@ -22,13 +22,13 @@ vim.opt.updatetime = 250
 vim.g.mapleader = " "
 
 -- Keymaps
-vim.keymap.set("n", "H", "0")
-vim.keymap.set("n", "L", "$")
-vim.keymap.set("n", "J", "G")
-vim.keymap.set("n", "K", "gg")
-vim.keymap.set("n", "e", "w")
-vim.keymap.set("n", "w", "b")
-vim.keymap.set("n", "W", "B")
+vim.keymap.set({ "n", "v" }, "H", "0")
+vim.keymap.set({ "n", "v" }, "L", "$")
+vim.keymap.set({ "n", "v" }, "J", "G")
+vim.keymap.set({ "n", "v" }, "K", "gg")
+vim.keymap.set({ "n", "v" }, "e", "w")
+vim.keymap.set({ "n", "v" }, "w", "b")
+vim.keymap.set({ "n", "v" }, "W", "B")
 vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")
 vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")
