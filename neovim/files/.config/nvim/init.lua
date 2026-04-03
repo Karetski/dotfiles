@@ -23,27 +23,26 @@ vim.opt.virtualedit = "onemore"
 vim.g.mapleader = " "
 
 -- Keymaps
-vim.keymap.set({ "n", "v" }, "H", "0")
-vim.keymap.set({ "n", "v" }, "L", function()
+vim.keymap.set({ "n", "v" }, "H", "0")              -- Jump to line start
+vim.keymap.set({ "n", "v" }, "L", function()         -- Jump past line end
   local col = vim.fn.col("$")
   vim.fn.cursor(0, col)
 end)
-vim.keymap.set({ "n", "v" }, "J", "G")
-vim.keymap.set({ "n", "v" }, "K", "gg")
-vim.keymap.set({ "n", "v" }, "e", "w")
-vim.keymap.set({ "n", "v" }, "w", "b")
-vim.keymap.set({ "n", "v" }, "W", "B")
-vim.keymap.set("i", "jk", "<Esc>")
-vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")
-vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")
-vim.keymap.set("n", "<leader>e", "<C-w>l")
-vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>")
-vim.api.nvim_create_autocmd("VimEnter", {
+vim.keymap.set({ "n", "v" }, "J", "G")              -- Jump to file end
+vim.keymap.set({ "n", "v" }, "K", "gg")             -- Jump to file start
+vim.keymap.set({ "n", "v" }, "<M-l>", "w")          -- Next word
+vim.keymap.set({ "n", "v" }, "<M-h>", "b")          -- Previous word
+vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
+vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")      -- Previous buffer
+vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")      -- Next buffer
+vim.keymap.set("n", "<leader>e", "<C-w>l")           -- Focus right split
+vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>") -- Toggle file tree
+vim.api.nvim_create_autocmd("VimEnter", {            -- Open file tree on startup
   callback = function()
     vim.cmd("Neotree show")
   end,
 })
-vim.keymap.set("n", "<leader>j", function()
+vim.keymap.set("n", "<leader>j", function()          -- Reveal current file in tree
   vim.cmd("Neotree reveal")
   vim.cmd("Neotree focus")
 end)
