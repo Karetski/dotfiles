@@ -26,6 +26,9 @@ HOMEBREW_CASKS=(
   ghostty
 )
 
+# Formulae that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
+OPTIONAL_HOMEBREW_FORMULAE=()
+
 # Casks that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
 OPTIONAL_HOMEBREW_CASKS=(
   codex

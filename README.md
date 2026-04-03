@@ -122,7 +122,7 @@ Both `deploy_file` and `deploy_template` are idempotent — they skip when the d
 
 ### vars/main.sh
 
-Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED`, `OPTIONAL_ROLES`, `HOMEBREW_FORMULAE`, `HOMEBREW_CASKS`, and `OPTIONAL_HOMEBREW_CASKS`. See [Variables](#variables) for the full list.
+Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED`, `OPTIONAL_ROLES`, `HOMEBREW_FORMULAE`, `HOMEBREW_CASKS`, `OPTIONAL_HOMEBREW_FORMULAE`, and `OPTIONAL_HOMEBREW_CASKS`. See [Variables](#variables) for the full list.
 
 ### vars/local.sh
 
@@ -185,13 +185,14 @@ Deploys `~/.zshrc` as a static file.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
-**Plugin**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion.
+**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion and `fzf` for fuzzy finding.
 
 **Aliases**:
 
 | Alias | Expands to | Description |
 |-------|-----------|-------------|
 | `ll` | `lssplit` | Lists directory contents split into Directories, Files, and Symlinks sections with colored headers |
+| `vf` | `nvim $(fzf)` | Open a file in Neovim via fzf |
 | `caff` | `caffeinate` | Prevent system sleep |
 | `caffd` | `caffeinate -d` | Prevent display sleep only |
 
@@ -205,7 +206,7 @@ Deploys `~/.zshrc` as a static file.
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
 - Line 1: Git branch/status (shown only inside a git repo)
-- Line 2: Success/failure indicator (`%` / `#` for root), current path, username
+- Line 2: Success/failure indicator (`❯` green on success, red on failure), current path, `%` (`#` for root)
 - Right prompt: Current time
 
 Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).
@@ -308,6 +309,10 @@ Deploys `~/.config/nvim/init.lua`.
 | Plugin | Purpose |
 |--------|---------|
 | `neo-tree.nvim` | File manager sidebar |
+| `nvim-treesitter` | Syntax highlighting and indentation |
+| `lualine.nvim` | Statusline with LSP client info |
+| `telescope.nvim` | Fuzzy finder for files, commands, grep, and buffers |
+| `gitsigns.nvim` | Git diff signs and hunk navigation |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
 | `catppuccin` | Colorscheme (latte flavour) |
 
@@ -317,12 +322,22 @@ Deploys `~/.config/nvim/init.lua`.
 
 | Key | Action |
 |-----|--------|
-| `<Space>e` | Toggle file manager (neo-tree) |
+| `<Space>e` | Move cursor to right window |
+| `<Space>E` | Toggle file manager (neo-tree) |
+| `<Space>j` | Reveal current file in neo-tree |
 | `H` / `L` | Start / end of line |
 | `J` / `K` | Bottom / top of file |
-| `e` / `w` | Next / previous word (w / b) |
+| `e` / `w` / `W` | Next word / previous word / previous WORD |
 | `jk` (insert) | Escape to normal mode |
 | `Shift+Alt+H` / `Shift+Alt+L` | Previous / next buffer |
+| `Ctrl+p` | Find files (Telescope) |
+| `<Space>p` | Command palette (Telescope) |
+| `<Space>fg` | Live grep (Telescope) |
+| `<Space>fb` | Buffers (Telescope) |
+| `]h` / `[h` | Next / previous git hunk |
+| `<Space>gS` | Stage hunk |
+| `<Space>gr` | Reset hunk |
+| `<Space>gp` | Preview hunk |
 | `gd` | Go to definition (LSP) |
 | `gr` | Find references (LSP) |
 | `gI` | Go to implementation (LSP) |
