@@ -353,6 +353,8 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 | `<Space>r` | Rename symbol (LSP) |
 | `<Space>a` | Code action (LSP) |
 
+**Commands**: `:Q` closes all windows and exits Neovim immediately (`qall!`).
+
 **Disabled defaults**: `s`, `S` (substitute — use `cl`/`cc`), `q`, `Q` (macro recording/replay) are mapped to `<Nop>` to prevent accidental triggers.
 
 **Auto save**: Files are saved automatically on every text change, leaving insert mode, switching buffers, and losing focus. Only applies to named, modified file buffers (skips special buffers like terminals or neo-tree).

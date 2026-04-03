@@ -72,6 +72,9 @@ vim.keymap.set("n", "S",     "<Nop>")               -- Disable substitute line (
 vim.keymap.set("n", "q",     "<Nop>")               -- Disable macro recording
 vim.keymap.set("n", "Q",     "<Nop>")               -- Disable replay macro
 
+-- Commands
+vim.api.nvim_create_user_command("Q", "qall!", {})     -- Close all windows at once
+
 -- Auto save
 vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "BufLeave", "FocusLost" }, {
   callback = function(ev)
