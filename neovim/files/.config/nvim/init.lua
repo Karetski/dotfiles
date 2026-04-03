@@ -17,13 +17,17 @@ vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 vim.opt.timeoutlen = 300
 vim.opt.updatetime = 250
+vim.opt.virtualedit = "onemore"
 
 -- Leader
 vim.g.mapleader = " "
 
 -- Keymaps
 vim.keymap.set({ "n", "v" }, "H", "0")
-vim.keymap.set({ "n", "v" }, "L", "$")
+vim.keymap.set({ "n", "v" }, "L", function()
+  local col = vim.fn.col("$")
+  vim.fn.cursor(0, col)
+end)
 vim.keymap.set({ "n", "v" }, "J", "G")
 vim.keymap.set({ "n", "v" }, "K", "gg")
 vim.keymap.set({ "n", "v" }, "e", "w")
