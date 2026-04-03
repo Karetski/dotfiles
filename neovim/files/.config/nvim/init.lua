@@ -92,6 +92,24 @@ require("lazy").setup({
     config = function()
       require("lualine").setup({
         options = { globalstatus = true },
+        sections = {
+          lualine_x = {
+            {
+              function()
+                local clients = vim.lsp.get_clients({ bufnr = 0 })
+                if #clients == 0 then return "" end
+                local names = {}
+                for _, c in ipairs(clients) do
+                  table.insert(names, c.name)
+                end
+                return " " .. table.concat(names, ", ")
+              end,
+            },
+            "encoding",
+            "fileformat",
+            "filetype",
+          },
+        },
       })
     end,
   },
