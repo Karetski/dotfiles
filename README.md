@@ -325,9 +325,11 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>e` | Move cursor to right window |
 | `<Space>E` | Toggle file manager (neo-tree) |
 | `<Space>j` | Reveal current file in neo-tree |
-| `H` / `L` | Start / end of line |
+| `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
 | `e` / `w` / `W` | Next word / previous word / previous WORD |
+
+Navigation keys (`H`, `L`, `J`, `K`, `e`, `w`, `W`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
 | `jk` (insert) | Escape to normal mode |
 | `Shift+Alt+H` / `Shift+Alt+L` | Previous / next buffer |
 | `Ctrl+p` | Find files (Telescope) |
