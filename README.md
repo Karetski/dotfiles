@@ -308,7 +308,10 @@ Deploys `~/.config/nvim/init.lua`.
 | Plugin | Purpose |
 |--------|---------|
 | `neo-tree.nvim` | File manager sidebar |
+| `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
 | `catppuccin` | Colorscheme (latte flavour) |
+
+**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`. `sourcekit` is configured directly (pre-installed on macOS).
 
 **Key bindings**:
 
@@ -319,6 +322,11 @@ Deploys `~/.config/nvim/init.lua`.
 | `J` / `K` | Bottom / top of file |
 | `w` / `W` | Previous word (b / B) |
 | `jk` (insert) | Escape to normal mode |
+| `gd` | Go to definition (LSP) |
+| `gr` | Find references (LSP) |
+| `gI` | Go to implementation (LSP) |
+| `<Space>r` | Rename symbol (LSP) |
+| `<Space>a` | Code action (LSP) |
 
 **neo-tree** follows the current file automatically and replaces netrw.
 

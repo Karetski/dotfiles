@@ -116,6 +116,39 @@ require("lazy").setup({
     },
   },
   {
+    "williamboman/mason.nvim",
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      "williamboman/mason-lspconfig.nvim",
+    },
+    config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = {
+          "lua_ls", "rust_analyzer", "clangd",
+        },
+      })
+
+      local servers = { "lua_ls", "rust_analyzer", "clangd", "sourcekit" }
+      for _, server in ipairs(servers) do
+        vim.lsp.config(server, {})
+      end
+      vim.lsp.enable(servers)
+
+      -- LSP keymaps on attach
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(args)
+          local opts = { buffer = args.buf }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts)
+          vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, opts)
+        end,
+      })
+    end,
+  },
+  {
     "catppuccin/nvim",
     name = "catppuccin",
     priority = 1000,
