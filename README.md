@@ -224,7 +224,7 @@ Deploys git configuration across two files.
 
 **`~/.config/git/ignore`**:
 
-Globally ignores `.claude/settings.local.json` so per-machine Claude overrides are never accidentally committed.
+Globally ignores `.claude/settings.local.json` (per-machine Claude overrides) and `.DS_Store`.
 
 ---
 
@@ -273,7 +273,7 @@ Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 
 **Cursor**: Block style.
 
-**Shell integration**: Disabled for cursor, sudo, and title — minimal overhead, no unwanted prompt decoration.
+**Shell integration**: Cursor and sudo disabled; title enabled.
 
 ---
 
