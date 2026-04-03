@@ -322,6 +322,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `J` / `K` | Bottom / top of file |
 | `w` / `W` | Previous word (b / B) |
 | `jk` (insert) | Escape to normal mode |
+| `Shift+Alt+H` / `Shift+Alt+L` | Previous / next buffer |
 | `gd` | Go to definition (LSP) |
 | `gr` | Find references (LSP) |
 | `gI` | Go to implementation (LSP) |

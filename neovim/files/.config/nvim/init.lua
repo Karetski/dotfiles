@@ -28,6 +28,8 @@ vim.keymap.set("n", "K", "gg")
 vim.keymap.set("n", "w", "b")
 vim.keymap.set("n", "W", "B")
 vim.keymap.set("i", "jk", "<Esc>")
+vim.keymap.set("n", "<M-H>", "<cmd>bprev<cr>")
+vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")
 vim.keymap.set("n", "<leader>e", "<C-w>l")
 vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>")
 vim.api.nvim_create_autocmd("VimEnter", {
