@@ -58,6 +58,8 @@ vim.keymap.set("n", "<leader>j", function()          -- Reveal current file in t
   vim.cmd("Neotree reveal")
   vim.cmd("Neotree focus")
 end)
+vim.keymap.set("n", "<leader>g", "<cmd>Neotree git_status<cr>") -- Git status panel
+vim.keymap.set("n", "<leader>i", "<cmd>Neotree diagnostics<cr>") -- Issues panel
 vim.api.nvim_create_autocmd("VimEnter", {            -- Open file tree on startup
   callback = function()
     vim.cmd("Neotree show")
