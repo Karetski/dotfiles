@@ -43,10 +43,18 @@ vim.api.nvim_create_autocmd("VimEnter", {
     vim.cmd("Neotree show")
   end,
 })
-vim.keymap.set("n", "<leader>j", "<cmd>Neotree reveal<cr>")
+vim.keymap.set("n", "<leader>j", function()
+  vim.cmd("Neotree reveal")
+  vim.cmd("Neotree focus")
+end)
 
 -- Highlights
-vim.api.nvim_set_hl(0, "MatchParen", { underline = true, bg = "none" })
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "MatchParen", { underline = true, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "NeoTreeCursorLine", { bg = "LightGrey" })
+  end,
+})
 
 -- Plugins
 require("lazy").setup({
