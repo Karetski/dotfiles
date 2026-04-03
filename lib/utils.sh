@@ -4,21 +4,22 @@
 # When DRY_RUN=1, deploy functions show what would change without writing files
 DRY_RUN="${DRY_RUN:-0}"
 
-# ── Terminal / table width ─────────────────────────────────────────────────────
+# ── Terminal width (used for section header/footer dashes) ────────────────────
 _TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
-# Table width is terminal minus outer margins, clamped to 58–120 columns
-_TBL_W=$(( _TERM_W - 2 ))
-[ "$_TBL_W" -lt 58 ]  && _TBL_W=58
-[ "$_TBL_W" -gt 120 ] && _TBL_W=120
+[ "$_TERM_W" -lt 60 ]  && _TERM_W=60
+[ "$_TERM_W" -gt 120 ] && _TERM_W=120
 
 # ── Colors (light-background safe) ───────────────────────────────────────────
-_C_GRN=$'\033[32m'      # green — borders, structure
-_C_GRN_B=$'\033[1;32m'  # bold green — ok status
-_C_AMB=$'\033[33m'      # amber — dry-run, prompts
-_C_RED=$'\033[31m'      # red — errors
+_C_GRN=$'\033[32m'      # green — ok icon
+_C_GRN_B=$'\033[1;32m'  # bold green — ok status text
+_C_AMB=$'\033[33m'      # yellow — separators, dry-run, warnings
+_C_YLW_B=$'\033[1;33m'  # bold yellow — section/summary separators
+_C_RED=$'\033[31m'      # red — errors, diff deletes
 _C_DIM=$'\033[2m'       # dim — skips, no-change labels
-_C_BLD=$'\033[1m'       # bold — section titles
+_C_BLD=$'\033[1m'       # bold
 _C_RST=$'\033[0m'       # reset
+_C_PUR=$'\033[35m'      # purple — accents
+_C_PUR_B=$'\033[1;35m'  # bold purple — section titles, summary counts
 
 # ── Counters ──────────────────────────────────────────────────────────────────
 # Global counters (across all roles) shown in the final summary
@@ -49,85 +50,39 @@ _shorten() {
   fi
 }
 
-# Visible (ANSI-stripped) length of a string — needed because ANSI escape
-# codes inflate ${#s} but don't occupy display columns
-_vis_len() {
-  local ESC=$'\033' s
-  s=$(printf '%s' "$1" | sed "s/${ESC}\[[0-9;]*m//g")
-  printf '%s' "${#s}"
-}
-
-# Right-border padding: fill the gap between the status text and the trailing │
-# so every row ends at the same column.  $1 = path display, $2 = status length
-_rpad() {
-  local pcol pad
-  pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
-  pad=$(( _TBL_W - 9 - pcol - $2 ))
-  [ "$pad" -lt 1 ] && pad=1
-  printf '%*s' "$pad" ''
-}
-
-# Truncate status text so it never overflows the row width.
-# Returns the original or a truncated-with-ellipsis version.
-_fit_plain() {
-  local pcol max
-  pcol=$(( ${#1} > 42 ? ${#1} : 42 ))
-  max=$(( _TBL_W - 10 - pcol ))  # 10 = 9 prefix overhead + 1 min gap before │
-  if [ "$max" -lt 1 ]; then max=1; fi
-  if [ "${#2}" -gt "$max" ]; then
-    printf '%s…' "${2:0:$(( max - 1 ))}"
-  else
-    printf '%s' "$2"
-  fi
+# Repeat a character N times: _repeat "-" 40
+_repeat() {
+  printf '%0.s'"$1" $(seq 1 "$2")
 }
 
 # ── Log functions ─────────────────────────────────────────────────────────────
 
 _log_ok() {
-  local slen pad
-  slen=$(_vis_len "$2")
-  pad=$(_rpad "$1" "$slen")
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_GRN_B}✓${_C_RST}  %-42s  ${_C_GRN_B}%s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$2" "$pad"
+  printf "  ${_C_GRN_B}✓${_C_RST} %-44s  ${_C_GRN_B}%s${_C_RST}\n" "$1" "$2"
   _COUNT_OK=$(( _COUNT_OK + 1 ))
   _SECTION_OK=$(( _SECTION_OK + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_skip() {
-  local status pad
-  status=$(_fit_plain "$1" "$2")
-  pad=$(_rpad "$1" "${#status}")
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}·  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$status" "$pad"
+  printf "  ${_C_DIM}· %-44s  %s${_C_RST}\n" "$1" "$2"
   _COUNT_SKIP=$(( _COUNT_SKIP + 1 ))
   _SECTION_SKIP=$(( _SECTION_SKIP + 1 ))
 }
 
 _log_dry() {
-  local status pad
-  status=$(_fit_plain "$1" "$2")
-  pad=$(_rpad "$1" "${#status}")
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}→  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$status" "$pad"
+  printf "  ${_C_AMB}→${_C_RST} %-44s  ${_C_AMB}%s${_C_RST}\n" "$1" "$2"
   _COUNT_DRY=$(( _COUNT_DRY + 1 ))
   _SECTION_DRY=$(( _SECTION_DRY + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_note() {
-  local status pad
-  status=$(_fit_plain "$1" "$2")
-  pad=$(_rpad "$1" "${#status}")
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}◆  %-42s  %s${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$status" "$pad"
+  printf "  ${_C_PUR}◆${_C_RST} %-44s  ${_C_DIM}%s${_C_RST}\n" "$1" "$2"
 }
 
 _log_err() {
-  local pad=$(( _TBL_W - 7 - ${#1} ))
-  [ "$pad" -lt 0 ] && pad=0
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_RED}✗  %s${_C_RST}%*s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$pad" "" >&2
+  printf "  ${_C_RED}✗ %s${_C_RST}\n" "$1" >&2
 }
 
 # ── Section layout ────────────────────────────────────────────────────────────
@@ -141,17 +96,13 @@ _log_section_end() {
     for item in "${_SECTION_CHANGED[@]}"; do
       [ -z "$names" ] && names="$item" || names="$names, $item"
     done
-    local npad=$(( _TBL_W - 13 - ${#names} ))
-    [ "$npad" -lt 0 ] && npad=0
-    printf "  ${_C_GRN}│%*s│${_C_RST}\n" $(( _TBL_W - 2 )) ""
-    printf "  ${_C_GRN}│${_C_RST}  ${_C_DIM}changed: %s${_C_RST}%*s${_C_GRN}│${_C_RST}\n" \
-      "$names" "$npad" ""
+    printf "  ${_C_DIM}changed: %s${_C_RST}\n" "$names"
   fi
 
   local s="" s_plain=""
   if [ "$DRY_RUN" = "1" ]; then
     if [ "$_SECTION_DRY" -gt 0 ]; then
-      s="${_C_AMB}${_SECTION_DRY} plan${_C_RST}"; s_plain="${_SECTION_DRY} plan"
+      s="${_C_PUR_B}${_SECTION_DRY} plan${_C_RST}"; s_plain="${_SECTION_DRY} plan"
     fi
     if [ "$_SECTION_SKIP" -gt 0 ]; then
       s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
@@ -159,7 +110,7 @@ _log_section_end() {
     fi
   else
     if [ "$_SECTION_OK" -gt 0 ]; then
-      s="${_C_GRN_B}${_SECTION_OK} ok${_C_RST}"; s_plain="${_SECTION_OK} ok"
+      s="${_C_PUR_B}${_SECTION_OK} ok${_C_RST}"; s_plain="${_SECTION_OK} ok"
     fi
     if [ "$_SECTION_SKIP" -gt 0 ]; then
       s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
@@ -168,14 +119,12 @@ _log_section_end() {
   fi
   if [ -z "$s" ]; then s="${_C_DIM}—${_C_RST}"; s_plain="—"; fi
 
-  # Footer: "  └─ SUMMARY ────────────────────────────────┘" = TERM_W chars
-  # "  └─" (4) + " " + summary + " " + right_dashes + "┘" (1) = TERM_W
-  # right_dashes = TBL_W - 5 - len(summary)
-  local right_dashes=$(( _TBL_W - 5 - ${#s_plain} ))
-  [ "$right_dashes" -lt 1 ] && right_dashes=1
-  local _right
-  _right=$(printf '─%.0s' $(seq 1 "$right_dashes"))
-  printf "  ${_C_GRN}└─${_C_RST} %s ${_C_GRN}%s┘${_C_RST}\n\n" "$s" "$_right"
+  # Footer: "--- SUMMARY ---..." (3 + 1 + text + 1 + dashes = _TERM_W)
+  local dashes_len=$(( _TERM_W - 5 - ${#s_plain} ))
+  [ "$dashes_len" -lt 3 ] && dashes_len=3
+  local dashes
+  dashes=$(_repeat "-" "$dashes_len")
+  printf "${_C_YLW_B}---${_C_RST} %s ${_C_YLW_B}%s${_C_RST}\n\n" "$s" "$dashes"
 }
 
 _log_section() {
@@ -193,48 +142,40 @@ _log_section() {
     title="$name"
   fi
 
-  # fill_len reserves 1 char for the closing ┐
-  local fill_len=$(( _TBL_W - 5 - ${#title} ))
-  [ "$fill_len" -lt 1 ] && fill_len=1
-  local fill
-  fill=$(printf '─%.0s' $(seq 1 "$fill_len"))
-
-  printf "\n  ${_C_GRN}┌─${_C_RST} ${_C_BLD}%s${_C_RST} ${_C_GRN}%s┐${_C_RST}\n" "$title" "$fill"
+  # Header: "--- TITLE ---..." (3 + 1 + text + 1 + dashes = _TERM_W)
+  local dashes_len=$(( _TERM_W - 5 - ${#title} ))
+  [ "$dashes_len" -lt 3 ] && dashes_len=3
+  local dashes
+  dashes=$(_repeat "-" "$dashes_len")
+  printf "\n${_C_YLW_B}---${_C_RST} ${_C_PUR_B}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$title" "$dashes"
 }
 
 _log_summary() {
   [ "$_SECTION_OPEN" = "1" ] && _log_section_end
 
-  local _sep
-  _sep=$(printf '═%.0s' $(seq 1 "$_TBL_W"))
-  printf "  ${_C_GRN}%s${_C_RST}\n" "$_sep"
+  local sep
+  sep=$(_repeat "=" "$_TERM_W")
+  printf "${_C_YLW_B}%s${_C_RST}\n" "$sep"
   if [ "$DRY_RUN" = "1" ]; then
-    printf "  ${_C_AMB}● %d plan${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_DRY" "$_COUNT_SKIP"
+    printf "${_C_YLW_B}●${_C_RST} ${_C_PUR_B}%d plan${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_DRY" "$_COUNT_SKIP"
   else
-    printf "  ${_C_GRN_B}● %d ok${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_OK" "$_COUNT_SKIP"
+    printf "${_C_YLW_B}●${_C_RST} ${_C_PUR_B}%d ok${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_OK" "$_COUNT_SKIP"
   fi
 }
 
 # ── Brew output helpers ───────────────────────────────────────────────────────
 
 _log_brew_start() {
-  local _bdiv pad
-  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
-  pad=$(_rpad "$1" 13)  # "installing..." = 13 chars
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}↓${_C_RST}  %-42s  ${_C_AMB}installing...${_C_RST}%s${_C_GRN}│${_C_RST}\n" \
-    "$1" "$pad"
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_bdiv"
+  printf "  ${_C_AMB}↓${_C_RST} %-44s  ${_C_AMB}installing...${_C_RST}\n" "$1"
 }
 
 _log_brew_end() {
-  local _bdiv
-  _bdiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_bdiv"
+  :
 }
 
 _brew_pipe() {
   while IFS= read -r line; do
-    printf "  ${_C_GRN}│${_C_RST}     %s\n" "$line"
+    printf "    ${_C_DIM}%s${_C_RST}\n" "$line"
   done
 }
 
@@ -295,7 +236,7 @@ _optional_selected() {
   fi
 
   # Interactive prompt; reads from /dev/tty so piped input doesn't interfere
-  printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}?${_C_RST}  %-42s  ${_C_AMB}optional ${kind} — apply? ${_C_BLD}[y/N]${_C_RST} " "$display"
+  printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}optional ${kind} — apply? ${_C_BLD}[y/N]${_C_RST} " "$display"
   read -r reply < /dev/tty 2>/dev/null || true
   if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
     eval "$cache_var=1"
@@ -309,7 +250,7 @@ _optional_selected() {
 
 # ── Diff display ─────────────────────────────────────────────────────────────
 
-# Print a unified diff between two files, colored and framed within the table border.
+# Print a unified diff between two files, colored and indented.
 # Used by deploy functions to show what changed in an existing file.
 _log_diff() {
   local udiff
@@ -318,13 +259,11 @@ _log_diff() {
   _log_diff_raw "$udiff"
 }
 
-# Print pre-computed unified diff output within the table border.
+# Print pre-computed unified diff output.
 # Skips --- / +++ headers and context lines; shows only hunks, adds, and deletes.
 _log_diff_raw() {
   local line color
-  local _ddiv
-  _ddiv=$(printf '┄%.0s' $(seq 1 $(( _TBL_W - 4 ))))
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_ddiv"
+  printf '\n'
   while IFS= read -r line; do
     case "$line" in
       ---*|+++*) continue ;;
@@ -333,9 +272,9 @@ _log_diff_raw() {
       -*)   color="$_C_RED" ;;
       *)    continue ;;
     esac
-    printf "  ${_C_GRN}│${_C_RST}     ${color}%s${_C_RST}\n" "$line"
+    printf "    ${color}%s${_C_RST}\n" "$line"
   done <<< "$1"
-  printf "  ${_C_GRN}│  ${_C_DIM}%s${_C_GRN}│${_C_RST}\n" "$_ddiv"
+  printf '\n'
 }
 
 # ── File deployment ───────────────────────────────────────────────────────────
@@ -411,7 +350,7 @@ _sanitize_bak() {
   if [ "$DRY_RUN" = "1" ]; then
     _log_dry "$display" "stale backup — would prompt removal"
   else
-    printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}?${_C_RST}  %-42s  ${_C_AMB}stale backup — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
+    printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}stale backup — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
     local reply=""
     read -r reply < /dev/tty 2>/dev/null || true
     if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
@@ -447,7 +386,7 @@ _sanitize_dir() {
       if [ "$DRY_RUN" = "1" ]; then
         _log_dry "$display" "not in dotfiles — would prompt removal"
       else
-        printf "  ${_C_GRN}│${_C_RST}  ${_C_AMB}?${_C_RST}  %-42s  ${_C_AMB}not in dotfiles — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
+        printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}not in dotfiles — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
         reply=""
         read -r reply < /dev/tty 2>/dev/null || true
         if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
