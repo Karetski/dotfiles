@@ -361,7 +361,7 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **neo-tree** follows the current file automatically and replaces netrw. The sidebar includes Files, Git, and Issues (diagnostics) tabs.
 
-**Diagnostics** are displayed inline below each offending line (`virtual_lines`). LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
+**Diagnostics** are displayed as inline virtual text at the end of each offending line (`virtual_text`). LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
 
 **Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root. Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
 

@@ -22,8 +22,8 @@ vim.opt.exrc = true
 
 -- Diagnostics
 vim.diagnostic.config({
-  virtual_lines = true,
-  virtual_text = false,
+  virtual_lines = false,
+  virtual_text = true,
   signs = true,
 })
 
