@@ -16,6 +16,7 @@ vim.opt.scrolloff = 8
 vim.opt.clipboard = "unnamedplus"
 vim.opt.cursorline = true
 vim.opt.timeoutlen = 300
+vim.opt.updatetime = 250
 
 -- Leader
 vim.g.mapleader = " "
@@ -25,6 +26,7 @@ vim.keymap.set("n", "H", "0")
 vim.keymap.set("n", "L", "$")
 vim.keymap.set("n", "J", "G")
 vim.keymap.set("n", "K", "gg")
+vim.keymap.set("n", "e", "w")
 vim.keymap.set("n", "w", "b")
 vim.keymap.set("n", "W", "B")
 vim.keymap.set("i", "jk", "<Esc>")
@@ -146,6 +148,23 @@ require("lazy").setup({
           vim.keymap.set("n", "gI", vim.lsp.buf.implementation, opts)
           vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, opts)
           vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, opts)
+
+          -- Highlight symbol under cursor
+          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          if client and client:supports_method("textDocument/documentHighlight") then
+            local group = vim.api.nvim_create_augroup("LspHighlight", { clear = false })
+            vim.api.nvim_clear_autocmds({ group = group, buffer = args.buf })
+            vim.api.nvim_create_autocmd("CursorHold", {
+              group = group,
+              buffer = args.buf,
+              callback = vim.lsp.buf.document_highlight,
+            })
+            vim.api.nvim_create_autocmd("CursorMoved", {
+              group = group,
+              buffer = args.buf,
+              callback = vim.lsp.buf.clear_references,
+            })
+          end
         end,
       })
     end,

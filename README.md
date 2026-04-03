@@ -320,7 +320,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>e` | Toggle file manager (neo-tree) |
 | `H` / `L` | Start / end of line |
 | `J` / `K` | Bottom / top of file |
-| `w` / `W` | Previous word (b / B) |
+| `e` / `w` | Next / previous word (w / b) |
 | `jk` (insert) | Escape to normal mode |
 | `Shift+Alt+H` / `Shift+Alt+L` | Previous / next buffer |
 | `gd` | Go to definition (LSP) |
