@@ -175,7 +175,7 @@ Casks use the `adopt` option so existing installations are adopted rather than r
 
 **Formulae**: `zsh-autocomplete`, `lazygit`, `jq`, `fzf`, `neovim`
 
-**Casks**: `codex`, `ghostty`
+**Casks**: `codex`, `ghostty`, `stats`
 
 ---
 

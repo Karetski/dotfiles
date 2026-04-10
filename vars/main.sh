@@ -24,6 +24,7 @@ HOMEBREW_FORMULAE=(
 HOMEBREW_CASKS=(
   codex
   ghostty
+  stats
 )
 
 # Formulae that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
