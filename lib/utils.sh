@@ -197,7 +197,7 @@ _optional_token() {
 # Determine whether an optional item should be applied.
 # Checks (in order): cached choice from earlier in this run, ENABLE_OPTIONAL_*
 # env override, dry-run skip, interactive prompt. The result is cached so the
-# same item (e.g. codex cask + codex role) only prompts once per run.
+# same item (e.g. an optional cask + its role) only prompts once per run.
 _optional_selected() {
   local key="$1" kind="$2" display="$3"
   local token cache_var override_var cached override reply=""

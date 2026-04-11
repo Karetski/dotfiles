@@ -8,7 +8,7 @@ export CLAUDE_SANDBOX_ENABLED=true
 # Roles that prompt before applying (unless ENABLE_OPTIONAL_<NAME>=1 in local.sh)
 OPTIONAL_ROLES=(
   claude
-  codex
+  stats
 )
 
 # CLI tools installed by the homebrew role
@@ -22,7 +22,6 @@ HOMEBREW_FORMULAE=(
 
 # GUI apps installed by the homebrew role (--cask --adopt)
 HOMEBREW_CASKS=(
-  codex
   ghostty
   stats
 )
@@ -32,5 +31,5 @@ OPTIONAL_HOMEBREW_FORMULAE=()
 
 # Casks that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
 OPTIONAL_HOMEBREW_CASKS=(
-  codex
+  stats
 )

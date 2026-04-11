@@ -15,6 +15,7 @@ fi
 deploy_template "$DOTFILES_DIR/claude/templates/settings.json" "$HOME/.claude/settings.json" "0644" '$CLAUDE_SANDBOX_ENABLED'
 # Deployed as executable (0755) — invoked by Claude Code's status line harness
 deploy_file "$DOTFILES_DIR/claude/files/statusline.sh" "$HOME/.claude/statusline.sh" "0755"
+ensure_dir "$HOME/.claude/hooks"
 # Hook scripts — deployed as executable (0755)
 for hook in "$DOTFILES_DIR/claude/files/hooks/"*.sh; do
   deploy_file "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "0755"

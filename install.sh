@@ -12,7 +12,7 @@ if [ -f "$DOTFILES_DIR/vars/local.sh" ]; then
 fi
 
 # Roles are applied in this order; each has a matching <role>/install.sh
-ROLES=(homebrew zsh git lazygit claude codex ghostty neovim)
+ROLES=(homebrew zsh git lazygit claude ghostty stats neovim)
 # TAG limits the run to a single role (e.g. TAG=git)
 TAG="${TAG:-}"
 
@@ -24,7 +24,7 @@ _INDEX=0
 _role_is_configured() {
   case "$1" in
     claude) command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
-    codex)  [ -d "$HOME/.codex" ] ;;
+    stats)  [ -d "/Applications/Stats.app" ] ;;
     *)      return 1 ;;
   esac
 }

@@ -19,4 +19,4 @@ Recent commits use short, imperative summaries such as `Add neo-tree file manage
 Do not commit `vars/local.sh`; keep per-machine values there. Prefer idempotent install logic, and preserve the existing backup and sanitize behavior in `lib/utils.sh` when changing deployment flows.
 
 ## Agent-Specific Notes
-For OpenAI product questions, prefer the OpenAI developer docs MCP server when it is configured in Codex. Keep agent-specific instructions centralized in `AGENTS.md` or managed config files instead of duplicating guidance across multiple docs.
+Keep agent-specific instructions centralized in `AGENTS.md` or managed config files instead of duplicating guidance across multiple docs.

@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Codex, Ghostty, and Neovim via idempotent install scripts.
+Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Neovim via idempotent install scripts.
 
 ## Prerequisites
 
@@ -22,17 +22,17 @@ Some roles and Homebrew packages can be marked optional. During `make install`, 
 This repo currently treats these items as optional:
 
 - `claude` role
-- `codex` Homebrew cask
-- `codex` role
+- `stats` cask
+- `stats` role
 
 To auto-apply an optional item without an interactive prompt, set the matching variable in `vars/local.sh`:
 
 ```bash
 export ENABLE_OPTIONAL_CLAUDE=1
-export ENABLE_OPTIONAL_CODEX=1
+export ENABLE_OPTIONAL_STATS=1
 ```
 
-Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_CODEX=1` enables both the `codex` Homebrew install and the `codex` role.
+Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_STATS=1` enables both the `stats` Homebrew install and the `stats` role.
 
 To mark more items as optional:
 
@@ -43,7 +43,7 @@ To mark more items as optional:
 The corresponding override variable name is derived from the item name:
 
 - `claude` -> `ENABLE_OPTIONAL_CLAUDE`
-- `codex` -> `ENABLE_OPTIONAL_CODEX`
+- `stats` -> `ENABLE_OPTIONAL_STATS`
 - `some-tool` -> `ENABLE_OPTIONAL_SOME_TOOL`
 
 ## Structure
@@ -73,7 +73,7 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 
 ### install.sh
 
-Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, codex, ghostty, neovim.
+Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, ghostty, stats, neovim.
 
 - Each role is sourced from `<role>/install.sh`
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
@@ -155,7 +155,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_NAME` | `vars/local.sh` | Git commit author name |
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
-| `ENABLE_OPTIONAL_CODEX` | `vars/local.sh` | Auto-apply the optional Codex cask and role instead of prompting |
+| `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `OPTIONAL_HOMEBREW_FORMULAE` | `vars/main.sh` | Formulae that should prompt before installing |
 | `OPTIONAL_HOMEBREW_CASKS` | `vars/main.sh` | Casks that should prompt before installing |
@@ -171,11 +171,11 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-`codex` is an optional cask: `make install` will prompt before applying it unless `ENABLE_OPTIONAL_CODEX=1` is set in `vars/local.sh`.
+`stats` is an optional cask: `make install` will prompt before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`.
 
 **Formulae**: `zsh-autocomplete`, `lazygit`, `jq`, `fzf`, `neovim`
 
-**Casks**: `codex`, `ghostty`, `stats`
+**Casks**: `ghostty`, `stats`
 
 ---
 
@@ -277,24 +277,13 @@ Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 
 ---
 
-### codex
+### stats
 
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CODEX=1` is set in `vars/local.sh`.
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`. Stats.app itself is installed via the `HOMEBREW_CASKS` list (also optional, gated by the same variable).
 
-Deploys a Codex instruction file and updates `~/.codex/config.toml` in place without removing existing project trust entries. Installation is handled by the `homebrew` role via the `codex` cask.
+Deploys the [Stats](https://github.com/exelban/stats) menu-bar app's preferences to `~/Library/Preferences/eu.exelban.Stats.plist` via `defaults import`, which routes the write through `cfprefsd` and avoids racing the live app.
 
-**`~/.codex/instructions.md`**:
-
-- Mirrors the Claude guidance to stay analytical, concise, and implementation-focused.
-- Explicitly forbids AI signatures, attribution lines, co-author tags, and similar metadata in commits, files, comments, or docs.
-
-**`~/.codex/config.toml`**:
-
-- Sets `commit_attribution = ""` to disable Codex co-author trailers.
-- Pins `approval_policy = "untrusted"` and `sandbox_mode = "workspace-write"` to match the current workflow.
-- Points `model_instructions_file` at the deployed instruction file.
-- Adds the OpenAI developer docs MCP server at `https://developers.openai.com/mcp`.
-
+The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWindow Frame ...` key is stripped from the live plist before comparison so window-position noise doesn't trigger spurious updates.
 
 ---
 

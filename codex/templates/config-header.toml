@@ -1,8 +1,0 @@
-# Managed by dotfiles.
-approval_policy = "untrusted"
-sandbox_mode = "workspace-write"
-commit_attribution = ""
-model_instructions_file = "$HOME/.codex/instructions.md"
-
-[mcp_servers.openaiDeveloperDocs]
-url = "https://developers.openai.com/mcp"
