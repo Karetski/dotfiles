@@ -11,20 +11,6 @@ current_dir_full=$(echo "$input" | jq -r '.workspace.current_dir // empty')
 current_dir="${current_dir_full/#$HOME/\~}"
 current_dir=$(echo "$current_dir" | awk -F/ '{print $(NF-1)"/"$NF}')
 
-# ── Git branch ───────────────────────────────────────────────────────────────
-# --no-optional-locks avoids interfering with concurrent git operations
-branch=$(git -C "$current_dir_full" --no-optional-locks symbolic-ref --short HEAD 2>/dev/null)
-if [ -n "$branch" ]; then
-  porcelain=$(git -C "$current_dir_full" --no-optional-locks status --porcelain 2>/dev/null)
-  unstaged=$(echo "$porcelain" | grep -c '^.[^ ]' || true)
-  staged=$(echo "$porcelain" | grep -c '^[^ ]' || true)
-  # □ = unstaged changes, ■ = staged changes
-  dirty_flag=""
-  [ "$unstaged" -gt 0 ] && dirty_flag="${dirty_flag}□"
-  [ "$staged" -gt 0 ] && dirty_flag="${dirty_flag}■"
-  branch="⎇ ${branch}${dirty_flag:+ $dirty_flag}"
-fi
-
 # ── Model ────────────────────────────────────────────────────────────────────
 # Strip "Claude " prefix and trailing date suffix (e.g. "Claude Opus 4.6 20250101" → "Opus 4.6")
 model=$(echo "$input" | jq -r '.model.display_name // empty' | sed 's/^Claude //; s/ [0-9].*$//')
@@ -60,7 +46,6 @@ fi
 sep=" │ "
 parts=()
 [ -n "$current_dir" ] && parts+=("$current_dir")
-[ -n "$branch" ] && parts+=("$branch")
 [ -n "$model" ] && parts+=("$model")
 [ -n "$used_pct" ] && parts+=("ctx:${used_pct_int}%")
 if [ -n "$five_pct" ] && [ -n "$five_reset_str" ]; then

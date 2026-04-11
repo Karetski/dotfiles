@@ -135,12 +135,9 @@ Status line script deployed to `~/.claude/statusline.sh` for the Claude Code ter
 | Segment | Source | Example |
 |---------|--------|---------|
 | Directory | `workspace.current_dir` | `dotfiles/neovim` |
-| Git branch | `git symbolic-ref` + porcelain status | `⎇ main □■` |
 | Model | `model.display_name` (stripped) | `Opus 4.6` |
 | Context | `context_window.used_percentage` | `ctx:42%` |
 | Rate limit | `rate_limits.five_hour` + countdown | `5h:15% \| 3h12m` |
-
-Dirty indicators: `□` = unstaged changes, `■` = staged changes.
 
 ### Role install scripts
 
