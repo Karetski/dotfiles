@@ -9,6 +9,7 @@ export CLAUDE_SANDBOX_ENABLED=true
 OPTIONAL_ROLES=(
   claude
   stats
+  zed
 )
 
 # CLI tools installed by the homebrew role

@@ -25,6 +25,7 @@ This repo currently treats these items as optional:
 - `stats` cask
 - `stats` role
 - `zed` cask
+- `zed` role
 
 To auto-apply an optional item without an interactive prompt, set the matching variable in `vars/local.sh`:
 
@@ -75,7 +76,7 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 
 ### install.sh
 
-Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, ghostty, stats, neovim.
+Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, ghostty, stats, zed, neovim.
 
 - Each role is sourced from `<role>/install.sh`
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
@@ -155,7 +156,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
-| `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask instead of prompting |
+| `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `OPTIONAL_HOMEBREW_FORMULAE` | `vars/main.sh` | Formulae that should prompt before installing |
 | `OPTIONAL_HOMEBREW_CASKS` | `vars/main.sh` | Casks that should prompt before installing |
@@ -284,6 +285,22 @@ Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL
 Deploys the [Stats](https://github.com/exelban/stats) menu-bar app's preferences to `~/Library/Preferences/eu.exelban.Stats.plist` via `defaults import`, which routes the write through `cfprefsd` and avoids racing the live app.
 
 The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWindow Frame ...` key is stripped from the live plist before comparison so window-position noise doesn't trigger spurious updates.
+
+---
+
+### zed
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`. Zed itself is installed via the `HOMEBREW_CASKS` list (also optional, gated by the same variable).
+
+Deploys `~/.config/zed/settings.json`.
+
+**Fonts**: `SF Pro` for the UI at 16pt, `SF Mono Terminal` for the editor buffer at 15pt — matching the Ghostty role's choice of the `SF Mono Terminal` variant shipped with macOS.
+
+**Theme**: Follows the system appearance (`One Light` / `One Dark`).
+
+**Keymap**: `VSCode` base keymap.
+
+**Diff view**: Unified style.
 
 ---
 
