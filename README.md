@@ -296,7 +296,7 @@ Deploys `~/.config/zed/settings.json`.
 
 **Fonts**: `SF Pro` for the UI at 16pt, `SF Mono Terminal` for the editor buffer at 15pt — matching the Ghostty role's choice of the `SF Mono Terminal` variant shipped with macOS.
 
-**Theme**: Follows the system appearance (`One Light` / `One Dark`).
+**Theme**: `macOS Classic Light` / `macOS Classic Dark` following the system appearance, for a more native-macOS look. Provided by the [`macos-classic`](https://github.com/huacnlee/zed-theme-macos-classic) extension, which is auto-installed via the `auto_install_extensions` setting.
 
 **Keymap**: `VSCode` base keymap.
 
