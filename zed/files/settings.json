@@ -14,10 +14,10 @@
   },
   "ui_font_family": ".SystemUIFont",
   "ui_font_size": 16,
-  "buffer_font_family": "SF Mono",
+  "buffer_font_family": "SF Mono Terminal",
   "buffer_font_size": 12,
   "terminal": {
-    "font_family": "SF Mono",
+    "font_family": "SF Mono Terminal",
     "font_size": 12,
   },
   "outline_panel": {
