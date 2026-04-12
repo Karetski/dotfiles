@@ -294,7 +294,7 @@ Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL
 
 Deploys `~/.config/zed/settings.json`.
 
-**Fonts**: UI left at Zed defaults, 16pt. Editor buffer uses `SF Mono Terminal` Medium at 12pt — same family and weight as the Ghostty role, one point larger to suit the editor viewport.
+**Fonts**: UI uses `.SystemUIFont` (resolves to SF Pro on macOS) at 16pt. Editor buffer and built-in terminal use `SF Mono Terminal` at 12pt — same family as the Ghostty role, one point larger for the editor viewport. Weights are left at Zed defaults.
 
 **Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
 
