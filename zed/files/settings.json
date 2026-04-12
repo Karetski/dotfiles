@@ -10,13 +10,13 @@
   "diff_view_style": "unified",
   "base_keymap": "VSCode",
   "auto_install_extensions": {
-    "macos-classic": true,
+    "catppuccin": true,
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
   "theme": {
     "mode": "system",
-    "light": "macOS Classic Light",
-    "dark": "macOS Classic Dark",
+    "light": "Catppuccin Latte",
+    "dark": "Catppuccin Mocha",
   },
 }

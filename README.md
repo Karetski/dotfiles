@@ -296,7 +296,7 @@ Deploys `~/.config/zed/settings.json`.
 
 **Font sizes**: 16pt UI, 15pt editor buffer. Font families are left at Zed defaults for now.
 
-**Theme**: `macOS Classic Light` / `macOS Classic Dark` following the system appearance, for a more native-macOS look. Provided by the [`macos-classic`](https://github.com/huacnlee/zed-theme-macos-classic) extension, which is auto-installed via the `auto_install_extensions` setting.
+**Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
 
 **Keymap**: `VSCode` base keymap.
 
