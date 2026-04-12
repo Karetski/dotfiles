@@ -13,7 +13,9 @@
     "catppuccin": true,
   },
   "ui_font_size": 16,
-  "buffer_font_size": 13,
+  "buffer_font_family": "SF Mono Terminal",
+  "buffer_font_weight": 500,
+  "buffer_font_size": 11,
   "theme": {
     "mode": "system",
     "light": "Catppuccin Latte",
