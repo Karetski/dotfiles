@@ -294,7 +294,7 @@ Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL
 
 Deploys `~/.config/zed/settings.json`.
 
-**Font sizes**: 16pt UI, 15pt editor buffer. Font families are left at Zed defaults for now.
+**Font sizes**: 16pt UI, 13pt editor buffer. Font families are left at Zed defaults for now.
 
 **Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
 
