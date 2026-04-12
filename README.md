@@ -294,7 +294,7 @@ Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL
 
 Deploys `~/.config/zed/settings.json`.
 
-**Fonts**: `SF Pro` for the UI at 16pt, `SF Mono Terminal` for the editor buffer at 15pt — matching the Ghostty role's choice of the `SF Mono Terminal` variant shipped with macOS.
+**Font sizes**: 16pt UI, 15pt editor buffer. Font families are left at Zed defaults for now.
 
 **Theme**: `macOS Classic Light` / `macOS Classic Dark` following the system appearance, for a more native-macOS look. Provided by the [`macos-classic`](https://github.com/huacnlee/zed-theme-macos-classic) extension, which is auto-installed via the `auto_install_extensions` setting.
 
