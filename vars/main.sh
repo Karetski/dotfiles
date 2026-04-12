@@ -24,6 +24,7 @@ HOMEBREW_FORMULAE=(
 HOMEBREW_CASKS=(
   ghostty
   stats
+  zed
 )
 
 # Formulae that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
@@ -32,4 +33,5 @@ OPTIONAL_HOMEBREW_FORMULAE=()
 # Casks that prompt before installing (same opt-in mechanism as OPTIONAL_ROLES)
 OPTIONAL_HOMEBREW_CASKS=(
   stats
+  zed
 )

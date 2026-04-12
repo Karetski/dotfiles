@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, and Neovim via idempotent install scripts.
+Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, Zed, and Neovim via idempotent install scripts.
 
 ## Prerequisites
 
@@ -24,12 +24,14 @@ This repo currently treats these items as optional:
 - `claude` role
 - `stats` cask
 - `stats` role
+- `zed` cask
 
 To auto-apply an optional item without an interactive prompt, set the matching variable in `vars/local.sh`:
 
 ```bash
 export ENABLE_OPTIONAL_CLAUDE=1
 export ENABLE_OPTIONAL_STATS=1
+export ENABLE_OPTIONAL_ZED=1
 ```
 
 Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_STATS=1` enables both the `stats` Homebrew install and the `stats` role.
@@ -153,6 +155,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
+| `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `OPTIONAL_HOMEBREW_FORMULAE` | `vars/main.sh` | Formulae that should prompt before installing |
 | `OPTIONAL_HOMEBREW_CASKS` | `vars/main.sh` | Casks that should prompt before installing |
@@ -168,11 +171,11 @@ Verifies that Homebrew is installed (fails with instructions if not), then insta
 
 Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
 
-`stats` is an optional cask: `make install` will prompt before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`.
+`stats` and `zed` are optional casks: `make install` will prompt before applying them unless `ENABLE_OPTIONAL_STATS=1` or `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`.
 
 **Formulae**: `zsh-autocomplete`, `lazygit`, `jq`, `fzf`, `neovim`
 
-**Casks**: `ghostty`, `stats`
+**Casks**: `ghostty`, `stats`, `zed`
 
 ---
 
