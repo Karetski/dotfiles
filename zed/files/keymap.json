@@ -13,4 +13,11 @@
       "cmd-ctrl-right": "pane::GoForward",
     },
   },
+  {
+    "context": "!AcpThread > Editor && mode == full",
+    "bindings": {
+      "cmd-shift-e": null,
+      "cmd-shift-j": "pane::RevealInProjectPanel",
+    },
+  },
 ]

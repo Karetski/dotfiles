@@ -296,7 +296,10 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 **Fonts**: UI uses `.SystemUIFont` (resolves to SF Pro on macOS) at 16pt. Editor buffer and built-in terminal use `SF Mono Terminal` at 12pt — same family as the Ghostty role, one point larger for the editor viewport. Weights are left at Zed defaults.
 
-**Keymap overrides**: `Cmd+Ctrl+Left` → `pane::GoBack`, `Cmd+Ctrl+Right` → `pane::GoForward`. These shadow Zed's default Shrink/Expand Syntax Selection bindings, which remain available on `Ctrl+Shift+Left/Right`.
+**Keymap overrides**:
+
+- `Cmd+Ctrl+Left` → `pane::GoBack`, `Cmd+Ctrl+Right` → `pane::GoForward`. These shadow Zed's default Shrink/Expand Syntax Selection bindings, which remain available on `Ctrl+Shift+Left/Right`.
+- `Cmd+Shift+J` → `pane::RevealInProjectPanel` (Zed's default `Cmd+Shift+E` is unbound so the key is free for other uses).
 
 **Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
 
