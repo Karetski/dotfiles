@@ -248,7 +248,7 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CLAUDE=1` is set in `vars/local.sh`.
 
-Deploys Claude Code settings and a status line script.
+Deploys Claude Code settings, hook scripts, and a status line script.
 
 **Installation**: Checks for `claude` in PATH; installs via the official install script if missing. Anthropic’s current documented installs are npm or their native installer, so it remains separate from the Homebrew role.
 
@@ -257,6 +257,15 @@ Deploys Claude Code settings and a status line script.
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
+- **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
+
+**`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
+
+| Script | Event | Matcher | Purpose |
+|--------|-------|---------|---------|
+| `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands before they run |
+| `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard protected paths from edits and writes |
+| `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
@@ -299,7 +308,7 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 **Keymap overrides**:
 
 - `Cmd+Ctrl+Left` → `pane::GoBack`, `Cmd+Ctrl+Right` → `pane::GoForward`. These shadow Zed's default Shrink/Expand Syntax Selection bindings, which remain available on `Ctrl+Shift+Left/Right`.
-- `Cmd+Shift+J` → `pane::RevealInProjectPanel` (Zed's default `Cmd+Shift+E` is unbound so the key is free for other uses).
+- `Cmd+Shift+J` → `pane::RevealInProjectPanel`.
 
 **Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
 
@@ -338,15 +347,14 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>e` | Move cursor to right window |
 | `<Space>E` | Toggle file manager (neo-tree) |
 | `<Space>j` | Reveal current file in neo-tree |
+| `<Space>g` | Open neo-tree Git status panel |
+| `<Space>i` | Open neo-tree Issues (diagnostics) panel |
 | `<Space>J` | Join lines (default `J` behaviour) |
 | `<Space>k` | Hover docs (LSP) |
 | `<Space>b` | Build project (`:make`) |
 | `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
 | `Alt+l` / `Alt+h` | Next word / previous word |
-
-Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
-
 | `jk` (insert) | Escape to normal mode |
 | `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
 | `Ctrl+p` | Find files (Telescope) |
@@ -363,6 +371,8 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 | `gI` | Go to implementation (LSP) |
 | `<Space>r` | Rename symbol (LSP) |
 | `<Space>a` | Code action (LSP) |
+
+Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
 
 **Commands**: `:Q` closes all windows and exits Neovim immediately (`qall!`).
 
