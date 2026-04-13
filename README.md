@@ -13,6 +13,7 @@ Plain shell script configuration management for a macOS development environment.
 make install              # apply all roles; prompts to remove stale backups and unmanaged configs
 make plan                 # dry-run: show what would change, including sanitize findings
 make install-tag TAG=git  # apply a single role by tag
+make install-confirm      # confirm each role and each brew package before applying
 ```
 
 ## Optional Components
@@ -36,6 +37,17 @@ export ENABLE_OPTIONAL_ZED=1
 ```
 
 Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_STATS=1` enables both the `stats` Homebrew install and the `stats` role.
+
+### Confirm mode
+
+`make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES` / `OPTIONAL_HOMEBREW_*`.
+
+- Each of the 9 roles prompts before its install script runs.
+- Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
+- `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
+- `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
+- `CONFIRM_MODE=1 DRY_RUN=1` combines with `make plan`: no interactive prompts, `would prompt to apply` lines for every role and package instead.
+- `CONFIRM_MODE=1 TAG=git` still runs a single tagged role without prompting (TAG wins).
 
 To mark more items as optional:
 
@@ -73,6 +85,7 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 | `install` | `./install.sh` | Apply all roles in sequence |
 | `plan` | `DRY_RUN=1 ./install.sh` | Dry run — show intended changes without modifying files |
 | `install-tag` | `TAG=$(TAG) ./install.sh` | Apply a single role by name |
+| `install-confirm` | `CONFIRM_MODE=1 ./install.sh` | Prompt `[y/N]` before every role and every brew package |
 
 ### install.sh
 
@@ -82,6 +95,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
 - Optional roles that are already configured (e.g. `~/.claude/settings.json` exists) are noted and skipped without prompting
 - `TAG` filters to a single role; tagged runs skip the optional prompt
+- `CONFIRM_MODE=1` prompts before every role and every brew package; `ENABLE_OPTIONAL_*` overrides and the `already configured` auto-skip are bypassed
 - Prints a summary of all changes at the end via `_log_summary`
 
 ### lib/utils.sh
@@ -163,6 +177,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `HOMEBREW_FORMULAE` | `vars/main.sh` | CLI tools to install |
 | `HOMEBREW_CASKS` | `vars/main.sh` | GUI apps to install |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
+| `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
 
 ## Roles
 

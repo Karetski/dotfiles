@@ -215,19 +215,23 @@ _optional_selected() {
     return 1
   fi
 
-  # Check for an explicit override in vars/local.sh
-  eval "override=\${$override_var:-}"
-  case "$override" in
-    1|true|TRUE|yes|YES|on|ON)
-      eval "$cache_var=1"
-      return 0
-      ;;
-    0|false|FALSE|no|NO|off|OFF)
-      eval "$cache_var=0"
-      _log_skip "$display" "optional — disabled"
-      return 1
-      ;;
-  esac
+  # Check for an explicit override in vars/local.sh.
+  # CONFIRM_MODE deliberately bypasses overrides so the user is asked about
+  # every step, even items they normally auto-apply via ENABLE_OPTIONAL_*.
+  if [ "${CONFIRM_MODE:-0}" != "1" ]; then
+    eval "override=\${$override_var:-}"
+    case "$override" in
+      1|true|TRUE|yes|YES|on|ON)
+        eval "$cache_var=1"
+        return 0
+        ;;
+      0|false|FALSE|no|NO|off|OFF)
+        eval "$cache_var=0"
+        _log_skip "$display" "optional — disabled"
+        return 1
+        ;;
+    esac
+  fi
 
   # Dry runs can't prompt interactively
   if [ "$DRY_RUN" = "1" ]; then

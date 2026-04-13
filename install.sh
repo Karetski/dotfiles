@@ -15,6 +15,10 @@ fi
 ROLES=(homebrew zsh git lazygit claude ghostty stats zed neovim)
 # TAG limits the run to a single role (e.g. TAG=git)
 TAG="${TAG:-}"
+# CONFIRM_MODE=1 treats every role and brew package as optional for this run,
+# prompting [y/N] before each one regardless of OPTIONAL_* membership.
+CONFIRM_MODE="${CONFIRM_MODE:-0}"
+export CONFIRM_MODE
 
 _TOTAL=${#ROLES[@]}
 _INDEX=0
@@ -40,11 +44,11 @@ for role in "${ROLES[@]}"; do
   else
     _log_section "$role" "$_INDEX" "$_TOTAL"
   fi
-  if _contains "$role" "${OPTIONAL_ROLES[@]+"${OPTIONAL_ROLES[@]}"}"; then
+  if [ "$CONFIRM_MODE" = "1" ] || _contains "$role" "${OPTIONAL_ROLES[@]+"${OPTIONAL_ROLES[@]}"}"; then
     if [ -n "$TAG" ] && [ "$role" = "$TAG" ]; then
       # Explicit TAG targets always run without prompting
       :
-    elif _role_is_configured "$role"; then
+    elif [ "$CONFIRM_MODE" != "1" ] && _role_is_configured "$role"; then
       _log_note "$role" "optional — already configured"
     elif ! _optional_selected "$role" "role" "$role"; then
       continue

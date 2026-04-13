@@ -1,4 +1,4 @@
-.PHONY: install plan install-tag
+.PHONY: install plan install-tag install-confirm
 
 install:
 	./install.sh
@@ -8,3 +8,6 @@ plan:
 
 install-tag:
 	TAG=$(TAG) ./install.sh
+
+install-confirm:
+	CONFIRM_MODE=1 ./install.sh
