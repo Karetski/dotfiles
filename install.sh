@@ -54,6 +54,7 @@ export CONFIRM_MODE
 
 _TOTAL=${#ROLES[@]}
 _INDEX=0
+_PREV_GROUP=""
 
 # Check whether an optional role was already set up on this machine,
 # so we can skip the interactive prompt and just note it.
@@ -68,10 +69,33 @@ _role_is_configured() {
   esac
 }
 
+# Map a role to its display group. Keep in sync with the comment
+# headers inside the ROLES array above.
+_role_group() {
+  case "$1" in
+    xcode-select|homebrew)                                   echo "preflight"  ;;
+    zsh|zsh-autocomplete|fzf|nvm)                            echo "shell"      ;;
+    git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
+    claude|ghostty|stats|zed|docker-desktop|linearmouse)     echo "apps"       ;;
+    go|rust)                                                 echo "toolchains" ;;
+    neovim)                                                  echo "editor"     ;;
+    *)                                                       echo ""           ;;
+  esac
+}
+
 for role in "${ROLES[@]}"; do
   # Skip roles that don't match the TAG filter
   [ -n "$TAG" ] && [ "$role" != "$TAG" ] && continue
   _INDEX=$(( _INDEX + 1 ))
+  # Emit a group header when the group changes (full runs only —
+  # single-role TAG runs don't need the grouping context).
+  if [ -z "$TAG" ]; then
+    _current_group=$(_role_group "$role")
+    if [ "$_current_group" != "$_PREV_GROUP" ]; then
+      _log_group "$_current_group"
+      _PREV_GROUP="$_current_group"
+    fi
+  fi
   # Omit the [n/total] counter when running a single tagged role
   if [ -n "$TAG" ]; then
     _log_section "$role"

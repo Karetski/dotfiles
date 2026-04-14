@@ -150,6 +150,21 @@ _log_section() {
   printf "\n${_C_YLW_B}---${_C_RST} ${_C_PUR_B}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$title" "$dashes"
 }
 
+# Group header drawn ABOVE a cluster of related _log_section banners.
+# Uses heavy horizontal rules (━) so groups are visually one level above
+# the ASCII-dash section headers.
+_log_group() {
+  [ "$_SECTION_OPEN" = "1" ] && _log_section_end
+
+  local label="$1"
+  # Header: "━━━ LABEL ━━━..." (3 + 1 + text + 1 + dashes = _TERM_W)
+  local dashes_len=$(( _TERM_W - 5 - ${#label} ))
+  [ "$dashes_len" -lt 3 ] && dashes_len=3
+  local dashes
+  dashes=$(_repeat "━" "$dashes_len")
+  printf "${_C_YLW_B}━━━${_C_RST} ${_C_PUR_B}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$label" "$dashes"
+}
+
 _log_summary() {
   [ "$_SECTION_OPEN" = "1" ] && _log_section_end
 
