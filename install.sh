@@ -34,7 +34,6 @@ ROLES=(
   claude
   ghostty
   stats
-  zed
   docker-desktop
   linearmouse
 
@@ -43,6 +42,7 @@ ROLES=(
   rust
 
   # editor
+  zed
   neovim
 )
 # TAG limits the run to a single role (e.g. TAG=git)
@@ -76,9 +76,9 @@ _role_group() {
     xcode-select|homebrew)                                   echo "preflight"  ;;
     zsh|zsh-autocomplete|fzf|nvm)                            echo "shell"      ;;
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
-    claude|ghostty|stats|zed|docker-desktop|linearmouse)     echo "apps"       ;;
+    claude|ghostty|stats|docker-desktop|linearmouse)         echo "apps"       ;;
     go|rust)                                                 echo "toolchains" ;;
-    neovim)                                                  echo "editor"     ;;
+    zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac
 }
