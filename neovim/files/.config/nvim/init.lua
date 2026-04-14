@@ -169,20 +169,22 @@ require("lazy").setup({
     end,
   },
   {
-    "ibhagwan/fzf-lua",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
-    config = function()
-      local fzf = require("fzf-lua")
-      fzf.setup({ "default-title" })
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      picker = { enabled = true },
+    },
+    config = function(_, opts)
+      require("snacks").setup(opts)
 
       local function command_palette()
-        local labels, actions_by_label = {}, {}
+        local items, seen = {}, {}
 
         local function add(label, action)
-          if not actions_by_label[label] then
-            actions_by_label[label] = action
-            table.insert(labels, label)
-          end
+          if seen[label] then return end
+          seen[label] = true
+          table.insert(items, { text = label, action = action })
         end
 
         for _, mode in ipairs({ "n", "v", "x", "i" }) do
@@ -215,23 +217,23 @@ require("lazy").setup({
           add(name .. "  [cmd]", function() vim.cmd(name) end)
         end
 
-        fzf.fzf_exec(labels, {
-          prompt = "Command Palette> ",
-          actions = {
-            ["default"] = function(selected)
-              local fn = selected and selected[1] and actions_by_label[selected[1]]
-              if fn then fn() end
-            end,
-          },
+        Snacks.picker({
+          source = "Command Palette",
+          items = items,
+          format = "text",
+          confirm = function(picker, item)
+            picker:close()
+            if item and item.action then item.action() end
+          end,
         })
       end
 
-      vim.keymap.set("n", "<leader>p",  fzf.files,                      { desc = "Find files" })
-      vim.keymap.set("n", "<leader>P",  command_palette,                { desc = "Command palette" })
-      vim.keymap.set("n", "<leader>o",  fzf.lsp_document_symbols,       { desc = "Document symbols" })
-      vim.keymap.set("n", "<leader>O",  fzf.lsp_live_workspace_symbols, { desc = "Workspace symbols" })
-      vim.keymap.set("n", "<leader>fg", fzf.live_grep,                  { desc = "Live grep" })
-      vim.keymap.set("n", "<leader>fb", fzf.buffers,                    { desc = "Buffers" })
+      vim.keymap.set("n", "<leader>p",  function() Snacks.picker.files() end,                 { desc = "Find files" })
+      vim.keymap.set("n", "<leader>P",  command_palette,                                      { desc = "Command palette" })
+      vim.keymap.set("n", "<leader>o",  function() Snacks.picker.lsp_symbols() end,           { desc = "Document symbols" })
+      vim.keymap.set("n", "<leader>O",  function() Snacks.picker.lsp_workspace_symbols() end, { desc = "Workspace symbols" })
+      vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep() end,                  { desc = "Live grep" })
+      vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end,               { desc = "Buffers" })
     end,
   },
   {
