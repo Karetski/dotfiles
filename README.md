@@ -179,6 +179,12 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 
 ## Roles
 
+### xcode-select
+
+Preflight step — runs `xcode-select --install` to bootstrap Apple's Command Line Tools (clang, make, git, and the rest) if `xcode-select -p` reports none. The installer is GUI-driven and asynchronous, so if it needs to run the role triggers it and aborts the orchestrator with a message asking you to re-run `make install` once the installer finishes. Has to run before `homebrew` because Homebrew itself fails without Command Line Tools.
+
+---
+
 ### homebrew
 
 Preflight step — verifies that Homebrew itself is installed and fails with install instructions if not. Individual packages are declared by the roles that need them via `ensure_brew_formula` / `ensure_brew_cask` (see [lib/utils.sh](#libutilssh)), so each role composes its own dependencies end-to-end.
