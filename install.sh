@@ -32,10 +32,6 @@ _role_is_configured() {
     zed)            [ -d "/Applications/Zed.app" ] ;;
     docker-desktop) [ -d "/Applications/Docker.app" ] ;;
     linearmouse)    [ -d "/Applications/LinearMouse.app" ] ;;
-    # rust is considered configured once a default toolchain is active,
-    # not merely once rustup is installed — the bootstrap prompt is the
-    # second half of the role's work.
-    rust)           command -v rustup > /dev/null 2>&1 && rustup show active-toolchain > /dev/null 2>&1 ;;
     *)              return 1 ;;
   esac
 }

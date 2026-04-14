@@ -10,7 +10,6 @@ export GIT_EMAIL="your@email.com"
 # export ENABLE_OPTIONAL_CLAUDE=1
 # export ENABLE_OPTIONAL_STATS=1
 # export ENABLE_OPTIONAL_ZED=1
-# export ENABLE_OPTIONAL_RUST=1
 # export ENABLE_OPTIONAL_RUST_TOOLCHAIN=1    # auto-run `rustup default stable`
 # export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 # export ENABLE_OPTIONAL_LINEARMOUSE=1
