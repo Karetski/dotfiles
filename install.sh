@@ -30,11 +30,13 @@ ROLES=(
   ripgrep
   fd
 
-  # apps
+  # dev tools
   claude
+  docker-desktop
+
+  # system
   ghostty
   stats
-  docker-desktop
   linearmouse
 
   # toolchains
@@ -76,7 +78,8 @@ _role_group() {
     xcode-select|homebrew)                                   echo "preflight"  ;;
     zsh|zsh-autocomplete|fzf|nvm)                            echo "shell"      ;;
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
-    claude|ghostty|stats|docker-desktop|linearmouse)         echo "apps"       ;;
+    claude|docker-desktop)                                   echo "dev tools"  ;;
+    ghostty|stats|linearmouse)                               echo "system"     ;;
     go|rust)                                                 echo "toolchains" ;;
     zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;
