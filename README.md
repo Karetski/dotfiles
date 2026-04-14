@@ -333,7 +333,6 @@ Deploys `~/.config/nvim/init.lua`.
 | Plugin | Purpose |
 |--------|---------|
 | `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with diagnostics panel |
-| `aerial.nvim` | Right-side LSP symbols outline panel |
 | `nvim-treesitter` | Syntax highlighting and indentation |
 | `lualine.nvim` | Statusline with LSP client info |
 | `telescope.nvim` | Fuzzy finder for files, grep, buffers, and command palette |
@@ -353,7 +352,6 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>j` | Reveal current file in neo-tree |
 | `<Space>g` | Open neo-tree Git status panel |
 | `<Space>i` | Open neo-tree Issues (diagnostics) panel |
-| `<Space>o` | Toggle symbols panel (aerial, right side) |
 | `<Space>J` | Join lines (default `J` behaviour) |
 | `<Space>k` | Hover docs (LSP) |
 | `<Space>b` | Build project (`:make`) |
@@ -387,8 +385,6 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 **Auto save**: Files are saved automatically on every text change, leaving insert mode, switching buffers, and losing focus. Only applies to named, modified file buffers (skips special buffers like terminals or neo-tree).
 
 **neo-tree** follows the current file automatically and replaces netrw. The sidebar includes Files, Git, and Issues (diagnostics) tabs.
-
-**aerial** provides a right-side symbols outline panel driven by LSP (falls back to treesitter). It opens alongside neo-tree on startup and tracks the current buffer globally via `attach_mode = "global"`.
 
 **Diagnostics** are displayed as inline virtual text at the end of each offending line (`virtual_text`). LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
 

@@ -64,13 +64,9 @@ end)
 vim.keymap.set("n", "<leader>g", "<cmd>Neotree git_status<cr>") -- Git status panel
 vim.keymap.set("n", "<leader>i", "<cmd>Neotree diagnostics<cr>") -- Issues panel
 
--- Keymaps: Symbols panel
-vim.keymap.set("n", "<leader>o", "<cmd>AerialToggle right<cr>") -- Toggle symbols panel
-
 vim.api.nvim_create_autocmd("VimEnter", {            -- Open side panels on startup
   callback = function()
     vim.cmd("Neotree show")
-    vim.cmd("AerialOpen right")
   end,
 })
 
@@ -127,20 +123,6 @@ require("lazy").setup({
         filtered_items = { visible = true },
       },
       window = { width = 30 },
-    },
-  },
-  {
-    "stevearc/aerial.nvim",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons",
-    },
-    opts = {
-      layout = {
-        default_direction = "right",
-        min_width = 30,
-      },
-      attach_mode = "global",
     },
   },
   {
