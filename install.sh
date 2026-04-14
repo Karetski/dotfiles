@@ -21,7 +21,6 @@ ROLES=(
   zsh
   zsh-autocomplete
   fzf
-  nvm
 
   # cli tools
   git
@@ -41,6 +40,7 @@ ROLES=(
 
   # toolchains
   go
+  nvm
   rust
 
   # editor
@@ -76,11 +76,11 @@ _role_is_configured() {
 _role_group() {
   case "$1" in
     xcode-select|homebrew)                                   echo "preflight"  ;;
-    zsh|zsh-autocomplete|fzf|nvm)                            echo "shell"      ;;
+    zsh|zsh-autocomplete|fzf)                                echo "shell"      ;;
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|stats|linearmouse)                               echo "system"     ;;
-    go|rust)                                                 echo "toolchains" ;;
+    go|nvm|rust)                                             echo "toolchains" ;;
     zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac
