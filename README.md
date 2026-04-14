@@ -18,17 +18,15 @@ make install-confirm      # confirm each role and each brew package before apply
 
 ## Optional Components
 
-Some roles and Homebrew packages can be marked optional. During `make install`, optional items prompt before they are applied. During `make plan`, they show as `would prompt to apply`.
+Some roles can be marked optional. During `make install`, optional roles prompt before they are applied. During `make plan`, they show as `would prompt to apply`.
 
-This repo currently treats these items as optional:
+This repo currently treats these roles as optional:
 
-- `claude` role
-- `stats` cask
-- `stats` role
-- `zed` cask
-- `zed` role
+- `claude`
+- `stats`
+- `zed`
 
-To auto-apply an optional item without an interactive prompt, set the matching variable in `vars/local.sh`:
+To auto-apply an optional role without an interactive prompt, set the matching variable in `vars/local.sh`:
 
 ```bash
 export ENABLE_OPTIONAL_CLAUDE=1
@@ -36,26 +34,22 @@ export ENABLE_OPTIONAL_STATS=1
 export ENABLE_OPTIONAL_ZED=1
 ```
 
-Those variables are checked once per run and reused across related steps. For example, `ENABLE_OPTIONAL_STATS=1` enables both the `stats` Homebrew install and the `stats` role.
+Because each role now declares its own brew dependencies, a single override gates both the role's config and the Homebrew package that ships with it. For example, `ENABLE_OPTIONAL_STATS=1` covers both installing Stats.app and importing its preferences.
 
 ### Confirm mode
 
-`make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES` / `OPTIONAL_HOMEBREW_*`.
+`make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 9 roles prompts before its install script runs.
+- Each of the 10 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
 - `CONFIRM_MODE=1 DRY_RUN=1` combines with `make plan`: no interactive prompts, `would prompt to apply` lines for every role and package instead.
 - `CONFIRM_MODE=1 TAG=git` still runs a single tagged role without prompting (TAG wins).
 
-To mark more items as optional:
+To mark more roles as optional, add their names to `OPTIONAL_ROLES` in `vars/main.sh`.
 
-- Add role names to `OPTIONAL_ROLES` in `vars/main.sh`
-- Add formula names to `OPTIONAL_HOMEBREW_FORMULAE` in `vars/main.sh`
-- Add cask names to `OPTIONAL_HOMEBREW_CASKS` in `vars/main.sh`
-
-The corresponding override variable name is derived from the item name:
+The corresponding override variable name is derived from the role name:
 
 - `claude` -> `ENABLE_OPTIONAL_CLAUDE`
 - `stats` -> `ENABLE_OPTIONAL_STATS`
@@ -89,7 +83,7 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 
 ### install.sh
 
-Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, claude, ghostty, stats, zed, neovim.
+Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, jq, claude, ghostty, stats, zed, neovim.
 
 - Each role is sourced from `<role>/install.sh`
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
@@ -114,7 +108,7 @@ Shared utility library sourced by all install scripts. Provides:
 
 **Section layout** — `_log_section` opens a bordered section for a role (with optional `[n/total]` counter), `_log_section_end` closes it with a per-section summary, and `_log_summary` prints the final totals.
 
-**Brew helpers** — `_log_brew_start` / `_log_brew_end` frame Homebrew install output, `_brew_pipe` indents brew output within the table border.
+**Brew helpers** — `ensure_brew_formula NAME` / `ensure_brew_cask NAME` are the public entry points each role calls to declare its own Homebrew dependencies (idempotent, CONFIRM_MODE-aware, dry-run-safe). `_log_brew_start` / `_log_brew_end` frame Homebrew install output, and `_brew_pipe` indents brew output within the table border.
 
 **File deployment:**
 
@@ -139,7 +133,7 @@ Both `deploy_file` and `deploy_template` are idempotent — they skip when the d
 
 ### vars/main.sh
 
-Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED`, `OPTIONAL_ROLES`, `HOMEBREW_FORMULAE`, `HOMEBREW_CASKS`, `OPTIONAL_HOMEBREW_FORMULAE`, and `OPTIONAL_HOMEBREW_CASKS`. See [Variables](#variables) for the full list.
+Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED` and `OPTIONAL_ROLES`. See [Variables](#variables) for the full list. Homebrew package lists live inside each role's own `install.sh` now, not here.
 
 ### vars/local.sh
 
@@ -172,10 +166,6 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
-| `OPTIONAL_HOMEBREW_FORMULAE` | `vars/main.sh` | Formulae that should prompt before installing |
-| `OPTIONAL_HOMEBREW_CASKS` | `vars/main.sh` | Casks that should prompt before installing |
-| `HOMEBREW_FORMULAE` | `vars/main.sh` | CLI tools to install |
-| `HOMEBREW_CASKS` | `vars/main.sh` | GUI apps to install |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
 
@@ -183,15 +173,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 
 ### homebrew
 
-Verifies that Homebrew is installed (fails with instructions if not), then installs all formulae and casks declared in `vars/main.sh`.
-
-Casks use the `adopt` option so existing installations are adopted rather than re-downloaded.
-
-`stats` and `zed` are optional casks: `make install` will prompt before applying them unless `ENABLE_OPTIONAL_STATS=1` or `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`.
-
-**Formulae**: `zsh-autocomplete`, `lazygit`, `jq`, `fzf`, `neovim`
-
-**Casks**: `ghostty`, `stats`, `zed`
+Preflight step — verifies that Homebrew itself is installed and fails with install instructions if not. Individual packages are declared by the roles that need them via `ensure_brew_formula` / `ensure_brew_cask` (see [lib/utils.sh](#libutilssh)), so each role composes its own dependencies end-to-end.
 
 ---
 
@@ -259,6 +241,12 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 ---
 
+### jq
+
+Installs the [jq](https://stedolan.github.io/jq/) command-line JSON processor via Homebrew. No config files — jq is consumed at runtime by the `claude` role's hook scripts and status line, so it's modeled as its own step to keep dependencies composable rather than hidden inside another role.
+
+---
+
 ### claude
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CLAUDE=1` is set in `vars/local.sh`.
@@ -290,7 +278,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 Deploys the Ghostty terminal emulator config to `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`.
 
-Ghostty itself is installed via the `HOMEBREW_CASKS` list.
+Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this role's install script.
 
 **Theme**: Separate light and dark variants using Apple System Colors (adapts to macOS appearance).
 
@@ -304,7 +292,7 @@ Ghostty itself is installed via the `HOMEBREW_CASKS` list.
 
 ### stats
 
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`. Stats.app itself is installed via the `HOMEBREW_CASKS` list (also optional, gated by the same variable).
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`. Stats.app itself is installed via `ensure_brew_cask stats` at the top of this role's install script, so one override gates both the cask install and the preference import.
 
 Deploys the [Stats](https://github.com/exelban/stats) menu-bar app's preferences to `~/Library/Preferences/eu.exelban.Stats.plist` via `defaults import`, which routes the write through `cfprefsd` and avoids racing the live app.
 
@@ -314,7 +302,7 @@ The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWind
 
 ### zed
 
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`. Zed itself is installed via the `HOMEBREW_CASKS` list (also optional, gated by the same variable).
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`. Zed itself is installed via `ensure_brew_cask zed` at the top of this role's install script, so one override gates both the cask install and the config deploy.
 
 Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 

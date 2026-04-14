@@ -179,6 +179,44 @@ _brew_pipe() {
   done
 }
 
+# Ensure a Homebrew formula is installed. Each role calls this for its own
+# CLI dependencies; CONFIRM_MODE=1 prompts per package for missing ones.
+ensure_brew_formula() {
+  local formula="$1"
+  if [ "${CONFIRM_MODE:-0}" = "1" ] && ! brew list --formula "$formula" > /dev/null 2>&1; then
+    _optional_selected "$formula" "formula" "$formula" || return 0
+  fi
+  if brew list --formula "$formula" > /dev/null 2>&1; then
+    _log_skip "$formula" "already installed"
+  elif [ "$DRY_RUN" = "1" ]; then
+    _log_dry "$formula" "would install"
+  else
+    _log_brew_start "$formula"
+    brew install "$formula" 2>&1 | _brew_pipe
+    _log_brew_end
+    _log_ok "$formula" "installed"
+  fi
+}
+
+# Ensure a Homebrew cask is installed. --adopt claims existing .app installs
+# instead of re-downloading them.
+ensure_brew_cask() {
+  local cask="$1"
+  if [ "${CONFIRM_MODE:-0}" = "1" ] && ! brew list --cask "$cask" > /dev/null 2>&1; then
+    _optional_selected "$cask" "cask" "$cask" || return 0
+  fi
+  if brew list --cask "$cask" > /dev/null 2>&1; then
+    _log_skip "$cask" "already installed  (cask)"
+  elif [ "$DRY_RUN" = "1" ]; then
+    _log_dry "$cask" "would install  (cask)"
+  else
+    _log_brew_start "$cask"
+    brew install --cask --adopt "$cask" 2>&1 | _brew_pipe
+    _log_brew_end
+    _log_ok "$cask" "installed  (cask)"
+  fi
+}
+
 # Check if a value exists in a list: _contains "foo" "${array[@]}"
 _contains() {
   local needle="$1" item

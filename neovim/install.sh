@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+ensure_brew_formula neovim
+
 ensure_dir "$HOME/.config/nvim"
 
 # Migrate from Vimscript to Lua config — rename the old file so Neovim doesn't

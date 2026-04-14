@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+ensure_brew_cask ghostty
 
 # Ghostty uses its bundle ID as the config directory name
 ensure_dir "$HOME/Library/Application Support/com.mitchellh.ghostty"

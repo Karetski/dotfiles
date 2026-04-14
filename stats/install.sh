@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+ensure_brew_cask stats
 
 # Stats stores its preferences as a macOS plist under the app's bundle ID.
 # We check in the XML form so diffs are reviewable; `defaults import` applies
