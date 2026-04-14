@@ -12,7 +12,7 @@ if [ -f "$DOTFILES_DIR/vars/local.sh" ]; then
 fi
 
 # Roles are applied in this order; each has a matching <role>/install.sh
-ROLES=(homebrew zsh git lazygit jq claude ghostty stats zed neovim)
+ROLES=(homebrew zsh git lazygit jq claude ghostty stats zed docker-desktop linearmouse rust neovim)
 # TAG limits the run to a single role (e.g. TAG=git)
 TAG="${TAG:-}"
 # CONFIRM_MODE=1 treats every role and brew package as optional for this run,
@@ -27,10 +27,16 @@ _INDEX=0
 # so we can skip the interactive prompt and just note it.
 _role_is_configured() {
   case "$1" in
-    claude) command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
-    stats)  [ -d "/Applications/Stats.app" ] ;;
-    zed)    [ -d "/Applications/Zed.app" ] ;;
-    *)      return 1 ;;
+    claude)         command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
+    stats)          [ -d "/Applications/Stats.app" ] ;;
+    zed)            [ -d "/Applications/Zed.app" ] ;;
+    docker-desktop) [ -d "/Applications/Docker.app" ] ;;
+    linearmouse)    [ -d "/Applications/LinearMouse.app" ] ;;
+    # rust is considered configured once a default toolchain is active,
+    # not merely once rustup is installed — the bootstrap prompt is the
+    # second half of the role's work.
+    rust)           command -v rustup > /dev/null 2>&1 && rustup show active-toolchain > /dev/null 2>&1 ;;
+    *)              return 1 ;;
   esac
 }
 
