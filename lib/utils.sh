@@ -17,6 +17,7 @@ _C_YLW_B=$'\033[1;33m'  # bold yellow — section/summary separators
 _C_RED=$'\033[31m'      # red — errors, diff deletes
 _C_DIM=$'\033[2m'       # dim — skips, no-change labels
 _C_BLD=$'\033[1m'       # bold
+_C_REV=$'\033[7m'       # reverse video — group headers
 _C_RST=$'\033[0m'       # reset
 _C_PUR=$'\033[35m'      # purple — accents
 _C_PUR_B=$'\033[1;35m'  # bold purple — section titles, summary counts
@@ -151,30 +152,23 @@ _log_section() {
 }
 
 # Group header drawn ABOVE a cluster of related _log_section banners.
-# Each group gets its own icon + accent colour (rotating through the
-# existing palette) while sharing the heavy ━ rule so groups are
-# visually one level above the ASCII-dash section headers.
+# Rendered as a 3-line reverse-video block: top bar, uppercase bold
+# label with a small left margin, bottom bar. The same style is used
+# for every group so groups read as one unmistakable visual marker.
 _log_group() {
   [ "$_SECTION_OPEN" = "1" ] && _log_section_end
 
-  local label="$1"
-  local icon="" color=""
-  case "$label" in
-    preflight)   icon="✦" ; color="$_C_YLW_B" ;;
-    shell)       icon="❯" ; color="$_C_GRN_B" ;;
-    "cli tools") icon="◆" ; color="$_C_PUR_B" ;;
-    apps)        icon="◉" ; color="$_C_AMB"   ;;
-    toolchains)  icon="✧" ; color="$_C_GRN"   ;;
-    editor)      icon="✎" ; color="$_C_PUR"   ;;
-    *)           icon="◇" ; color="$_C_YLW_B" ;;
-  esac
+  local label_upper
+  label_upper=$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')
+  local pad_line label_pad
+  pad_line=$(_repeat " " "$_TERM_W")
+  local label_pad_len=$(( _TERM_W - ${#label_upper} - 2 ))
+  [ "$label_pad_len" -lt 1 ] && label_pad_len=1
+  label_pad=$(_repeat " " "$label_pad_len")
 
-  # Header: "━━━ ICON LABEL ━━━..." (3 + 1 + 1 + 1 + text + 1 + dashes = _TERM_W)
-  local dashes_len=$(( _TERM_W - 7 - ${#label} ))
-  [ "$dashes_len" -lt 3 ] && dashes_len=3
-  local dashes
-  dashes=$(_repeat "━" "$dashes_len")
-  printf "${color}━━━ %s ${_C_BLD}%s${_C_RST} ${color}%s${_C_RST}\n" "$icon" "$label" "$dashes"
+  printf "${_C_BLD}${_C_REV}%s${_C_RST}\n"     "$pad_line"
+  printf "${_C_BLD}${_C_REV}  %s%s${_C_RST}\n" "$label_upper" "$label_pad"
+  printf "${_C_BLD}${_C_REV}%s${_C_RST}\n"     "$pad_line"
 }
 
 _log_summary() {
