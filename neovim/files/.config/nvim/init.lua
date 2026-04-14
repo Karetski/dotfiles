@@ -260,10 +260,16 @@ require("lazy").setup({
       require("mason-lspconfig").setup({
         ensure_installed = {
           "lua_ls", "rust_analyzer", "clangd",
+          "marksman", "bashls", "jsonls", "yamlls", "taplo",
+          "pyright", "ts_ls", "gopls",
         },
       })
 
-      local servers = { "lua_ls", "rust_analyzer", "clangd", "sourcekit" }
+      local servers = {
+        "lua_ls", "rust_analyzer", "clangd", "sourcekit",
+        "marksman", "bashls", "jsonls", "yamlls", "taplo",
+        "pyright", "ts_ls", "gopls",
+      }
       for _, server in ipairs(servers) do
         vim.lsp.config(server, {
           capabilities = require("blink.cmp").get_lsp_capabilities(),

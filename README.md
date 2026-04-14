@@ -356,7 +356,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `blink.cmp` | Autocompletion (LSP, path, buffer sources) |
 | `catppuccin` | Colorscheme (latte flavour) |
 
-**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`. `sourcekit` is configured directly (pre-installed on macOS).
+**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
 **Key bindings**:
 
