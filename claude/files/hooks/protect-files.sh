@@ -10,10 +10,12 @@ protected_patterns=(
 )
 
 for pattern in "${protected_patterns[@]}"; do
-  if echo "$file_path" | grep -qF "$pattern"; then
-    echo "Blocked: '$file_path' is protected. Explain why this edit is necessary." >&2
-    exit 2
-  fi
+  case "$file_path" in
+    *"/$pattern"|"$pattern")
+      echo "Blocked: '$file_path' is protected. Explain why this edit is necessary." >&2
+      exit 2
+      ;;
+  esac
 done
 
 exit 0
