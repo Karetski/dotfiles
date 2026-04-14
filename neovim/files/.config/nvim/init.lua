@@ -51,6 +51,9 @@ vim.keymap.set({ "n", "v" }, "<leader>J", "J")       -- Join lines
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)  -- Hover docs
 vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
 vim.keymap.set("n", "<leader>b", "<cmd>make<cr>",     { desc = "Build (make)" })
+vim.keymap.set({ "n", "v" }, "<leader>=", function() -- LSP format buffer/selection
+  vim.lsp.buf.format({ async = true })
+end, { desc = "LSP format" })
 
 -- Keymaps: File tree
 vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>") -- Toggle file tree
