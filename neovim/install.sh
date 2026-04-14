@@ -2,9 +2,9 @@
 ensure_brew_formula neovim
 ensure_brew_formula ripgrep
 ensure_brew_formula fd
-# Toolchains required by mason-installed LSP servers:
-# node powers bashls/jsonls/yamlls/pyright/ts_ls, go powers gopls.
-ensure_brew_formula node
+# Toolchains required by mason-installed LSP servers: go powers gopls.
+# node/npm (needed by bashls/jsonls/yamlls/pyright/ts_ls) are provided by
+# the nvm declared in the zsh role and sourced from .zshrc.
 ensure_brew_formula go
 
 ensure_dir "$HOME/.config/nvim"

@@ -10,4 +10,7 @@ OPTIONAL_ROLES=(
   claude
   stats
   zed
+  rust
+  docker-desktop
+  linearmouse
 )

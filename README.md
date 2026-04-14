@@ -168,6 +168,11 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
+| `ENABLE_OPTIONAL_RUST` | `vars/local.sh` | Auto-apply the optional Rust role (installs `rustup`) instead of prompting |
+| `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` after installing `rustup` instead of prompting |
+| `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
+| `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
+| `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during `zsh` role install instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
@@ -186,7 +191,7 @@ Deploys `~/.zshrc` as a static file.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
-**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion and `fzf` for fuzzy finding.
+**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion, `fzf` for fuzzy finding, and `nvm` for Node version management. Sourcing `nvm` from `.zshrc` is what puts `node`/`npm` on PATH for any interactive shell (and therefore for `nvim`-launched processes such as Mason's Node-based LSP installs).
 
 **Aliases**:
 
@@ -337,6 +342,26 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 ---
 
+### rust
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_RUST=1` is set in `vars/local.sh`. `rustup` itself is installed via `ensure_brew_formula rustup`.
+
+`brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs a second optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
+
+---
+
+### docker-desktop
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_DOCKER_DESKTOP=1` is set in `vars/local.sh`. Installs Docker Desktop via `ensure_brew_cask docker-desktop`; no additional config is deployed.
+
+---
+
+### linearmouse
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_LINEARMOUSE=1` is set in `vars/local.sh`. Installs the [LinearMouse](https://linearmouse.app/) macOS mouse customization app via `ensure_brew_cask linearmouse`; no additional config is deployed.
+
+---
+
 ### neovim
 
 Deploys `~/.config/nvim/init.lua`.
@@ -358,7 +383,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
-**Toolchains**: `node` (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) and `go` (powers `gopls`) are declared as Homebrew dependencies by the `neovim` role, so Mason can install Node- and Go-based language servers on first launch.
+**Toolchains**: `go` (powers `gopls`) is declared as a Homebrew dependency by the `neovim` role. `node`/`npm` (needed by `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) come from `nvm`, which is declared by the `zsh` role and sourced from `.zshrc` — so Mason's Node-based LSP installs resolve the first time you open `nvim` from an interactive shell.
 
 **Key bindings**:
 
