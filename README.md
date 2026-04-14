@@ -358,6 +358,8 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
+**Toolchains**: `node` (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) and `go` (powers `gopls`) are declared as Homebrew dependencies by the `neovim` role, so Mason can install Node- and Go-based language servers on first launch.
+
 **Key bindings**:
 
 | Key | Action |
