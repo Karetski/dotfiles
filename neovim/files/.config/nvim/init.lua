@@ -168,95 +168,69 @@ require("lazy").setup({
     end,
   },
   {
-    "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" },
+    "ibhagwan/fzf-lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      local builtin = require("telescope.builtin")
-      local pickers = require("telescope.pickers")
-      local finders = require("telescope.finders")
-      local conf = require("telescope.config").values
-      local actions = require("telescope.actions")
-      local action_state = require("telescope.actions.state")
+      local fzf = require("fzf-lua")
+      fzf.setup({ "default-title" })
 
       local function command_palette()
-        local items = {}
+        local labels, actions_by_label = {}, {}
 
-        -- Collect user keymaps with descriptions
+        local function add(label, action)
+          if not actions_by_label[label] then
+            actions_by_label[label] = action
+            table.insert(labels, label)
+          end
+        end
+
         for _, mode in ipairs({ "n", "v", "x", "i" }) do
           for _, km in ipairs(vim.api.nvim_get_keymap(mode)) do
             if km.desc and km.desc ~= "" then
-              table.insert(items, {
-                label = km.desc,
-                kind = "keymap",
-                display = km.desc .. "  [" .. mode .. " " .. km.lhs .. "]",
-                action = function() vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(km.lhs, true, false, true), mode, false) end,
-              })
+              local label = string.format("%s  [%s %s]", km.desc, mode, km.lhs)
+              add(label, function()
+                local keys = vim.api.nvim_replace_termcodes(km.lhs, true, false, true)
+                vim.api.nvim_feedkeys(keys, mode, false)
+              end)
             end
           end
         end
 
-        -- Collect LSP actions
         local lsp_actions = {
-          { label = "Rename symbol",         action = vim.lsp.buf.rename },
-          { label = "Code action",           action = vim.lsp.buf.code_action },
-          { label = "Go to definition",      action = vim.lsp.buf.definition },
-          { label = "Go to declaration",     action = vim.lsp.buf.declaration },
-          { label = "Go to implementation",  action = vim.lsp.buf.implementation },
-          { label = "Go to type definition", action = vim.lsp.buf.type_definition },
-          { label = "Find references",       action = vim.lsp.buf.references },
-          { label = "Hover documentation",   action = vim.lsp.buf.hover },
-          { label = "Signature help",        action = vim.lsp.buf.signature_help },
-          { label = "Format buffer",         action = function() vim.lsp.buf.format({ async = true }) end },
+          { "Rename symbol",         vim.lsp.buf.rename },
+          { "Code action",           vim.lsp.buf.code_action },
+          { "Go to definition",      vim.lsp.buf.definition },
+          { "Go to declaration",     vim.lsp.buf.declaration },
+          { "Go to implementation",  vim.lsp.buf.implementation },
+          { "Go to type definition", vim.lsp.buf.type_definition },
+          { "Find references",       vim.lsp.buf.references },
+          { "Hover documentation",   vim.lsp.buf.hover },
+          { "Signature help",        vim.lsp.buf.signature_help },
+          { "Format buffer",         function() vim.lsp.buf.format({ async = true }) end },
         }
-        for _, a in ipairs(lsp_actions) do
-          table.insert(items, { label = a.label, kind = "lsp", display = a.label .. "  [lsp]", action = a.action })
-        end
+        for _, a in ipairs(lsp_actions) do add(a[1] .. "  [lsp]", a[2]) end
 
-        -- Collect user commands
         for name, _ in pairs(vim.api.nvim_get_commands({})) do
-          table.insert(items, {
-            label = name,
-            kind = "command",
-            display = name .. "  [cmd]",
-            action = function() vim.cmd(name) end,
-          })
+          add(name .. "  [cmd]", function() vim.cmd(name) end)
         end
 
-        -- Deduplicate by display string
-        local seen = {}
-        local unique = {}
-        for _, item in ipairs(items) do
-          if not seen[item.display] then
-            seen[item.display] = true
-            table.insert(unique, item)
-          end
-        end
-
-        pickers.new({}, {
-          prompt_title = "Command Palette",
-          finder = finders.new_table({
-            results = unique,
-            entry_maker = function(item)
-              return { value = item, display = item.display, ordinal = item.label }
+        fzf.fzf_exec(labels, {
+          prompt = "Command Palette> ",
+          actions = {
+            ["default"] = function(selected)
+              local fn = selected and selected[1] and actions_by_label[selected[1]]
+              if fn then fn() end
             end,
-          }),
-          sorter = conf.generic_sorter({}),
-          attach_mappings = function(prompt_bufnr)
-            actions.select_default:replace(function()
-              actions.close(prompt_bufnr)
-              local entry = action_state.get_selected_entry()
-              if entry then entry.value.action() end
-            end)
-            return true
-          end,
-        }):find()
+          },
+        })
       end
 
-      vim.keymap.set("n", "<C-p>",      builtin.find_files,  { desc = "Find files" })
-      vim.keymap.set("n", "<leader>p",  command_palette,     { desc = "Command palette" })
-      vim.keymap.set("n", "<leader>fg", builtin.live_grep,   { desc = "Live grep" })
-      vim.keymap.set("n", "<leader>fb", builtin.buffers,     { desc = "Buffers" })
-      vim.keymap.set("n", "<leader>fs", builtin.lsp_document_symbols, { desc = "Document symbols" })
+      vim.keymap.set("n", "<leader>p",  fzf.files,                      { desc = "Find files" })
+      vim.keymap.set("n", "<leader>P",  command_palette,                { desc = "Command palette" })
+      vim.keymap.set("n", "<leader>o",  fzf.lsp_document_symbols,       { desc = "Document symbols" })
+      vim.keymap.set("n", "<leader>O",  fzf.lsp_live_workspace_symbols, { desc = "Workspace symbols" })
+      vim.keymap.set("n", "<leader>fg", fzf.live_grep,                  { desc = "Live grep" })
+      vim.keymap.set("n", "<leader>fb", fzf.buffers,                    { desc = "Buffers" })
     end,
   },
   {

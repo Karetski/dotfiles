@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 ensure_brew_formula neovim
+ensure_brew_formula ripgrep
+ensure_brew_formula fd
 
 ensure_dir "$HOME/.config/nvim"
 

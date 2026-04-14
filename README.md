@@ -335,7 +335,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with diagnostics panel |
 | `nvim-treesitter` | Syntax highlighting and indentation |
 | `lualine.nvim` | Statusline with LSP client info |
-| `telescope.nvim` | Fuzzy finder for files, grep, buffers, and command palette |
+| `fzf-lua` | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
 | `blink.cmp` | Autocompletion (LSP, path, buffer sources) |
@@ -360,11 +360,12 @@ Deploys `~/.config/nvim/init.lua`.
 | `Alt+l` / `Alt+h` | Next word / previous word |
 | `jk` (insert) | Escape to normal mode |
 | `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
-| `Ctrl+p` | Find files (Telescope) |
-| `<Space>p` | Command palette (keymaps, LSP actions, commands) |
-| `<Space>fg` | Live grep (Telescope) |
-| `<Space>fb` | Buffers (Telescope) |
-| `<Space>fs` | Document symbols (Telescope) |
+| `<Space>p` | Find files in project (fzf-lua) |
+| `<Space>P` | Command palette (keymaps, LSP actions, commands) |
+| `<Space>o` | Document symbols in current buffer (fzf-lua) |
+| `<Space>O` | Workspace symbols across project (fzf-lua) |
+| `<Space>fg` | Live grep (fzf-lua) |
+| `<Space>fb` | Buffers (fzf-lua) |
 | `]h` / `[h` | Next / previous git hunk |
 | `<Space>gS` | Stage hunk |
 | `<Space>gr` | Reset hunk |
