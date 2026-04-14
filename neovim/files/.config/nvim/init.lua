@@ -19,6 +19,7 @@ vim.opt.timeoutlen = 300
 vim.opt.updatetime = 250
 vim.opt.virtualedit = "onemore"
 vim.opt.exrc = true
+vim.opt.mouse = "a"
 
 -- Diagnostics
 vim.diagnostic.config({
