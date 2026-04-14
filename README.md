@@ -191,7 +191,7 @@ Deploys `~/.zshrc` as a static file.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
-**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion and `fzf` for fuzzy finding. `.zshrc` also sources `nvm` (installed by the `nvm` role) so `node`/`npm` land on PATH for interactive shells — that's how `nvim`-launched processes such as Mason's Node-based LSP installs find them.
+**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion, `fzf` for fuzzy finding, and `nvm` so `node`/`npm` land on PATH for interactive shells — the latter is how `nvim`-launched processes such as Mason's Node-based LSP installs find them. Each of those tools is installed by its own sibling role (`zsh-autocomplete`, `fzf`, `nvm`); the `zsh` role itself only deploys `.zshrc`.
 
 **Aliases**:
 
@@ -219,6 +219,18 @@ Deploys `~/.zshrc` as a static file.
 Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).
 
 **Local overrides**: Sources `~/.zshrc.local` at the end if the file exists. Use this for machine-specific aliases and config that doesn't belong in the shared repo.
+
+---
+
+### zsh-autocomplete
+
+Installs [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete) via `ensure_brew_formula zsh-autocomplete`. The plugin is sourced from `.zshrc` (deployed by the `zsh` role) at interactive-shell startup.
+
+---
+
+### fzf
+
+Installs [fzf](https://github.com/junegunn/fzf) via `ensure_brew_formula fzf`. The binary powers the `nvf` alias (`nvim $(fzf)`) and is sourced via `source <(fzf --zsh)` from `.zshrc` for key bindings and completion. It's also used indirectly by the `snacks.nvim` picker in the `neovim` role for its internal matcher.
 
 ---
 
@@ -253,6 +265,18 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 ### jq
 
 Installs the [jq](https://stedolan.github.io/jq/) command-line JSON processor via Homebrew. No config files — jq is consumed at runtime by the `claude` role's hook scripts and status line, so it's modeled as its own step to keep dependencies composable rather than hidden inside another role.
+
+---
+
+### ripgrep
+
+Installs [ripgrep](https://github.com/BurntSushi/ripgrep) via `ensure_brew_formula ripgrep`. Used at runtime by `snacks.nvim`'s grep picker in the `neovim` role (and generally useful as a `grep` replacement).
+
+---
+
+### fd
+
+Installs [fd](https://github.com/sharkdp/fd) via `ensure_brew_formula fd`. Used at runtime by `snacks.nvim`'s file picker in the `neovim` role (and generally useful as a `find` replacement).
 
 ---
 
@@ -350,6 +374,12 @@ nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`
 
 ---
 
+### go
+
+Installs the [Go](https://go.dev/) toolchain via `ensure_brew_formula go`. Used at runtime by the `gopls` LSP that Mason installs for the `neovim` role.
+
+---
+
 ### rust
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_RUST=1` is set in `vars/local.sh`. `rustup` itself is installed via `ensure_brew_formula rustup`.
@@ -391,7 +421,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
-**Toolchains**: `go` (powers `gopls`) is declared as a Homebrew dependency by the `neovim` role. `node`/`npm` (needed by `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) come from the `nvm` role, which is sourced from `.zshrc` — so Mason's Node-based LSP installs resolve the first time you open `nvim` from an interactive shell that has picked up the new `.zshrc`.
+**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), `go` (powers the `gopls` LSP), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time.
 
 **Key bindings**:
 

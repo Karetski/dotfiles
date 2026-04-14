@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
-# zsh-autocomplete powers real-time completion; fzf backs the `vf` alias.
-# nvm is installed by its own role; .zshrc below sources it so node/npm
-# land on PATH for interactive shells (and therefore Mason's installs).
-ensure_brew_formula zsh-autocomplete
-ensure_brew_formula fzf
+# Deploys .zshrc. Dependencies (zsh-autocomplete, fzf, nvm) are installed
+# by their own roles and sourced from .zshrc at interactive-shell startup.
 
 # ~/.local/bin is prepended to PATH in .zshrc for role-deployed scripts
 ensure_dir "$HOME/.local/bin"

@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
+# Installs neovim and deploys its config. Runtime dependencies
+# (ripgrep and fd for snacks.nvim pickers; go for the gopls LSP;
+# node/npm via nvm for the Node-based LSPs) are installed by their
+# own roles and resolved on PATH at launch time.
 ensure_brew_formula neovim
-ensure_brew_formula ripgrep
-ensure_brew_formula fd
-# Toolchains required by mason-installed LSP servers: go powers gopls.
-# node/npm (needed by bashls/jsonls/yamlls/pyright/ts_ls) are provided by
-# the nvm declared in the zsh role and sourced from .zshrc.
-ensure_brew_formula go
 
 ensure_dir "$HOME/.config/nvim"
 

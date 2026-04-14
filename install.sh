@@ -12,7 +12,7 @@ if [ -f "$DOTFILES_DIR/vars/local.sh" ]; then
 fi
 
 # Roles are applied in this order; each has a matching <role>/install.sh
-ROLES=(homebrew zsh nvm git lazygit jq claude ghostty stats zed docker-desktop linearmouse rust neovim)
+ROLES=(homebrew zsh zsh-autocomplete fzf nvm git lazygit jq ripgrep fd claude ghostty stats zed docker-desktop linearmouse go rust neovim)
 # TAG limits the run to a single role (e.g. TAG=git)
 TAG="${TAG:-}"
 # CONFIRM_MODE=1 treats every role and brew package as optional for this run,
