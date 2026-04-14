@@ -151,18 +151,30 @@ _log_section() {
 }
 
 # Group header drawn ABOVE a cluster of related _log_section banners.
-# Uses heavy horizontal rules (━) so groups are visually one level above
-# the ASCII-dash section headers.
+# Each group gets its own icon + accent colour (rotating through the
+# existing palette) while sharing the heavy ━ rule so groups are
+# visually one level above the ASCII-dash section headers.
 _log_group() {
   [ "$_SECTION_OPEN" = "1" ] && _log_section_end
 
   local label="$1"
-  # Header: "━━━ LABEL ━━━..." (3 + 1 + text + 1 + dashes = _TERM_W)
-  local dashes_len=$(( _TERM_W - 5 - ${#label} ))
+  local icon="" color=""
+  case "$label" in
+    preflight)   icon="✦" ; color="$_C_YLW_B" ;;
+    shell)       icon="❯" ; color="$_C_GRN_B" ;;
+    "cli tools") icon="◆" ; color="$_C_PUR_B" ;;
+    apps)        icon="◉" ; color="$_C_AMB"   ;;
+    toolchains)  icon="✧" ; color="$_C_GRN"   ;;
+    editor)      icon="✎" ; color="$_C_PUR"   ;;
+    *)           icon="◇" ; color="$_C_YLW_B" ;;
+  esac
+
+  # Header: "━━━ ICON LABEL ━━━..." (3 + 1 + 1 + 1 + text + 1 + dashes = _TERM_W)
+  local dashes_len=$(( _TERM_W - 7 - ${#label} ))
   [ "$dashes_len" -lt 3 ] && dashes_len=3
   local dashes
   dashes=$(_repeat "━" "$dashes_len")
-  printf "${_C_YLW_B}━━━${_C_RST} ${_C_PUR_B}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$label" "$dashes"
+  printf "${color}━━━ %s ${_C_BLD}%s${_C_RST} ${color}%s${_C_RST}\n" "$icon" "$label" "$dashes"
 }
 
 _log_summary() {
