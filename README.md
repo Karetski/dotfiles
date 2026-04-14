@@ -190,7 +190,8 @@ Deploys `~/.zshrc` as a static file.
 | Alias | Expands to | Description |
 |-------|-----------|-------------|
 | `ll` | `lssplit` | Lists directory contents split into Directories, Files, and Symlinks sections with colored headers |
-| `vf` | `nvim $(fzf)` | Open a file in Neovim via fzf |
+| `nv` | `nvim` | Shortcut for Neovim |
+| `nvf` | `nvim $(fzf)` | Open a file in Neovim via fzf |
 | `caff` | `caffeinate` | Prevent system sleep |
 | `caffd` | `caffeinate -d` | Prevent display sleep only |
 

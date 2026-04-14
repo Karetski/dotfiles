@@ -70,9 +70,14 @@ lssplit() {
 alias ll='lssplit'
 
 
+# NEOVIM
+
+alias nv='nvim'
+
+
 # FZF
 
-alias vf='nvim $(fzf)'
+alias nvf='nvim $(fzf)'
 
 
 # CAFFEINATE
