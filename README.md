@@ -191,7 +191,7 @@ Deploys `~/.zshrc` as a static file.
 
 **PATH**: Prepends `~/.local/bin` (where role-deployed scripts live).
 
-**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion, `fzf` for fuzzy finding, and `nvm` for Node version management. Sourcing `nvm` from `.zshrc` is what puts `node`/`npm` on PATH for any interactive shell (and therefore for `nvim`-launched processes such as Mason's Node-based LSP installs).
+**Plugins**: Sources `zsh-autocomplete` from its Homebrew location for real-time completion and `fzf` for fuzzy finding. `.zshrc` also sources `nvm` (installed by the `nvm` role) so `node`/`npm` land on PATH for interactive shells — that's how `nvim`-launched processes such as Mason's Node-based LSP installs find them.
 
 **Aliases**:
 
@@ -342,6 +342,14 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 ---
 
+### nvm
+
+Installs [nvm](https://github.com/nvm-sh/nvm) via `ensure_brew_formula nvm` and ensures `~/.nvm` exists. If no default Node alias is set, the role invokes the shared `_optional_selected` helper to prompt before running `nvm install --lts && nvm alias default 'lts/*'` (gated by `ENABLE_OPTIONAL_NVM_DEFAULT_NODE`). The actual `nvm install` runs inside a `bash -c` subshell so `nvm.sh`'s shell-function layout doesn't collide with the orchestrator's `set -euo pipefail`.
+
+nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`npm` land on PATH for interactive shells and therefore for Mason's Node-based LSP installs (`bashls`, `jsonls`, `yamlls`, `pyright`, `ts_ls`).
+
+---
+
 ### rust
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_RUST=1` is set in `vars/local.sh`. `rustup` itself is installed via `ensure_brew_formula rustup`.
@@ -383,7 +391,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
-**Toolchains**: `go` (powers `gopls`) is declared as a Homebrew dependency by the `neovim` role. `node`/`npm` (needed by `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) come from `nvm`, which is declared by the `zsh` role and sourced from `.zshrc` — so Mason's Node-based LSP installs resolve the first time you open `nvim` from an interactive shell.
+**Toolchains**: `go` (powers `gopls`) is declared as a Homebrew dependency by the `neovim` role. `node`/`npm` (needed by `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls`) come from the `nvm` role, which is sourced from `.zshrc` — so Mason's Node-based LSP installs resolve the first time you open `nvim` from an interactive shell that has picked up the new `.zshrc`.
 
 **Key bindings**:
 
