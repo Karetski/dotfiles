@@ -141,7 +141,7 @@ Machine-specific overrides, sourced after `vars/main.sh`. Gitignored — see `va
 
 ### claude/files/statusline.sh
 
-Status line script deployed to `~/.claude/statusline.sh` for the Claude Code terminal UI. Receives JSON on stdin from the Claude Code harness and outputs a single pipe-separated status string containing:
+Status line script deployed to `~/.claude/statusline.sh` for the Claude Code terminal UI. Receives JSON on stdin from the Claude Code harness and outputs a pipe-separated status string, optionally followed by a second line listing plugin state:
 
 | Segment | Source | Example |
 |---------|--------|---------|
@@ -149,6 +149,9 @@ Status line script deployed to `~/.claude/statusline.sh` for the Claude Code ter
 | Model | `model.display_name` (stripped) | `Opus 4.6` |
 | Context | `context_window.used_percentage` | `ctx:42%` |
 | Rate limit | `rate_limits.five_hour` + countdown | `5h:15% \| 3h12m` |
+| Plugins (2nd line) | `~/.claude/plugins/installed_plugins.json` + merged `enabledPlugins` | `plugins: +superpowers -rust-analyzer-lsp` |
+
+The plugins line is only emitted when installed plugins apply to the current `cwd` (user-scoped plugins always, project-scoped plugins only when `cwd` is under their `projectPath`). Each plugin is prefixed with `+` when enabled or `-` when disabled, with effective state resolved in the order `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`, defaulting to enabled when unset.
 
 ### Role install scripts
 
@@ -270,6 +273,18 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 | `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands before they run |
 | `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard protected paths from edits and writes |
 | `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
+
+**`~/.claude/commands/`**: Custom slash command definitions.
+
+| Command | Purpose |
+|---------|---------|
+| `/superpowers` | Toggle the Superpowers plugin's `enabledPlugins` flag in the current project's `.claude/settings.local.json` and print a `/reload-plugins` reminder. Walks up from `cwd` to find the nearest `.claude/` directory. Claude Code cannot chain slash commands, so `/reload-plugins` still has to be run manually to apply the change. |
+
+**`~/.claude/scripts/`**: Helper scripts invoked by slash commands (executable).
+
+| Script | Used by | Purpose |
+|--------|---------|---------|
+| `superpowers-toggle.sh` | `/superpowers` | Flip `enabledPlugins["superpowers@claude-plugins-official"]` between `true` and `false`, using the same precedence (`local` → `project` → `user`) as the statusline reader. |
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 

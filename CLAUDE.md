@@ -10,5 +10,7 @@ The `claude/` role in this repository still manages local Claude Code configurat
 - `~/.claude/hooks/block-dangerous.sh`
 - `~/.claude/hooks/protect-files.sh`
 - `~/.claude/hooks/check-syntax.sh`
+- `~/.claude/commands/superpowers.md`
+- `~/.claude/scripts/superpowers-toggle.sh`
 
 Repository changes to that role should follow the same standards documented in [AGENTS.md](/Users/karetski/Developer/dotfiles/AGENTS.md).
