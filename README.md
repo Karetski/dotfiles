@@ -446,6 +446,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `J` / `K` | Bottom / top of file |
 | `Alt+l` / `Alt+h` | Next word / previous word |
 | `jk` (insert) | Escape to normal mode |
+| `<Esc>` (normal) | Clear search highlight (`:nohlsearch`) |
 | `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
 | `<Space>p` | Find files in project (snacks picker) |
 | `<Space>P` | Command palette (keymaps, LSP actions, commands) |
