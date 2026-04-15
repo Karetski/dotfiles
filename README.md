@@ -308,18 +308,6 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 | `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard protected paths from edits and writes |
 | `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
 
-**`~/.claude/commands/`**: Custom slash command definitions.
-
-| Command | Purpose |
-|---------|---------|
-| `/superpowers` | Toggle the Superpowers plugin's `enabledPlugins` flag in the current project's `.claude/settings.local.json` and print a `/reload-plugins` reminder. Walks up from `cwd` to find the nearest `.claude/` directory. Claude Code cannot chain slash commands, so `/reload-plugins` still has to be run manually to apply the change. |
-
-**`~/.claude/scripts/`**: Helper scripts invoked by slash commands (executable).
-
-| Script | Used by | Purpose |
-|--------|---------|---------|
-| `superpowers-toggle.sh` | `/superpowers` | Flip `enabledPlugins["superpowers@claude-plugins-official"]` between `true` and `false`, using the same precedence (`local` → `project` → `user`) as the statusline reader. |
-
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
 ---

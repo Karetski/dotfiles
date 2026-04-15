@@ -20,17 +20,5 @@ ensure_dir "$HOME/.claude/hooks"
 for hook in "$DOTFILES_DIR/claude/files/hooks/"*.sh; do
   deploy_file "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "0755"
 done
-ensure_dir "$HOME/.claude/commands"
-# Slash command definitions
-for cmd in "$DOTFILES_DIR/claude/files/commands/"*.md; do
-  [ -e "$cmd" ] || continue
-  deploy_file "$cmd" "$HOME/.claude/commands/$(basename "$cmd")" "0644"
-done
-ensure_dir "$HOME/.claude/scripts"
-# Helper scripts invoked by slash commands — deployed as executable (0755)
-for script in "$DOTFILES_DIR/claude/files/scripts/"*.sh; do
-  [ -e "$script" ] || continue
-  deploy_file "$script" "$HOME/.claude/scripts/$(basename "$script")" "0755"
-done
 _sanitize_bak "$HOME/.claude/settings.json"
 _sanitize_bak "$HOME/.claude/statusline.sh"
