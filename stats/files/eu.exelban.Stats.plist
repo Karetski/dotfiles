@@ -58,12 +58,24 @@
 	<integer>7</integer>
 	<key>Disk_widget</key>
 	<string></string>
+	<key>NSStatusItem Preferred Position Network_speed</key>
+	<real>612</real>
 	<key>Network_label_position</key>
 	<integer>1</integer>
 	<key>Network_networkChart_position</key>
 	<integer>2</integer>
+	<key>Network_speed_displayValue</key>
+	<string>oi</string>
+	<key>Network_speed_icon</key>
+	<string>chars</string>
+	<key>Network_speed_mode</key>
+	<string>twoRows</string>
+	<key>Network_speed_monochrome</key>
+	<false/>
 	<key>Network_speed_position</key>
 	<integer>0</integer>
+	<key>Network_speed_units</key>
+	<true/>
 	<key>Network_state_position</key>
 	<integer>3</integer>
 	<key>Network_text_position</key>
