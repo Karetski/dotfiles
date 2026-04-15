@@ -9,6 +9,15 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- nvm exposes node only via an interactive-zsh shell function, so Mason-installed
+-- Node LSPs (bashls, pyright, ts_ls, yamlls, jsonls) can't resolve `#!/usr/bin/env node`
+-- when nvim is launched outside an interactive shell. Prepend the installed version's bin.
+local nvm_bins = vim.fn.glob("~/.nvm/versions/node/*/bin", true, true)
+if #nvm_bins > 0 then
+  table.sort(nvm_bins)
+  vim.env.PATH = nvm_bins[#nvm_bins] .. ":" .. vim.env.PATH
+end
+
 -- Options
 vim.opt.number = true
 vim.opt.relativenumber = true

@@ -428,7 +428,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
-**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), `go` (powers the `gopls` LSP), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time.
+**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), `go` (powers the `gopls` LSP), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time. Because nvm exposes `node` only through an interactive-zsh shell function, `init.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
 
 **Key bindings**:
 
