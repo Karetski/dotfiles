@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages zsh, git, lazygit, Claude Code, Ghostty, Zed, and Neovim via idempotent install scripts.
+Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 20 roles.
 
 ## Prerequisites
 
@@ -25,6 +25,8 @@ This repo currently treats these roles as optional:
 - `claude`
 - `stats`
 - `zed`
+- `docker-desktop`
+- `linearmouse`
 
 To auto-apply an optional role without an interactive prompt, set the matching variable in `vars/local.sh`:
 
@@ -32,6 +34,8 @@ To auto-apply an optional role without an interactive prompt, set the matching v
 export ENABLE_OPTIONAL_CLAUDE=1
 export ENABLE_OPTIONAL_STATS=1
 export ENABLE_OPTIONAL_ZED=1
+export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
+export ENABLE_OPTIONAL_LINEARMOUSE=1
 ```
 
 Because each role now declares its own brew dependencies, a single override gates both the role's config and the Homebrew package that ships with it. For example, `ENABLE_OPTIONAL_STATS=1` covers both installing Stats.app and importing its preferences.
@@ -40,7 +44,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 10 roles prompts before its install script runs.
+- Each of the 20 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -83,7 +87,15 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 
 ### install.sh
 
-Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in order: homebrew, zsh, git, lazygit, jq, claude, ghostty, stats, zed, neovim.
+Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in this order, grouped by purpose:
+
+- **preflight** — `xcode-select`, `homebrew`
+- **shell** — `zsh`, `zsh-autocomplete`, `fzf`
+- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
+- **dev tools** — `claude`, `docker-desktop`
+- **system** — `ghostty`, `stats`, `linearmouse`
+- **toolchains** — `go`, `nvm`, `rust`
+- **editor** — `zed`, `neovim`
 
 - Each role is sourced from `<role>/install.sh`
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
@@ -96,7 +108,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 
 Shared utility library sourced by all install scripts. Provides:
 
-**Logging** — styled, table-framed output with status indicators:
+**Logging** — styled, section-banner output with status indicators:
 
 | Function | Indicator | Purpose |
 |----------|-----------|---------|
@@ -108,7 +120,7 @@ Shared utility library sourced by all install scripts. Provides:
 
 **Section layout** — `_log_section` opens a bordered section for a role (with optional `[n/total]` counter), `_log_section_end` closes it with a per-section summary, and `_log_summary` prints the final totals.
 
-**Brew helpers** — `ensure_brew_formula NAME` / `ensure_brew_cask NAME` are the public entry points each role calls to declare its own Homebrew dependencies (idempotent, CONFIRM_MODE-aware, dry-run-safe). `_log_brew_start` / `_log_brew_end` frame Homebrew install output, and `_brew_pipe` indents brew output within the table border.
+**Brew helpers** — `ensure_brew_formula NAME` / `ensure_brew_cask NAME` are the public entry points each role calls to declare its own Homebrew dependencies (idempotent, CONFIRM_MODE-aware, dry-run-safe). `_log_brew_start` / `_log_brew_end` frame Homebrew install output, and `_brew_pipe` indents brew output under the section banner.
 
 **File deployment:**
 
@@ -171,7 +183,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rust` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
 | `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
-| `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during `zsh` role install instead of prompting |
+| `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during the `nvm` role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
@@ -312,6 +324,12 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 ---
 
+### docker-desktop
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_DOCKER_DESKTOP=1` is set in `vars/local.sh`. Installs Docker Desktop via `ensure_brew_cask docker-desktop`; no additional config is deployed.
+
+---
+
 ### ghostty
 
 Deploys the Ghostty terminal emulator config to `~/Library/Application Support/com.mitchellh.ghostty/config.ghostty`.
@@ -340,6 +358,34 @@ The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWind
 
 ---
 
+### linearmouse
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_LINEARMOUSE=1` is set in `vars/local.sh`. Installs the [LinearMouse](https://linearmouse.app/) macOS mouse customization app via `ensure_brew_cask linearmouse`; no additional config is deployed.
+
+---
+
+### go
+
+Installs the [Go](https://go.dev/) toolchain via `ensure_brew_formula go`. Used at runtime by the `gopls` LSP that Mason installs for the `neovim` role.
+
+---
+
+### nvm
+
+Installs [nvm](https://github.com/nvm-sh/nvm) via `ensure_brew_formula nvm` and ensures `~/.nvm` exists. If no default Node alias is set, the role invokes the shared `_optional_selected` helper to prompt before running `nvm install --lts && nvm alias default 'lts/*'` (gated by `ENABLE_OPTIONAL_NVM_DEFAULT_NODE`). The actual `nvm install` runs inside a `bash -c` subshell so `nvm.sh`'s shell-function layout doesn't collide with the orchestrator's `set -euo pipefail`.
+
+nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`npm` land on PATH for interactive shells and therefore for Mason's Node-based LSP installs (`bashls`, `jsonls`, `yamlls`, `pyright`, `ts_ls`).
+
+---
+
+### rust
+
+Installs `rustup` via `ensure_brew_formula rustup`.
+
+`brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs an optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
+
+---
+
 ### zed
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`. Zed itself is installed via `ensure_brew_cask zed` at the top of this role's install script, so one override gates both the cask install and the config deploy.
@@ -358,40 +404,6 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 **Keymap**: `VSCode` base keymap.
 
 **Diff view**: Unified style.
-
----
-
-### nvm
-
-Installs [nvm](https://github.com/nvm-sh/nvm) via `ensure_brew_formula nvm` and ensures `~/.nvm` exists. If no default Node alias is set, the role invokes the shared `_optional_selected` helper to prompt before running `nvm install --lts && nvm alias default 'lts/*'` (gated by `ENABLE_OPTIONAL_NVM_DEFAULT_NODE`). The actual `nvm install` runs inside a `bash -c` subshell so `nvm.sh`'s shell-function layout doesn't collide with the orchestrator's `set -euo pipefail`.
-
-nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`npm` land on PATH for interactive shells and therefore for Mason's Node-based LSP installs (`bashls`, `jsonls`, `yamlls`, `pyright`, `ts_ls`).
-
----
-
-### go
-
-Installs the [Go](https://go.dev/) toolchain via `ensure_brew_formula go`. Used at runtime by the `gopls` LSP that Mason installs for the `neovim` role.
-
----
-
-### rust
-
-Installs `rustup` via `ensure_brew_formula rustup`.
-
-`brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs an optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
-
----
-
-### docker-desktop
-
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_DOCKER_DESKTOP=1` is set in `vars/local.sh`. Installs Docker Desktop via `ensure_brew_cask docker-desktop`; no additional config is deployed.
-
----
-
-### linearmouse
-
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_LINEARMOUSE=1` is set in `vars/local.sh`. Installs the [LinearMouse](https://linearmouse.app/) macOS mouse customization app via `ensure_brew_cask linearmouse`; no additional config is deployed.
 
 ---
 
