@@ -44,7 +44,10 @@ fi
 # ── Plugins line ─────────────────────────────────────────────────────────────
 # Second line listing installed plugins relevant to this cwd (user-scoped or
 # project-scoped where cwd is under projectPath), each prefixed with + or -
-# based on effective enabled state (local > project > user, default enabled).
+# based on effective enabled state (local > project > user). Claude Code only
+# treats a plugin as enabled when enabledPlugins[id] === true (or an array of
+# skill names) — anything else, including an absent key, counts as disabled,
+# so that is what the default has to be here.
 plugins_file="$HOME/.claude/plugins/installed_plugins.json"
 plugins_line=""
 if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
@@ -64,17 +67,22 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
   plugin_parts=()
   while IFS= read -r name; do
     [ -z "$name" ] && continue
-    state=""
+    state="false"
     for f in "$current_dir_full/.claude/settings.local.json" \
              "$current_dir_full/.claude/settings.json" \
              "$HOME/.claude/settings.json"; do
       [ -f "$f" ] || continue
-      # `(.enabledPlugins // {})[$n]` returns "null" when unset, "true"/"false"
-      # otherwise. `// empty` would misfire on `false` and fall through.
-      v=$(jq -r --arg n "$name" '(.enabledPlugins // {})[$n]' "$f" 2>/dev/null || true)
-      if [ -n "$v" ] && [ "$v" != "null" ]; then state="$v"; break; fi
+      # Emit "true" if enabledPlugins[name] is literal true OR a non-empty
+      # array (Claude Code treats both as enabled); "false" if explicitly
+      # false; empty string when the key is unset so the next scope wins.
+      v=$(jq -r --arg n "$name" '
+        (.enabledPlugins // {})[$n]
+        | if . == true or (type == "array" and length > 0) then "true"
+          elif . == false then "false"
+          else "" end
+      ' "$f" 2>/dev/null || true)
+      if [ -n "$v" ]; then state="$v"; break; fi
     done
-    [ -z "$state" ] && state="true"
     short="${name%@*}"
     if [ "$state" = "true" ]; then
       plugin_parts+=("+$short")
