@@ -344,8 +344,6 @@ Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this ro
 
 **Shell integration**: Cursor and sudo disabled; title enabled.
 
-**Splits**: Divider color set to `#df8e1d` (Catppuccin Latte yellow) for clearer pane boundaries.
-
 ---
 
 ### stats
