@@ -118,7 +118,7 @@ Shared utility library sourced by all install scripts. Provides:
 | `_log_note` | `◆` | Informational note |
 | `_log_err` | `✗` | Error message |
 
-**Section layout** — `_log_section` opens a bordered section for a role (with optional `[n/total]` counter), `_log_section_end` closes it with a per-section summary, and `_log_summary` prints the final totals.
+**Section layout** — `_log_group` renders a reverse-video banner above each cluster of related roles (`preflight`, `shell`, `cli tools`, `dev tools`, `system`, `toolchains`, `editor`) so groups read as one unmistakable visual marker. `_log_section` opens a bordered section for a role (with optional `[n/total]` counter), `_log_section_end` closes it with a per-section summary, and `_log_summary` prints the final totals.
 
 **Brew helpers** — `ensure_brew_formula NAME` / `ensure_brew_cask NAME` are the public entry points each role calls to declare its own Homebrew dependencies (idempotent, CONFIRM_MODE-aware, dry-run-safe). `_log_brew_start` / `_log_brew_end` frame Homebrew install output, and `_brew_pipe` indents brew output under the section banner.
 
