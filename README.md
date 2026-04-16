@@ -437,6 +437,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>j` | Reveal current file in neo-tree |
 | `<Space>g` | Open neo-tree Git status panel |
 | `<Space>i` | Open neo-tree Issues (diagnostics) panel |
+| `<Space>v` | Select all (`ggVG`) |
 | `<Space>J` | Join lines (default `J` behaviour) |
 | `<Space>k` | Hover docs (LSP) |
 | `<Space>b` | Build project (`:make`) |

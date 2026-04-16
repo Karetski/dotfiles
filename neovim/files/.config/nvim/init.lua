@@ -57,6 +57,7 @@ vim.keymap.set("n", "<M-L>", "<cmd>bnext<cr>")      -- Next buffer
 vim.keymap.set("n", "<leader>e", "<C-w>l")           -- Focus right split
 
 -- Keymaps: Editing
+vim.keymap.set("n", "<leader>v", "ggVG",             { desc = "Select all" })
 vim.keymap.set({ "n", "v" }, "<leader>J", "J")       -- Join lines
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)  -- Hover docs
 vim.keymap.set("i", "jk", "<Esc>")                  -- Exit insert mode
