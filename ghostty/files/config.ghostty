@@ -1,4 +1,4 @@
-theme = light:Apple System Colors Light,dark:Apple System Colors
+theme = catppuccin-latte
 font-family = SF Mono Terminal
 font-style = Medium
 font-size = 11

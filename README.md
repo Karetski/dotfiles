@@ -336,7 +336,7 @@ Deploys the Ghostty terminal emulator config to `~/Library/Application Support/c
 
 Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this role's install script.
 
-**Theme**: Separate light and dark variants using Apple System Colors (adapts to macOS appearance).
+**Theme**: Catppuccin Latte (built-in Ghostty theme).
 
 **Font**: SF Mono Terminal, Medium weight, 11pt.
 
