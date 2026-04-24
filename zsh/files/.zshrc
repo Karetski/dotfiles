@@ -142,14 +142,15 @@ function +vi-git-ahead-behind() {
 }
 
 # Rebuild PROMPT before each command so vcs line only appears in git repos.
-# Line 1: full-width standout bar (%S…%E%s), path first then git, left-to-right.
-# %S (reverse video) always contrasts with the terminal background regardless of theme.
+# Line 1: full-width yellow bar (%K{yellow}…%E%k), path first then git, left-to-right.
+# ANSI yellow maps to the theme's yellow, so it adapts to both light and dark modes.
+# Black text (%F{black}) ensures legibility on any theme's yellow.
 # Line 2: input line.
 _set_prompt() {
     if [[ -n $vcs_info_msg_0_ ]]; then
-        PROMPT=$'%S %B%~%b  │  ${vcs_info_msg_0_} %E%s\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%K{yellow}%F{black} %B%~%b  ${vcs_info_msg_0_} %E%f%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     else
-        PROMPT=$'%S %B%~%b %E%s\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%K{yellow}%F{black} %B%~%b %E%f%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     fi
 }
 add-zsh-hook precmd _set_prompt

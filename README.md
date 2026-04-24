@@ -44,7 +44,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 20 roles prompts before its install script runs.
+- Each of the 21 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -93,7 +93,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **shell** — `zsh`, `zsh-autocomplete`, `fzf`
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
-- **system** — `ghostty`, `stats`, `linearmouse`
+- **system** — `ghostty`, `stats`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `uv`, `rustup`
 - **editor** — `zed`, `neovim`
 
@@ -230,7 +230,7 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1 (status bar): Full-width reverse-video bar (`%S … %E%s`) — always contrasts with the terminal background regardless of theme. Path (bold) first, then git info, separated by `│`.
+- Line 1 (status bar): Full-width ANSI yellow bar (`%K{yellow}…%E%k`) with black text — adapts to both light and dark themes via the theme's yellow palette entry. Path (bold) first, then git info.
 - Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
 
 Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `⇡N` ahead of remote, `⇣N` behind remote.
@@ -360,6 +360,20 @@ The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWind
 ### linearmouse
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_LINEARMOUSE=1` is set in `vars/local.sh`. Installs the [LinearMouse](https://linearmouse.app/) macOS mouse customization app via `ensure_brew_cask linearmouse`; no additional config is deployed.
+
+---
+
+### macos
+
+Applies macOS system defaults via `defaults write`. Each setting is checked for idempotency before writing; the affected system process (e.g. Dock) is restarted only when a value actually changes.
+
+Currently managed settings:
+
+| Setting | Domain | Key | Value |
+|---|---|---|---|
+| Fixed Space order | `com.apple.dock` | `mru-spaces` | `false` |
+
+**Fixed Space order** — disables Mission Control's automatic promotion of the most-recently-used Space to position 1. Spaces stay in the order you arrange them manually.
 
 ---
 
