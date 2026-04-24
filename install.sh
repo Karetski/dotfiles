@@ -37,6 +37,7 @@ ROLES=(
   ghostty
   stats
   linearmouse
+  macos
 
   # toolchains
   nvm
@@ -79,7 +80,7 @@ _role_group() {
     zsh|zsh-autocomplete|fzf)                                echo "shell"      ;;
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
-    ghostty|stats|linearmouse)                               echo "system"     ;;
+    ghostty|stats|linearmouse|macos)                         echo "system"     ;;
     nvm|uv|rustup)                                           echo "toolchains" ;;
     zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;

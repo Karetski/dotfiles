@@ -21,4 +21,4 @@ Do not commit `vars/local.sh`; keep per-machine values there. Prefer idempotent 
 ## Agent-Specific Notes
 Keep agent-specific instructions centralized in `AGENTS.md` or managed config files instead of duplicating guidance across multiple docs.
 
-When asked to configure Claude Code (settings, hooks, permissions, etc.), always make changes in this repo first — edit `claude/templates/settings.json` or the relevant file under `claude/`. Never edit `~/.claude/settings.json` directly as the source of truth; the live file is rendered from this repo by `make install`.
+This repo is the source of truth for all machine configuration. When asked about any setting, tool, or config change — always answer in terms of this repo first. If the setting is already managed by an existing role, point there. If it isn't, add it to the appropriate role or create a new one. Never suggest editing config files or running commands directly on the system as the primary answer; the managed path through this repo is always preferred.
