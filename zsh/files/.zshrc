@@ -131,32 +131,44 @@ zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
 zstyle ':vcs_info:git*+set-message:*' hooks git-ahead-behind
 
-# Append ⇡N ⇣N to %m (appears in msg_1) when the branch has an upstream
+# Append ↑N ↓N to %m (appears in msg_1) when the branch has an upstream
 function +vi-git-ahead-behind() {
     local -a ab
     git rev-parse ${hook_com[branch]}@{upstream} &>/dev/null || return 0
     ab=($(git rev-list --left-right --count HEAD...${hook_com[branch]}@{upstream} 2>/dev/null))
     local ahead=${ab[1]} behind=${ab[2]}
     local arrows=''
-    (( ahead  )) && arrows+="⇡${ahead}"
-    (( behind )) && arrows+="${arrows:+ }⇣${behind}"
-    [[ -n $arrows ]] && hook_com[misc]+=" ${arrows}"
+    (( ahead  )) && arrows+="↑${ahead}"
+    (( behind )) && arrows+="${arrows:+ }↓${behind}"
+    # Use = instead of += to avoid duplication when vcs_info processes multiple formats
+    [[ -n $arrows ]] && hook_com[misc]=" ${arrows}"
 }
 
 # Rebuild PROMPT before each command.
-# Line 1: three cascading segments, each a lighter shade of yellow (256-colour),
-# not full-width — the bar ends after the last segment. Segments shown/hidden
-# based on whether there is git context and status to display.
-#   228 (#ffff87) path  →  229 (#ffffaf) branch  →  230 (#ffffd7) status
+# Line 1: three cascading segments with Rounded separators (, ).
+#   136 (#af8700) path  →  178 (#d7af00) branch  →  220 (#ffd700) status
 # Line 2: input line.
 _set_prompt() {
     local branch=${vcs_info_msg_0_//\%/%%}
     local status_str=${${vcs_info_msg_1_//\%/%%}## }  # trim hook's leading space
 
-    local line1="%K{228}%F{black} %B%~%b%f%k"
+    # Path segment (with rounded start)
+    local line1="%F{136}%K{136}%F{black} %B%~%b %f"
+    
     if [[ -n $branch ]]; then
-        line1+="%K{229}%F{black} ⎇ ${branch} %f%k"
-        [[ -n $status_str ]] && line1+="%K{230}%F{black} ${status_str} %f%k"
+        # Transition Path -> Branch
+        line1+="%K{178}%F{136}%F{black} ⎇ ${branch} %f"
+        
+        if [[ -n $status_str ]]; then
+            # Transition Branch -> Status
+            line1+="%K{220}%F{178}%F{black} ${status_str} %f%k%F{220}%f"
+        else
+            # End Branch segment
+            line1+="%k%F{178}%f"
+        fi
+    else
+        # End Path segment
+        line1+="%k%F{136}%f"
     fi
 
     PROMPT="${line1}"$'\n'"%(?.%F{green}❯.%F{red}❯)%f %# "
