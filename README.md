@@ -230,11 +230,10 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1 (status bar): Full-width ANSI black background (`%K{black} … %E%k`) with path first, then git info. `▌` anchors the left edge; `·` separates the two sections. ANSI named colors adapt to the active Ghostty theme palette.
+- Line 1 (status bar): Full-width reverse-video bar (`%S … %E%s`) — always contrasts with the terminal background regardless of theme. Path (bold) first, then git info, separated by `│`.
 - Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
-- Right prompt: Current time (ANSI white)
 
-Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).
+Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `⇡N` ahead of remote, `⇣N` behind remote.
 
 **Local overrides**: Sources `~/.zshrc.local` at the end if the file exists. Use this for machine-specific aliases and config that doesn't belong in the shared repo.
 

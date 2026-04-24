@@ -122,28 +122,39 @@ add-zsh-hook precmd vcs_info
 # Style the vcs_info message — no color codes here; colors are applied in
 # PROMPT directly so zsh treats them as zero-width (avoids cursor drift)
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' formats '⎇ %b %u%c'
-zstyle ':vcs_info:git*' actionformats '⎇ %b %u%c [%a]'
+zstyle ':vcs_info:git*' formats '⎇ %b %u%c%m'
+zstyle ':vcs_info:git*' actionformats '⎇ %b %u%c%m [%a]'
 zstyle ':vcs_info:git*' unstagedstr '□'
 zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
+zstyle ':vcs_info:git*+set-message:*' hooks git-ahead-behind
+
+# Append ⇡N ⇣N to %m when the branch has an upstream
+function +vi-git-ahead-behind() {
+    local -a ab
+    git rev-parse ${hook_com[branch]}@{upstream} &>/dev/null || return 0
+    ab=($(git rev-list --left-right --count HEAD...${hook_com[branch]}@{upstream} 2>/dev/null))
+    local ahead=${ab[1]} behind=${ab[2]}
+    local arrows=''
+    (( ahead  )) && arrows+="⇡${ahead}"
+    (( behind )) && arrows+="${arrows:+ }⇣${behind}"
+    [[ -n $arrows ]] && hook_com[misc]+=" ${arrows}"
+}
 
 # Rebuild PROMPT before each command so vcs line only appears in git repos.
-# Line 1: full-width status bar (ANSI black bg, %E fills to edge): path first,
-# then git, left-to-right. ANSI named colors adapt to the active Ghostty theme.
-# ▌ anchors the left edge; · separates path from git.
+# Line 1: full-width standout bar (%S…%E%s), path first then git, left-to-right.
+# %S (reverse video) always contrasts with the terminal background regardless of theme.
 # Line 2: input line.
 _set_prompt() {
     if [[ -n $vcs_info_msg_0_ ]]; then
-        PROMPT=$'%K{black}%F{blue}▌ %B%~%b%f  %F{white}·%f  %F{cyan}${vcs_info_msg_0_}%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%S %B%~%b  │  ${vcs_info_msg_0_} %E%s\n%(?.%F{green}❯.%F{red}❯)%f %# '
     else
-        PROMPT=$'%K{black}%F{blue}▌ %B%~%b%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%S %B%~%b %E%s\n%(?.%F{green}❯.%F{red}❯)%f %# '
     fi
 }
 add-zsh-hook precmd _set_prompt
 
-# Time on the input line right side (ANSI white):
-RPROMPT='%F{white}%*%f'
+RPROMPT=''
 
 
 # --------------------------------------------------------
