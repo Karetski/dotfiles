@@ -31,7 +31,9 @@ _refresh_term_w() {
   [ "$_LOG_COL" -lt 20 ] && _LOG_COL=20
   [ "$_LOG_COL" -gt 44 ] && _LOG_COL=44
 }
-_refresh_term_w
+_TERM_W=80
+_LOG_COL=44
+_refresh_term_w || true
 trap '_refresh_term_w' WINCH
 
 # ── Colors (light-background safe) ───────────────────────────────────────────
