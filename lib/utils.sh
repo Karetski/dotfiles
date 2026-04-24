@@ -9,13 +9,13 @@ _refresh_term_w() {
   local _w=""
 
   # stty size issues TIOCGWINSZ on the controlling tty via stdin
-  _w=$(stty size 2>/dev/null | cut -d' ' -f2)
+  _w=$(stty size 2>/dev/null | cut -d' ' -f2 || true)
 
   # COLUMNS — set by bash in interactive shells, updated on SIGWINCH
   [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w="${COLUMNS:-}"
 
   # tput cols — last resort; may return terminfo default (80)
-  [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w=$(tput cols 2>/dev/null)
+  [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w=$(tput cols 2>/dev/null || true)
 
   # Hard default
   [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w=80
