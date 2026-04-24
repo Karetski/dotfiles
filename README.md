@@ -141,6 +141,8 @@ Both `deploy_file` and `deploy_template` are idempotent — they skip when the d
 
 **Diff display** — `_log_diff` and `_log_diff_raw` render unified diffs inside the table border with color-coded additions/removals.
 
+**Terminal width** — `_refresh_term_w` computes `_TERM_W` (clamped 40–120) and `_LOG_COL` (the name column width for item rows, clamped 20–44) and is wired to a `SIGWINCH` trap so layout adapts automatically when the terminal is resized. On narrow terminals (< 64 cols) the name column shrinks to prevent overflow; on wide terminals it stays at 44 chars.
+
 **Helpers** — `_shorten` abbreviates paths for display, `_contains` checks array membership, `_optional_selected` handles interactive opt-in prompts with caching and `ENABLE_OPTIONAL_*` overrides.
 
 ### vars/main.sh

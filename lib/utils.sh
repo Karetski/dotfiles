@@ -5,9 +5,16 @@
 DRY_RUN="${DRY_RUN:-0}"
 
 # ── Terminal width (used for section header/footer dashes) ────────────────────
-_TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
-[ "$_TERM_W" -lt 60 ]  && _TERM_W=60
-[ "$_TERM_W" -gt 120 ] && _TERM_W=120
+_refresh_term_w() {
+  _TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
+  [ "$_TERM_W" -lt 40 ] && _TERM_W=40
+  [ "$_TERM_W" -gt 120 ] && _TERM_W=120
+  _LOG_COL=$(( _TERM_W - 20 ))
+  [ "$_LOG_COL" -lt 20 ] && _LOG_COL=20
+  [ "$_LOG_COL" -gt 44 ] && _LOG_COL=44
+}
+_refresh_term_w
+trap '_refresh_term_w' WINCH
 
 # ── Colors (light-background safe) ───────────────────────────────────────────
 _C_GRN=$'\033[32m'      # green — ok icon
@@ -59,27 +66,27 @@ _repeat() {
 # ── Log functions ─────────────────────────────────────────────────────────────
 
 _log_ok() {
-  printf "  ${_C_GRN_B}✓${_C_RST} %-44s  ${_C_GRN_B}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_GRN_B}✓${_C_RST} %-${_LOG_COL}s  ${_C_GRN_B}%s${_C_RST}\n" "$1" "$2"
   _COUNT_OK=$(( _COUNT_OK + 1 ))
   _SECTION_OK=$(( _SECTION_OK + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_skip() {
-  printf "  ${_C_DIM}· %-44s  %s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_DIM}· %-${_LOG_COL}s  %s${_C_RST}\n" "$1" "$2"
   _COUNT_SKIP=$(( _COUNT_SKIP + 1 ))
   _SECTION_SKIP=$(( _SECTION_SKIP + 1 ))
 }
 
 _log_dry() {
-  printf "  ${_C_AMB}→${_C_RST} %-44s  ${_C_AMB}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_AMB}→${_C_RST} %-${_LOG_COL}s  ${_C_AMB}%s${_C_RST}\n" "$1" "$2"
   _COUNT_DRY=$(( _COUNT_DRY + 1 ))
   _SECTION_DRY=$(( _SECTION_DRY + 1 ))
   _SECTION_CHANGED+=("$1")
 }
 
 _log_note() {
-  printf "  ${_C_PUR}◆${_C_RST} %-44s  ${_C_DIM}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_PUR}◆${_C_RST} %-${_LOG_COL}s  ${_C_DIM}%s${_C_RST}\n" "$1" "$2"
 }
 
 _log_err() {
@@ -187,7 +194,7 @@ _log_summary() {
 # ── Brew output helpers ───────────────────────────────────────────────────────
 
 _log_brew_start() {
-  printf "  ${_C_AMB}↓${_C_RST} %-44s  ${_C_AMB}installing...${_C_RST}\n" "$1"
+  printf "  ${_C_AMB}↓${_C_RST} %-${_LOG_COL}s  ${_C_AMB}installing...${_C_RST}\n" "$1"
 }
 
 _log_brew_end() {
@@ -299,7 +306,7 @@ _optional_selected() {
   fi
 
   # Interactive prompt; reads from /dev/tty so piped input doesn't interfere
-  printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}optional ${kind} — apply? ${_C_BLD}[y/N]${_C_RST} " "$display"
+  printf "  ${_C_AMB}?${_C_RST} %-${_LOG_COL}s  ${_C_AMB}optional ${kind} — apply? ${_C_BLD}[y/N]${_C_RST} " "$display"
   read -r reply < /dev/tty 2>/dev/null || true
   if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
     eval "$cache_var=1"
@@ -413,7 +420,7 @@ _sanitize_bak() {
   if [ "$DRY_RUN" = "1" ]; then
     _log_dry "$display" "stale backup — would prompt removal"
   else
-    printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}stale backup — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
+    printf "  ${_C_AMB}?${_C_RST} %-${_LOG_COL}s  ${_C_AMB}stale backup — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
     local reply=""
     read -r reply < /dev/tty 2>/dev/null || true
     if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
@@ -449,7 +456,7 @@ _sanitize_dir() {
       if [ "$DRY_RUN" = "1" ]; then
         _log_dry "$display" "not in dotfiles — would prompt removal"
       else
-        printf "  ${_C_AMB}?${_C_RST} %-44s  ${_C_AMB}not in dotfiles — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
+        printf "  ${_C_AMB}?${_C_RST} %-${_LOG_COL}s  ${_C_AMB}not in dotfiles — remove? ${_C_BLD}[y/N]${_C_RST} " "$display"
         reply=""
         read -r reply < /dev/tty 2>/dev/null || true
         if [ "$reply" = "y" ] || [ "$reply" = "Y" ]; then
