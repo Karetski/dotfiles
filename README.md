@@ -44,7 +44,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 21 roles prompts before its install script runs.
+- Each of the 22 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -91,7 +91,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 
 - **preflight** — `xcode-select`, `homebrew`
 - **shell** — `zsh`, `zsh-autocomplete`, `fzf`
-- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
+- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`, `rtk`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `uv`, `rustup`
@@ -230,10 +230,10 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1: Three cascading segments — path on `228` (#ffff87, light yellow), branch on `229` (#ffffaf, paler), status symbols on `230` (#ffffd7, cream). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
+- Line 1: Three cascading segments with rounded powerline separators (, ) — path on `136` (#af8700, amber), branch on `178` (#d7af00, golden), status symbols on `220` (#ffd700, yellow). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
 - Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
 
-Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `⇡N` ahead of remote, `⇣N` behind remote.
+Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `↑N` ahead of remote, `↓N` behind remote.
 
 **Local overrides**: Sources `~/.zshrc.local` at the end if the file exists. Use this for machine-specific aliases and config that doesn't belong in the shared repo.
 
@@ -297,6 +297,14 @@ Installs [fd](https://github.com/sharkdp/fd) via `ensure_brew_formula fd`. Used 
 
 ---
 
+### rtk
+
+Installs [RTK (Rust Token Killer)](https://github.com/stash/rtk) via `ensure_brew_formula rtk`. RTK proxies shell commands to strip noise from their output before returning results to Claude Code, reducing token consumption by 60–90% on common dev operations.
+
+Initialized globally with `rtk init -g --no-patch` — the `--no-patch` flag skips patching `settings.json` because this repo manages that file via `claude/templates/settings.json`. The RTK hook (`rtk-rewrite.sh`) is wired in that template instead.
+
+---
+
 ### claude
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CLAUDE=1` is set in `vars/local.sh`.
@@ -317,6 +325,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 | Script | Event | Matcher | Purpose |
 |--------|-------|---------|---------|
+| `rtk-rewrite.sh` | `PreToolUse` | `Bash` | Rewrite shell commands through RTK (Rust Token Killer) to save tokens; passes through unchanged if RTK is not installed |
 | `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands: `rm -rf /` or `~`, `git reset --hard`, force-push, `git clean -fd`, `DROP TABLE/DATABASE`, disk wipe (`> /dev/sda`, `mkfs.`), fork bomb |
 | `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard `vars/local.sh`, `.env`, and `.claude/settings.local.json` from edits and writes |
 | `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
