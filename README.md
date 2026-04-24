@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 20 roles.
+Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 21 roles.
 
 ## Prerequisites
 
@@ -44,7 +44,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 20 roles prompts before its install script runs.
+- Each of the 21 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -94,7 +94,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`
-- **toolchains** — `go`, `nvm`, `rust`
+- **toolchains** — `go`, `nvm`, `uv`, `rust`
 - **editor** — `zed`, `neovim`
 
 - Each role is sourced from `<role>/install.sh`
@@ -180,6 +180,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
+| `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
 | `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rust` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
 | `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
@@ -381,6 +382,16 @@ nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`
 Installs `rustup` via `ensure_brew_formula rustup`.
 
 `brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs an optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
+
+---
+
+### uv
+
+Installs [uv](https://docs.astral.sh/uv/) via `ensure_brew_formula uv` — a fast Python package and project manager.
+
+uv fetches Python versions on demand per-project, but having a globally managed version is convenient for ad-hoc scripts and `uvx` one-shot tool runs. The role runs an optional prompt (`uv-default-python`, gated by `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON`) that invokes `uv python install` (fetches the latest stable CPython) unless a managed version is already present.
+
+Shell completions are sourced via `eval "$(uv generate-shell-completion zsh)"` from `.zshrc` (deployed by the `zsh` role).
 
 ---
 

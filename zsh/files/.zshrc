@@ -15,6 +15,9 @@ source <(fzf --zsh)
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && source "/opt/homebrew/opt/nvm/nvm.sh"
 
+# uv
+eval "$(uv generate-shell-completion zsh)"
+
 
 # --------------------------------------------------------
 # ALIAS

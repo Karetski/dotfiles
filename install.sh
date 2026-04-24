@@ -41,6 +41,7 @@ ROLES=(
   # toolchains
   go
   nvm
+  uv
   rust
 
   # editor
@@ -80,7 +81,7 @@ _role_group() {
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|stats|linearmouse)                               echo "system"     ;;
-    go|nvm|rust)                                             echo "toolchains" ;;
+    go|nvm|uv|rust)                                          echo "toolchains" ;;
     zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac
