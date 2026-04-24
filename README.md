@@ -94,7 +94,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`
-- **toolchains** — `nvm`, `uv`, `rust`
+- **toolchains** — `nvm`, `uv`, `rustup`
 - **editor** — `zed`, `neovim`
 
 - Each role is sourced from `<role>/install.sh`
@@ -181,7 +181,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
 | `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
-| `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rust` role instead of prompting |
+| `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rustup` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
 | `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
 | `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during the `nvm` role instead of prompting |
@@ -371,7 +371,7 @@ nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`
 
 ---
 
-### rust
+### rustup
 
 Installs `rustup` via `ensure_brew_formula rustup`.
 
