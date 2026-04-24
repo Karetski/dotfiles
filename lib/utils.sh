@@ -6,8 +6,26 @@ DRY_RUN="${DRY_RUN:-0}"
 
 # ── Terminal width (used for section header/footer dashes) ────────────────────
 _refresh_term_w() {
-  _TERM_W=$(tput cols 2>/dev/null || printf '%s' "${COLUMNS:-80}")
-  [ "$_TERM_W" -lt 40 ] && _TERM_W=40
+  local _w=""
+
+  # stty size issues TIOCGWINSZ on the controlling tty via stdin
+  _w=$(stty size 2>/dev/null | cut -d' ' -f2)
+
+  # COLUMNS — set by bash in interactive shells, updated on SIGWINCH
+  [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w="${COLUMNS:-}"
+
+  # tput cols — last resort; may return terminfo default (80)
+  [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w=$(tput cols 2>/dev/null)
+
+  # Hard default
+  [ "${_w:-0}" -gt 0 ] 2>/dev/null || _w=80
+
+  # Validate: reject anything that is not a positive integer
+  case "$_w" in ''|*[!0-9]*) _w=80 ;; esac
+  [ "$_w" -gt 0 ] || _w=80
+
+  _TERM_W="$_w"
+  [ "$_TERM_W" -lt 40 ]  && _TERM_W=40
   [ "$_TERM_W" -gt 120 ] && _TERM_W=120
   _LOG_COL=$(( _TERM_W - 20 ))
   [ "$_LOG_COL" -lt 20 ] && _LOG_COL=20
