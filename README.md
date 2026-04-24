@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 21 roles.
+Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 20 roles.
 
 ## Prerequisites
 
@@ -94,7 +94,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`
-- **toolchains** — `go`, `nvm`, `uv`, `rust`
+- **toolchains** — `nvm`, `uv`, `rust`
 - **editor** — `zed`, `neovim`
 
 - Each role is sourced from `<role>/install.sh`
@@ -363,12 +363,6 @@ Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL
 
 ---
 
-### go
-
-Installs the [Go](https://go.dev/) toolchain via `ensure_brew_formula go`. Used at runtime by the `gopls` LSP that Mason installs for the `neovim` role.
-
----
-
 ### nvm
 
 Installs [nvm](https://github.com/nvm-sh/nvm) via `ensure_brew_formula nvm` and ensures `~/.nvm` exists. If no default Node alias is set, the role invokes the shared `_optional_selected` helper to prompt before running `nvm install --lts && nvm alias default 'lts/*'` (gated by `ENABLE_OPTIONAL_NVM_DEFAULT_NODE`). The actual `nvm install` runs inside a `bash -c` subshell so `nvm.sh`'s shell-function layout doesn't collide with the orchestrator's `set -euo pipefail`.
@@ -437,7 +431,7 @@ Deploys `~/.config/nvim/init.lua`.
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
 
-**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), `go` (powers the `gopls` LSP), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time. Because nvm exposes `node` only through an interactive-zsh shell function, `init.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
+**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time. Because nvm exposes `node` only through an interactive-zsh shell function, `init.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
 
 **Key bindings**:
 

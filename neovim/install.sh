@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Installs neovim and deploys its config. Runtime dependencies
-# (ripgrep and fd for snacks.nvim pickers; go for the gopls LSP;
-# node/npm via nvm for the Node-based LSPs) are installed by their
-# own roles and resolved on PATH at launch time.
+# (ripgrep and fd for snacks.nvim pickers; node/npm via nvm for the
+# Node-based LSPs) are installed by their own roles and resolved on
+# PATH at launch time.
 ensure_brew_formula neovim
 
 ensure_dir "$HOME/.config/nvim"
