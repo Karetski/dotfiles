@@ -129,18 +129,21 @@ zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
 
 # Rebuild PROMPT before each command so vcs line only appears in git repos.
-# Line 1 is a full-width status bar (dark bg via %K/%E); line 2 is the input line.
+# Line 1: full-width status bar (ANSI black bg, %E fills to edge): path first,
+# then git, left-to-right. ANSI named colors adapt to the active Ghostty theme.
+# ▌ anchors the left edge; · separates path from git.
+# Line 2: input line.
 _set_prompt() {
     if [[ -n $vcs_info_msg_0_ ]]; then
-        PROMPT=$'%K{236}%F{cyan} ${vcs_info_msg_0_}%f  %F{252}%~%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%K{black}%F{blue}▌ %B%~%b%f  %F{white}·%f  %F{cyan}${vcs_info_msg_0_}%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     else
-        PROMPT=$'%K{236}%F{252} %~%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
+        PROMPT=$'%K{black}%F{blue}▌ %B%~%b%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     fi
 }
 add-zsh-hook precmd _set_prompt
 
-# Right (appears on the input line, not the status bar):
-RPROMPT='%F{240}%*%f'
+# Time on the input line right side (ANSI white):
+RPROMPT='%F{white}%*%f'
 
 
 # --------------------------------------------------------

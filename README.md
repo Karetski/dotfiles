@@ -230,9 +230,9 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1 (status bar): Full-width dark background (`color 236`) showing git branch/status and current directory side by side. The background extends to the terminal edge via `%E`.
+- Line 1 (status bar): Full-width ANSI black background (`%K{black} … %E%k`) with path first, then git info. `▌` anchors the left edge; `·` separates the two sections. ANSI named colors adapt to the active Ghostty theme palette.
 - Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
-- Right prompt: Current time
+- Right prompt: Current time (ANSI white)
 
 Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).
 
