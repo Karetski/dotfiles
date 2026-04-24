@@ -243,6 +243,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<leader>P",  command_palette,                                      { desc = "Command palette" })
       vim.keymap.set("n", "<leader>o",  function() Snacks.picker.lsp_symbols() end,           { desc = "Document symbols" })
       vim.keymap.set("n", "<leader>O",  function() Snacks.picker.lsp_workspace_symbols() end, { desc = "Workspace symbols" })
+      vim.keymap.set("n", "<leader>f",  function() Snacks.picker.lines() end,                  { desc = "Search buffer lines" })
       vim.keymap.set("n", "<leader>fg", function() Snacks.picker.grep() end,                  { desc = "Live grep" })
       vim.keymap.set("n", "<leader>fb", function() Snacks.picker.buffers() end,               { desc = "Buffers" })
     end,
