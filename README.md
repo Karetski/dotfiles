@@ -44,7 +44,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 21 roles prompts before its install script runs.
+- Each of the 20 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -231,7 +231,7 @@ Deploys `~/.zshrc` as a static file.
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
 - Line 1: Git branch/status (shown only inside a git repo)
-- Line 2: Success/failure indicator (`❯` green on success, red on failure), current path, `%` (`#` for root)
+- Line 2: Success/failure indicator (`❯` green on success, red on failure), last two path components (`%2~`), `%` (`#` for root)
 - Right prompt: Current time
 
 Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).
@@ -275,8 +275,8 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 | Key | Context | Action |
 |-----|---------|--------|
-| `p` | files | Quick Look the selected file |
-| `p` | commitFiles | Quick Look the selected commit file |
+| `p` | files | Quick Look the selected file (images, video, PDF, SVG only) |
+| `p` | commitFiles | Quick Look the selected commit file (images, video, PDF, SVG only) |
 
 ---
 
@@ -311,14 +311,15 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
+- **Effort level**: Set to `"high"` — maximum reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
 
 | Script | Event | Matcher | Purpose |
 |--------|-------|---------|---------|
-| `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands before they run |
-| `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard protected paths from edits and writes |
+| `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands: `rm -rf /` or `~`, `git reset --hard`, force-push, `git clean -fd`, `DROP TABLE/DATABASE`, disk wipe (`> /dev/sda`, `mkfs.`), fork bomb |
+| `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard `vars/local.sh`, `.env`, and `.claude/settings.local.json` from edits and writes |
 | `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
@@ -408,6 +409,10 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 **Diff view**: Unified style.
 
+**Git panel**: Tree view enabled.
+
+**Outline panel**: Docked on the right.
+
 ---
 
 ### neovim
@@ -420,13 +425,13 @@ Deploys `~/.config/nvim/init.lua`.
 
 | Plugin | Purpose |
 |--------|---------|
-| `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with diagnostics panel |
-| `nvim-treesitter` | Syntax highlighting and indentation |
-| `lualine.nvim` | Statusline with LSP client info |
+| `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with Files / Git / Issues (diagnostics) tabs |
+| `nvim-treesitter` | Syntax highlighting and indentation; auto-installs parsers for Lua, Vim, Python, JS/TS, Bash, JSON, YAML, TOML, Markdown, Swift, Rust, C/C++/ObjC, Go |
+| `lualine.nvim` | Single global statusline (`globalstatus`) showing LSP clients, encoding, and filetype |
 | `snacks.nvim` (picker) | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
-| `blink.cmp` | Autocompletion (LSP, path, buffer sources) |
+| `blink.cmp` | Autocompletion (LSP, path, buffer sources) including command-line mode |
 | `catppuccin` | Colorscheme (latte flavour) |
 
 **LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
@@ -478,9 +483,11 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **Auto save**: Files are saved automatically on every text change, leaving insert mode, switching buffers, and losing focus. Only applies to named, modified file buffers (skips special buffers like terminals or neo-tree).
 
-**neo-tree** follows the current file automatically and replaces netrw. The sidebar includes Files, Git, and Issues (diagnostics) tabs.
+**neo-tree** opens automatically on startup, follows the current file, replaces netrw, and auto-refreshes when files change on disk (libuv watcher). Hidden files are visible by default (`filtered_items.visible = true`). The sidebar has three tabs: Files, Git, and Issues (diagnostics).
 
-**Diagnostics** are displayed as inline virtual text at the end of each offending line (`virtual_text`). LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
+**Diagnostics** are shown as inline virtual text (`virtual_text`) and as signs in the gutter. LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
+
+**Options**: `relativenumber`, `cursorline`, `scrolloff=8`, `clipboard="unnamedplus"` (system clipboard), `mouse="a"` (mouse support in all modes).
 
 **Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root. Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
 

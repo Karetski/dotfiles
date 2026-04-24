@@ -14,3 +14,4 @@ export GIT_EMAIL="your@email.com"
 # export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 # export ENABLE_OPTIONAL_LINEARMOUSE=1
 # export ENABLE_OPTIONAL_NVM_DEFAULT_NODE=1  # auto-run `nvm install --lts`
+# export ENABLE_OPTIONAL_UV_DEFAULT_PYTHON=1 # auto-run `uv python install`
