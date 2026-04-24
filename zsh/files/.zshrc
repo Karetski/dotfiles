@@ -146,29 +146,29 @@ function +vi-git-ahead-behind() {
 
 # Rebuild PROMPT before each command.
 # Line 1: three cascading segments with Rounded separators (, ).
-#   172 (#d78700) path  →  214 (#ffaf00) branch  →  220 (#ffd700) status
+#   178 (#d7af00) path  →  220 (#ffd700) branch  →  226 (#ffff00) status
 # Line 2: input line.
 _set_prompt() {
     local branch=${vcs_info_msg_0_//\%/%%}
     local status_str=${${vcs_info_msg_1_//\%/%%}## }  # trim hook's leading space
 
     # Path segment (with rounded start)
-    local line1="%F{172}%K{172}%F{black} %B%~%b %f"
+    local line1="%F{178}%K{178}%F{black} %B%~%b %f"
     
     if [[ -n $branch ]]; then
         # Transition Path -> Branch
-        line1+="%K{214}%F{172}%F{black} ⎇ ${branch} %f"
+        line1+="%K{220}%F{178}%F{black} ⎇ ${branch} %f"
         
         if [[ -n $status_str ]]; then
             # Transition Branch -> Status
-            line1+="%K{220}%F{214}%F{black} ${status_str} %f%k%F{220}%f"
+            line1+="%K{226}%F{220}%F{black} ${status_str} %f%k%F{226}%f"
         else
             # End Branch segment
-            line1+="%k%F{214}%f"
+            line1+="%k%F{220}%f"
         fi
     else
         # End Path segment
-        line1+="%k%F{172}%f"
+        line1+="%k%F{178}%f"
     fi
 
     PROMPT="${line1}"$'\n'"%(?.%F{blue}●.%F{red}●)%f %# "
