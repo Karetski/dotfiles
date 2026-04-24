@@ -230,8 +230,8 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1: Git branch/status (shown only inside a git repo)
-- Line 2: Success/failure indicator (`❯` green on success, red on failure), last two path components (`%2~`), `%` (`#` for root)
+- Line 1 (status bar): Full-width dark background (`color 236`) showing git branch/status and current directory side by side. The background extends to the terminal edge via `%E`.
+- Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
 - Right prompt: Current time
 
 Git status symbols in the prompt: `⎇` (branch name), `□` (unstaged changes), `■` (staged changes).

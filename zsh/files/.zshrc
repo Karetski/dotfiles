@@ -128,17 +128,18 @@ zstyle ':vcs_info:git*' unstagedstr '□'
 zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
 
-# Rebuild PROMPT before each command so vcs line only appears in git repos
+# Rebuild PROMPT before each command so vcs line only appears in git repos.
+# Line 1 is a full-width status bar (dark bg via %K/%E); line 2 is the input line.
 _set_prompt() {
     if [[ -n $vcs_info_msg_0_ ]]; then
-        PROMPT=$'%F{cyan}${vcs_info_msg_0_}%f\n%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+        PROMPT=$'%K{236}%F{cyan} ${vcs_info_msg_0_}%f  %F{252}%~%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     else
-        PROMPT='%(?.%F{green}❯.%F{red}❯)%f %2~ %# '
+        PROMPT=$'%K{236}%F{252} %~%f %E%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
     fi
 }
 add-zsh-hook precmd _set_prompt
 
-# Right:
+# Right (appears on the input line, not the status bar):
 RPROMPT='%F{240}%*%f'
 
 
