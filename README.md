@@ -456,6 +456,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>P` | Command palette (keymaps, LSP actions, commands) |
 | `<Space>o` | Document symbols in current buffer (snacks picker) |
 | `<Space>O` | Workspace symbols across project (snacks picker) |
+| `<Space>f` | Search lines in current buffer (snacks picker) |
 | `<Space>fg` | Live grep (snacks picker) |
 | `<Space>fb` | Buffers (snacks picker) |
 | `]h` / `[h` | Next / previous git hunk |
