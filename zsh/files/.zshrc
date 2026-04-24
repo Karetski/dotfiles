@@ -146,7 +146,7 @@ function +vi-git-ahead-behind() {
 
 # Rebuild PROMPT before each command.
 # Line 1: three cascading segments with Rounded separators (, ).
-#   172 (#d78700) path  →  214 (#ffaf00) branch  →  226 (#ffff00) status
+#   172 (#d78700) path  →  214 (#ffaf00) branch  →  220 (#ffd700) status
 # Line 2: input line.
 _set_prompt() {
     local branch=${vcs_info_msg_0_//\%/%%}
@@ -161,7 +161,7 @@ _set_prompt() {
         
         if [[ -n $status_str ]]; then
             # Transition Branch -> Status
-            line1+="%K{226}%F{214}%F{black} ${status_str} %f%k%F{226}%f"
+            line1+="%K{220}%F{214}%F{black} ${status_str} %f%k%F{220}%f"
         else
             # End Branch segment
             line1+="%k%F{214}%f"
@@ -171,7 +171,7 @@ _set_prompt() {
         line1+="%k%F{172}%f"
     fi
 
-    PROMPT="${line1}"$'\n'"%(?.%F{green}●.%F{red}●)%f %# "
+    PROMPT="${line1}"$'\n'"%(?.%F{blue}●.%F{red}●)%f %# "
 }
 add-zsh-hook precmd _set_prompt
 
