@@ -430,6 +430,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `lualine.nvim` | Single global statusline (`globalstatus`) showing LSP clients, encoding, and filetype |
 | `snacks.nvim` (picker) | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
+| `markdown-preview.nvim` | Live Mermaid/Markdown preview in browser (`<Space>mp`) |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
 | `blink.cmp` | Autocompletion (LSP, path, buffer sources) including command-line mode |
 | `catppuccin` | Colorscheme (latte flavour) |
@@ -468,6 +469,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>gS` | Stage hunk |
 | `<Space>gr` | Reset hunk |
 | `<Space>gp` | Preview hunk |
+| `<Space>mp` | Toggle Markdown/Mermaid browser preview |
 | `gd` | Go to definition (LSP) |
 | `gr` | Find references (LSP) |
 | `gI` | Go to implementation (LSP) |

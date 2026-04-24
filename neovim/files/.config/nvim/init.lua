@@ -263,6 +263,14 @@ require("lazy").setup({
     },
   },
   {
+    "iamcco/markdown-preview.nvim",
+    build = "cd app && npm install",
+    ft = { "markdown" },
+    config = function()
+      vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Toggle markdown preview" })
+    end,
+  },
+  {
     "williamboman/mason.nvim",
     dependencies = {
       "neovim/nvim-lspconfig",
