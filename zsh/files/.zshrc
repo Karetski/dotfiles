@@ -119,17 +119,19 @@ setopt prompt_subst
 # Run the `vcs_info` hook to grab git info before displaying the prompt
 add-zsh-hook precmd vcs_info
 
-# Style the vcs_info message — no color codes here; colors are applied in
-# PROMPT directly so zsh treats them as zero-width (avoids cursor drift)
+# Style the vcs_info messages — two formats so branch and status can live in
+# separate colour segments. msg_0 = branch name; msg_1 = status symbols + arrows.
+# No colour codes here; colours are applied in PROMPT so zsh treats them as
+# zero-width (avoids cursor drift).
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' formats '⎇ %b %u%c%m'
-zstyle ':vcs_info:git*' actionformats '⎇ %b %u%c%m [%a]'
+zstyle ':vcs_info:git*' formats '%b' '%u%c%m'
+zstyle ':vcs_info:git*' actionformats '%b [%a]' '%u%c%m'
 zstyle ':vcs_info:git*' unstagedstr '□'
 zstyle ':vcs_info:git*' stagedstr '■'
 zstyle ':vcs_info:*:*' check-for-changes true
 zstyle ':vcs_info:git*+set-message:*' hooks git-ahead-behind
 
-# Append ⇡N ⇣N to %m when the branch has an upstream
+# Append ⇡N ⇣N to %m (appears in msg_1) when the branch has an upstream
 function +vi-git-ahead-behind() {
     local -a ab
     git rev-parse ${hook_com[branch]}@{upstream} &>/dev/null || return 0
@@ -141,17 +143,23 @@ function +vi-git-ahead-behind() {
     [[ -n $arrows ]] && hook_com[misc]+=" ${arrows}"
 }
 
-# Rebuild PROMPT before each command so vcs line only appears in git repos.
-# Line 1: full-width yellow bar (%K{yellow}…%E%k), path first then git, left-to-right.
-# ANSI yellow maps to the theme's yellow, so it adapts to both light and dark modes.
-# Black text (%F{black}) ensures legibility on any theme's yellow.
+# Rebuild PROMPT before each command.
+# Line 1: three cascading segments, each a lighter shade of yellow (256-colour),
+# not full-width — the bar ends after the last segment. Segments shown/hidden
+# based on whether there is git context and status to display.
+#   228 (#ffff87) path  →  229 (#ffffaf) branch  →  230 (#ffffd7) status
 # Line 2: input line.
 _set_prompt() {
-    if [[ -n $vcs_info_msg_0_ ]]; then
-        PROMPT=$'%K{yellow}%F{black} %B%~%b  ${vcs_info_msg_0_} %E%f%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
-    else
-        PROMPT=$'%K{yellow}%F{black} %B%~%b %E%f%k\n%(?.%F{green}❯.%F{red}❯)%f %# '
+    local branch=${vcs_info_msg_0_//\%/%%}
+    local status_str=${${vcs_info_msg_1_//\%/%%}## }  # trim hook's leading space
+
+    local line1="%K{228}%F{black} %B%~%b%f%k"
+    if [[ -n $branch ]]; then
+        line1+="%K{229}%F{black} ⎇ ${branch} %f%k"
+        [[ -n $status_str ]] && line1+="%K{230}%F{black} ${status_str} %f%k"
     fi
+
+    PROMPT="${line1}"$'\n'"%(?.%F{green}❯.%F{red}❯)%f %# "
 }
 add-zsh-hook precmd _set_prompt
 

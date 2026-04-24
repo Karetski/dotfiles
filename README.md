@@ -230,7 +230,7 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1 (status bar): Full-width ANSI yellow bar (`%K{yellow}…%E%k`) with black text — adapts to both light and dark themes via the theme's yellow palette entry. Path (bold) first, then git info.
+- Line 1: Three cascading segments — path on `228` (#ffff87, light yellow), branch on `229` (#ffffaf, paler), status symbols on `230` (#ffffd7, cream). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
 - Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
 
 Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `⇡N` ahead of remote, `⇣N` behind remote.
