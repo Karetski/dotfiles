@@ -502,6 +502,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `<Space>r` | Rename symbol (LSP) |
 | `<Space>a` | Code action (LSP) |
 | `<Space>=` | Format buffer or selection (LSP) |
+| `<Space>x` | Open current file in system default app (`vim.ui.open`) |
 
 Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
 

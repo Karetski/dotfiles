@@ -66,6 +66,9 @@ vim.keymap.set("n", "<leader>b", "<cmd>make<cr>",     { desc = "Build (make)" })
 vim.keymap.set({ "n", "v" }, "<leader>=", function() -- LSP format buffer/selection
   vim.lsp.buf.format({ async = true })
 end, { desc = "LSP format" })
+vim.keymap.set("n", "<leader>x", function()          -- Open current file in system app
+  vim.ui.open(vim.fn.expand("%:p"))
+end, { desc = "Open file in system app" })
 
 -- Keymaps: File tree
 vim.keymap.set("n", "<leader>E", "<cmd>Neotree toggle<cr>") -- Toggle file tree
