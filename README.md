@@ -334,8 +334,6 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
-**Plugins**: Installs `superpowers@claude-plugins-official` at user scope if not already present. This provides the `/review` (pull request review), `/simplify` (code quality review and cleanup), and several other slash-command skills globally across all projects.
-
 ---
 
 ### docker-desktop
