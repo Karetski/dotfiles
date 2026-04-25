@@ -22,3 +22,12 @@ for hook in "$DOTFILES_DIR/claude/files/hooks/"*.sh; do
 done
 _sanitize_bak "$HOME/.claude/settings.json"
 _sanitize_bak "$HOME/.claude/statusline.sh"
+# Install superpowers plugin at user scope (provides /review, /simplify, and other skills)
+if claude plugin list 2>/dev/null | grep -A3 'superpowers' | grep -q 'Scope: user'; then
+  _log_skip "superpowers" "already installed at user scope"
+elif [ "$DRY_RUN" = "1" ]; then
+  _log_dry "superpowers" "would install at user scope"
+else
+  claude plugin install superpowers --scope user
+  _log_ok "superpowers" "installed at user scope"
+fi
