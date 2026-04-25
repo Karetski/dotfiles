@@ -334,6 +334,8 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
+**Plugins**: Installs `code-review` and `code-simplifier` from `claude-plugins-official` at user scope. `code-review` runs multi-agent PR analysis and posts findings to GitHub; `code-simplifier` refines recently modified code for clarity without changing behaviour.
+
 ---
 
 ### docker-desktop
