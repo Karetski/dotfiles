@@ -320,7 +320,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
-- **Effort level**: Set to `"high"` — maximum reasoning effort on every request.
+- **Effort level**: Set to `"max"` — maximum reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
@@ -334,7 +334,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
-**Plugins**: Installs `code-review` and `code-simplifier` from `claude-plugins-official` at user scope. `code-review` runs multi-agent PR analysis and posts findings to GitHub; `code-simplifier` refines recently modified code for clarity without changing behaviour.
+**Plugins**: Installs `code-simplifier` from `claude-plugins-official` at user scope. `code-simplifier` refines recently modified code for clarity without changing behaviour.
 
 ---
 

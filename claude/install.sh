@@ -23,7 +23,7 @@ done
 _sanitize_bak "$HOME/.claude/settings.json"
 _sanitize_bak "$HOME/.claude/statusline.sh"
 # Install code-review and code-simplifier plugins at user scope
-for _plugin in code-review code-simplifier; do
+for _plugin in code-simplifier; do
   if claude plugin list 2>/dev/null | grep -A3 "^  . ${_plugin}@" | grep -q 'Scope: user'; then
     _log_skip "$_plugin" "already installed at user scope"
   elif [ "$DRY_RUN" = "1" ]; then

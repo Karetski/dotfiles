@@ -7,7 +7,7 @@
   "sandbox": {
     "enabled": $CLAUDE_SANDBOX_ENABLED
   },
-  "effortLevel": "high",
+  "effortLevel": "max",
   "hooks": {
     "PreToolUse": [
       {
@@ -54,7 +54,6 @@
   },
   "skipAutoPermissionPrompt": true,
   "enabledPlugins": {
-    "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true
   }
 }
