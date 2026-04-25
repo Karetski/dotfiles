@@ -152,9 +152,7 @@ require("lazy").setup({
         follow_current_file = { enabled = true },
         hijack_netrw_behavior = "open_current",
         filtered_items = { visible = true },
-        -- Neo-tree's Git source also registers filesystem watchers. In large
-        -- repos that can make the Git tab slow or hit open-file limits.
-        use_libuv_file_watcher = false,
+        use_libuv_file_watcher = true,
       },
       window = { width = 30 },
     },
