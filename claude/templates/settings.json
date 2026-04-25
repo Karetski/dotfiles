@@ -52,5 +52,9 @@
   "permissions": {
     "defaultMode": "auto"
   },
-  "skipAutoPermissionPrompt": true
+  "skipAutoPermissionPrompt": true,
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true
+  }
 }
