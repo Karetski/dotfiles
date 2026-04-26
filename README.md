@@ -217,7 +217,7 @@ Deploys `~/.zshrc` as a static file.
 
 | Alias | Expands to | Description |
 |-------|-----------|-------------|
-| `ll` | `lssplit` | Lists directory contents split into Directories, Files, and Symlinks sections with colored headers |
+| `ll` | `lssplit` | Lists directory contents split into Directories, Files, and Symlinks sections with Nerd Font icons, type-based colors, human-readable sizes, and a layout that adapts to terminal width (full / compact / grid). Set `LSSPLIT_ICONS=0` to disable glyphs |
 | `nv` | `nvim` | Shortcut for Neovim |
 | `nvf` | `nvim $(fzf)` | Open a file in Neovim via fzf |
 | `caff` | `caffeinate` | Prevent system sleep |
