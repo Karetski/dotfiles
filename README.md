@@ -358,7 +358,7 @@ Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this ro
 
 **Shell integration**: Cursor and sudo disabled; title enabled.
 
-**Splits**: Divider color set to `#000000` for a prominent separator between panes.
+**Splits**: Divider color set to `#ffff00` for a vibrant yellow separator between panes.
 
 ---
 
