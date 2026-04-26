@@ -4,4 +4,6 @@ font-style = Medium
 font-size = 11
 cursor-style = block
 shell-integration-features = no-cursor,no-sudo,title
+split-divider-color = #808080
+unfocused-split-opacity = 0.5
 

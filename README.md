@@ -358,6 +358,8 @@ Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this ro
 
 **Shell integration**: Cursor and sudo disabled; title enabled.
 
+**Splits**: Divider color set to `#808080` (mid-gray, prominent on both light and dark themes); unfocused splits dimmed to 0.5 opacity for a stronger focus distinction.
+
 ---
 
 ### stats
