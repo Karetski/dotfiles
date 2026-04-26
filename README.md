@@ -454,7 +454,7 @@ Deploys `~/.config/nvim/init.lua`.
 | Plugin | Purpose |
 |--------|---------|
 | `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with Files / Git / Issues (diagnostics) tabs |
-| `nvim-treesitter` | Syntax highlighting and indentation; auto-installs parsers for Lua, Vim, Python, JS/TS, Bash, JSON, YAML, TOML, Markdown, Swift, Rust, C/C++/ObjC, Go |
+| `nvim-treesitter` | Syntax highlighting and indentation; auto-installs parsers for Lua, Vim, Python, JS/TS, Bash, JSON, YAML, TOML, Markdown, Swift, Rust, C/C++/ObjC, Go, GDScript (incl. Godot `.tres`/`.tscn`) |
 | `lualine.nvim` | Single global statusline (`globalstatus`) showing LSP clients, encoding, and filetype |
 | `snacks.nvim` (picker) | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
@@ -463,7 +463,7 @@ Deploys `~/.config/nvim/init.lua`.
 | `blink.cmp` | Autocompletion (LSP, path, buffer sources) including command-line mode |
 | `catppuccin` | Colorscheme (latte flavour) |
 
-**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS).
+**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS). `gdscript` is also configured directly — Godot ships its own LSP server which Neovim connects to on TCP `127.0.0.1:6005` while the Godot editor is running with a project open.
 
 **Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time. Because nvm exposes `node` only through an interactive-zsh shell function, `init.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
 

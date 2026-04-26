@@ -170,6 +170,7 @@ require("lazy").setup({
         "bash", "json", "yaml", "toml",
         "markdown", "markdown_inline",
         "swift", "rust", "c", "cpp", "objc", "go",
+        "gdscript", "godot_resource",
       },
       auto_install = true,
       highlight = { enable = true },
@@ -312,7 +313,7 @@ require("lazy").setup({
       local servers = {
         "lua_ls", "rust_analyzer", "clangd", "sourcekit",
         "marksman", "bashls", "jsonls", "yamlls", "taplo",
-        "pyright", "ts_ls", "gopls",
+        "pyright", "ts_ls", "gopls", "gdscript",
       }
       for _, server in ipairs(servers) do
         vim.lsp.config(server, {
