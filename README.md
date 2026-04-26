@@ -232,8 +232,8 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1: Three cascading segments with rounded powerline separators (, ) — path on `136` (#af8700, amber), branch on `178` (#d7af00, golden), status symbols on `220` (#ffd700, yellow). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
-- Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
+- Line 1: Three cascading segments with rounded powerline separators (, ) — path on `#FF9100` (vibrant orange), branch on `#FFD000` (golden yellow), status symbols on `#FFFB00` (pure yellow). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
+- Line 2: Success/failure indicator (● blue on success, red on failure), `%` (`#` for root)
 
 Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `↑N` ahead of remote, `↓N` behind remote.
 
