@@ -286,8 +286,9 @@ require("lazy").setup({
   },
   {
     "iamcco/markdown-preview.nvim",
-    build = "cd app && npm install",
+    cmd = { "MarkdownPreview", "MarkdownPreviewStop", "MarkdownPreviewToggle" },
     ft = { "markdown" },
+    build = function() vim.fn["mkdp#util#install"]() end,
     config = function()
       vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Toggle markdown preview" })
     end,
