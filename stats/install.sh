@@ -13,9 +13,11 @@ _stats_display=$(_shorten "$STATS_PLIST")
 _stats_current=$(mktemp)
 if [ -f "$STATS_PLIST" ]; then
   plutil -convert xml1 -o "$_stats_current" "$STATS_PLIST" 2>/dev/null || : > "$_stats_current"
-  # The volatile window-frame key is filtered out of the checked-in copy;
-  # strip it here too so diffs stay focused on real settings changes.
+  # Volatile keys are filtered out of the checked-in copy; strip them here
+  # too so diffs stay focused on real settings changes. `support_ts` is a
+  # timestamp Stats rewrites on its own, unrelated to user-visible settings.
   plutil -remove 'NSWindow Frame eu\.exelban\.Stats\.Settings\.WindowFrame' "$_stats_current" 2>/dev/null || true
+  plutil -remove support_ts "$_stats_current" 2>/dev/null || true
 fi
 
 if [ -f "$STATS_PLIST" ] && diff -q "$STATS_SRC" "$_stats_current" > /dev/null 2>&1; then

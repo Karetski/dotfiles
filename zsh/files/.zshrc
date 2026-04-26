@@ -338,6 +338,11 @@ alias ll='lssplit'
 alias nv='nvim'
 
 
+# LAZYGIT
+
+alias lg='lazygit'
+
+
 # FZF
 
 alias nvf='nvim $(fzf)'
