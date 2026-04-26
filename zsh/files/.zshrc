@@ -54,11 +54,11 @@ lssplit() {
     else                         mode=full
     fi
 
+    # Pared-back palette: only entry types are colored; all metadata is dim.
     local reset=$'\e[0m' bold=$'\e[1m'
-    local c_dir=$'\e[1;34m' c_exec=$'\e[1;32m' c_link=$'\e[1;36m'
-    local c_hidden=$'\e[2m' c_broken=$'\e[1;31m'
-    local c_header=$'\e[1;36m' c_size=$'\e[33m' c_date=$'\e[35m'
-    local c_perm=$'\e[2m' c_target=$'\e[36m'
+    local c_dir=$'\e[34m' c_exec=$'\e[32m' c_link=$'\e[36m'
+    local c_hidden=$'\e[2m' c_broken=$'\e[31m'
+    local c_header=$'\e[2m' c_meta=$'\e[2m' c_target=$'\e[2m'
 
     local -A ext_icon=(
         py     $''   js     $''   mjs    $''
@@ -189,18 +189,28 @@ lssplit() {
     }
 
     _lssplit_header() {
-        local title=$1 count=$2
-        local label=" ${title} (${count}) "
-        local tlen=${#label}
+        local title=$1 count=$2 icon_arg=${3:-} icon_color=${4:-}
+        local icon=""
+        (( icons )) && [[ -n $icon_arg ]] && icon=$icon_arg
+        local visible
+        if [[ -n $icon ]]; then visible=" ${icon}  ${title} (${count}) "
+        else                    visible=" ${title} (${count}) "
+        fi
+        local tlen=${#visible}
         local left=$(( (width - tlen) / 2 ))
         local right=$(( width - tlen - left ))
         (( left  < 0 )) && left=0
         (( right < 0 )) && right=0
-        printf '%s%s%s%s%s%s%s\n' \
+        local label
+        if [[ -n $icon ]]; then
+            label=" ${icon_color}${icon}${reset}  ${bold}${title}${reset}${c_header} (${count}) "
+        else
+            label=" ${bold}${title}${reset}${c_header} (${count}) "
+        fi
+        printf '%s%s%s%s%s\n' \
             "$c_header" \
             "${(l:$left::─:)}" \
-            "$bold" "$label" \
-            "${reset}${c_header}" \
+            "$label" \
             "${(l:$right::─:)}" \
             "$reset"
     }
@@ -241,17 +251,17 @@ lssplit() {
                 printf '  %s%s%s%-*s%s  %s%5s%s  %s%s%s\n' \
                     "$color" "$icon" "$icon_sp" \
                     $nw "$display" "$reset" \
-                    "$c_size" "$hsz" "$reset" \
-                    "$c_date" "$hdt" "$reset"
+                    "$c_meta" "$hsz" "$reset" \
+                    "$c_meta" "$hdt" "$reset"
                 ;;
             full)
                 local target_str=""
                 [[ $kind == link && -n $tgt ]] && target_str=" ${c_target}→ ${tgt}${reset}"
                 printf '  %s%s%s%s%s%s  %s%5s%s  %s%-12s%s  %s%s%s%s\n' \
                     "$color" "$icon" "$icon_sp" \
-                    "$c_perm" "$perms" "$reset" \
-                    "$c_size" "$hsz" "$reset" \
-                    "$c_date" "$hdt" "$reset" \
+                    "$c_meta" "$perms" "$reset" \
+                    "$c_meta" "$hsz" "$reset" \
+                    "$c_meta" "$hdt" "$reset" \
                     "$color" "$name" "$reset" "$target_str"
                 ;;
         esac
@@ -292,7 +302,7 @@ lssplit() {
     }
 
     if (( ${#names_dir} > 0 )); then
-        _lssplit_header "Directories" ${#names_dir}
+        _lssplit_header "Directories" ${#names_dir} "$i_dir" "$c_dir"
         if [[ $mode == grid ]]; then
             _lssplit_render_grid "${names_dir[@]}"
         else
@@ -300,7 +310,7 @@ lssplit() {
         fi
     fi
     if (( ${#names_file} > 0 )); then
-        _lssplit_header "Files" ${#names_file}
+        _lssplit_header "Files" ${#names_file} "$i_file" ""
         if [[ $mode == grid ]]; then
             _lssplit_render_grid "${names_file[@]}"
         else
@@ -308,7 +318,7 @@ lssplit() {
         fi
     fi
     if (( ${#names_link} > 0 )); then
-        _lssplit_header "Symlinks" ${#names_link}
+        _lssplit_header "Symlinks" ${#names_link} "$i_link" "$c_link"
         if [[ $mode == grid ]]; then
             _lssplit_render_grid "${names_link[@]}"
         else
