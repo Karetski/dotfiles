@@ -22,12 +22,6 @@ vim.keymap.set("i", "jk", "<Esc>")
 vim.keymap.set("n", "<leader>v",  "ggVG",            { desc = "Select all" })
 vim.keymap.set("n", "<leader>cb", "<cmd>make<cr>",   { desc = "Build (make)" })
 
--- Tree reveal & focus (single-key habit; LazyVim's <leader>e toggles via plugin spec)
-vim.keymap.set("n", "<leader>j", function()
-  vim.cmd("Neotree reveal")
-  vim.cmd("Neotree focus")
-end, { desc = "Reveal in tree" })
-
 -- macOS file actions (under <leader>f to avoid colliding with <leader>x* trouble keys)
 vim.keymap.set("n", "<leader>fo", function()
   vim.ui.open(vim.fn.expand("%:p"))

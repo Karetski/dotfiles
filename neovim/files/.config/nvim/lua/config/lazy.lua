@@ -24,7 +24,6 @@ require("lazy").setup({
     -- Replace defaults with our preferred providers
     { import = "lazyvim.plugins.extras.coding.blink" },
     { import = "lazyvim.plugins.extras.editor.snacks_picker" },
-    { import = "lazyvim.plugins.extras.editor.neo-tree" },
     -- Language packs (Mason + treesitter + LSP wired up per language)
     { import = "lazyvim.plugins.extras.lang.clangd" },
     { import = "lazyvim.plugins.extras.lang.go" },

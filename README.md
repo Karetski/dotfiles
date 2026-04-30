@@ -447,15 +447,14 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 Deploys `~/.config/nvim/` as a [LazyVim](https://www.lazyvim.org/) starter — `init.lua` plus `lua/config/{lazy,options,keymaps,autocmds}.lua` and per-plugin overrides under `lua/plugins/`.
 
-**Base distribution**: [LazyVim](https://github.com/LazyVim/LazyVim) on top of [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch). LazyVim provides which-key, conform.nvim (formatting), nvim-lint, trouble.nvim, gitsigns, mini.* utilities, neo-tree, lualine, treesitter, and nvim-lspconfig + mason as defaults.
+**Base distribution**: [LazyVim](https://github.com/LazyVim/LazyVim) on top of [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch). LazyVim provides which-key, conform.nvim (formatting), nvim-lint, trouble.nvim, gitsigns, mini.* utilities, snacks.explorer (file tree), lualine, treesitter, and nvim-lspconfig + mason as defaults.
 
 **LazyVim extras** enabled (in `lua/config/lazy.lua`):
 
 | Extra | Effect |
 |-------|--------|
 | `coding.blink` | Replaces nvim-cmp with [blink.cmp](https://github.com/saghen/blink.cmp) for completion |
-| `editor.snacks_picker` | Replaces Telescope with [snacks.nvim](https://github.com/folke/snacks.nvim) picker |
-| `editor.neo-tree` | Brings in [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim) (LazyVim's current default file explorer is `snacks.explorer`) |
+| `editor.snacks_picker` | Replaces Telescope with [snacks.nvim](https://github.com/folke/snacks.nvim) picker (and brings the same picker engine to the file explorer) |
 | `lang.{rust,go,python,typescript,json,yaml,toml,markdown,clangd}` | Per-language Mason installs, treesitter parsers, and LSP wiring |
 
 **Personal plugin overrides** (in `lua/plugins/`):
@@ -463,7 +462,6 @@ Deploys `~/.config/nvim/` as a [LazyVim](https://www.lazyvim.org/) starter — `
 | File | Override |
 |------|----------|
 | `colorscheme.lua` | Pins LazyVim to `catppuccin` (latte flavour) instead of the default tokyonight |
-| `neo-tree.lua` | Adds `neo-tree-diagnostics.nvim`, three-tab winbar (Files / Git / Issues), `before_git_status` performance handler, libuv file watcher, hidden files visible, narrower window |
 | `treesitter.lua` | Adds `swift`, `objc`, `gdscript`, `godot_resource` parsers on top of LazyVim's defaults |
 | `lspconfig.lua` | Adds `sourcekit` (Xcode-shipped) and `gdscript` (Godot's TCP `127.0.0.1:6005`) servers, both `mason = false` |
 | `lualine.lua` | Prepends an attached-LSP-clients segment to `lualine_x` |
@@ -485,14 +483,13 @@ Deploys `~/.config/nvim/` as a [LazyVim](https://www.lazyvim.org/) starter — `
 | `<Space>v` | Select all (`ggVG`) |
 | `<Space>J` | Join lines (rescue for the remapped `J`) |
 | `<Space>k` | Hover docs (rescue for the remapped `K`) |
-| `<Space>j` | Reveal current file in neo-tree (and focus) |
 | `<Space>cb` | Build project (`:make`) |
 | `<Space>fo` | Open current file in system default app (`vim.ui.open`) |
 | `<Space>fO` | Reveal current file in Finder |
 | `<Space>P` | Command palette (keymaps, LSP actions, commands) |
 | `<Space>mp` | Toggle Markdown/Mermaid browser preview |
 
-LazyVim defaults that supersede previous bindings: `<Space>e`/`<Space>fe` (Neo-tree at root), `<Space>E`/`<Space>fE` (Neo-tree at cwd), `<Space>ge` (git explorer), `<Space>be` (buffer explorer), `<Space>cf` (format), `<Space>cr` (rename), `<Space>ca` (code action), `<Space>cd` (line diagnostics), `<Space>xx`/`<Space>xX` (Trouble), `<Space><space>`/`<Space>ff` (find files), `<Space>/`/`<Space>sg` (live grep), `<Space>sb` (buffer lines), `<Space>fb`/`<Space>,` (buffers), `<Space>ss`/`<Space>sS` (LSP symbols), `<Shift>h`/`<Shift>l` (prev/next buffer), `<Space>ghs`/`<Space>ghr`/`<Space>ghp` (gitsigns hunk actions), `]h`/`[h` (hunk navigation), `gd`/`gr`/`gI` (LSP), `K` (LSP hover — but `K` is remapped above; use `<Space>k`).
+LazyVim defaults that supersede previous bindings: `<Space>e`/`<Space>fe` (snacks.explorer at root), `<Space>E`/`<Space>fE` (snacks.explorer at cwd), `<Space>cf` (format), `<Space>cr` (rename), `<Space>ca` (code action), `<Space>cd` (line diagnostics), `<Space>xx`/`<Space>xX` (Trouble), `<Space><space>`/`<Space>ff` (find files), `<Space>/`/`<Space>sg` (live grep), `<Space>sb` (buffer lines), `<Space>fb`/`<Space>,` (buffers), `<Space>ss`/`<Space>sS` (LSP symbols), `<Shift>h`/`<Shift>l` (prev/next buffer), `<Space>ghs`/`<Space>ghr`/`<Space>ghp` (gitsigns hunk actions), `]h`/`[h` (hunk navigation), `gd`/`gr`/`gI` (LSP), `K` (LSP hover — but `K` is remapped above; use `<Space>k`).
 
 Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
 
@@ -500,7 +497,7 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **Disabled defaults**: `s`, `S` (substitute — use `cl`/`cc`), `q`, `Q` (macro recording/replay) are mapped to `<Nop>` to prevent accidental triggers.
 
-**neo-tree** opens automatically on startup (`VimEnter` autocmd), follows the current file, replaces netrw, and auto-refreshes when files change on disk (libuv watcher). Hidden files are visible by default. The sidebar has three tabs: Files, Git, Issues.
+**File explorer**: `snacks.explorer` (LazyVim default), opened with `<Space>e` / `<Space>E`. Reuses the same picker engine as the fuzzy finder. Git status and diagnostics live elsewhere — see `<Space>gg` (lazygit) and `<Space>xx` (Trouble).
 
 **Diagnostics** are shown as inline virtual text and gutter signs (LazyVim defaults; `virtual_lines` is explicitly disabled). Trouble.nvim provides a richer panel via `<Space>xx` / `<Space>xX`. Build errors from `:make` populate the quickfix list.
 

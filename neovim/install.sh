@@ -30,3 +30,6 @@ done
 _sanitize_bak "$NVIM_DEST/init.lua"
 # sanitize-ignore lists files created by lazy.nvim and other plugins at runtime
 _sanitize_dir "$NVIM_DEST" "$DOTFILES_DIR/neovim/sanitize-ignore" "init.lua"
+# Catch stale .lua files in lua/{config,plugins} dropped by past dotfile revisions
+_sanitize_dir "$NVIM_DEST/lua/config"  "" $(cd "$NVIM_SRC/lua/config"  && ls *.lua)
+_sanitize_dir "$NVIM_DEST/lua/plugins" "" $(cd "$NVIM_SRC/lua/plugins" && ls *.lua)
