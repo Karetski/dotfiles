@@ -64,7 +64,8 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
     | .key
   ' "$plugins_file" 2>/dev/null || true)
 
-  plugin_parts=()
+  enabled_parts=()
+  disabled_parts=()
   while IFS= read -r name; do
     [ -z "$name" ] && continue
     state="false"
@@ -85,12 +86,13 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
     done
     short="${name%@*}"
     if [ "$state" = "true" ]; then
-      plugin_parts+=("+$short")
+      enabled_parts+=("+$short")
     else
-      plugin_parts+=("-$short")
+      disabled_parts+=("-$short")
     fi
   done <<< "$relevant"
 
+  plugin_parts=("${enabled_parts[@]}" "${disabled_parts[@]}")
   if [ "${#plugin_parts[@]}" -gt 0 ]; then
     plugins_line="plugins: ${plugin_parts[*]}"
   fi
