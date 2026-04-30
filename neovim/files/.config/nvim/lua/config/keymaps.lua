@@ -15,6 +15,11 @@ vim.keymap.set({ "n", "v" }, "<M-h>", "b")
 vim.keymap.set({ "n", "v" }, "<leader>J", "J", { desc = "Join lines" })
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover, { desc = "Hover docs" })
 
+-- Reveal current file in the snacks explorer
+vim.keymap.set("n", "<leader>j", function()
+  Snacks.explorer({ cwd = vim.fn.expand("%:p:h") })
+end, { desc = "Reveal file in explorer" })
+
 -- Insert-mode escape
 vim.keymap.set("i", "jk", "<Esc>")
 

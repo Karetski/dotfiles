@@ -483,6 +483,7 @@ Deploys `~/.config/nvim/` as a [LazyVim](https://www.lazyvim.org/) starter — `
 | `<Space>v` | Select all (`ggVG`) |
 | `<Space>J` | Join lines (rescue for the remapped `J`) |
 | `<Space>k` | Hover docs (rescue for the remapped `K`) |
+| `<Space>j` | Reveal current file in `snacks.explorer` |
 | `<Space>cb` | Build project (`:make`) |
 | `<Space>fo` | Open current file in system default app (`vim.ui.open`) |
 | `<Space>fO` | Reveal current file in Finder |
