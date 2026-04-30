@@ -56,12 +56,19 @@ return {
     keys = {
       { "<leader>P", command_palette, desc = "Command palette" },
     },
-    -- Keep <Esc> from closing the file explorer. In the input field it still
-    -- falls back to switching from insert to normal mode (snacks default for i_<Esc>).
+    -- Explorer overrides:
+    --   * <Esc> no longer closes the panel (in the input it still falls back to
+    --     snacks' default i_<Esc> = switch to normal mode).
+    --   * narrower sidebar (30 cols vs the 40-col default).
     opts = {
       picker = {
         sources = {
           explorer = {
+            auto_close = false,
+            layout = {
+              preset = "sidebar",
+              layout = { width = 30, min_width = 30 },
+            },
             win = {
               input = { keys = { ["<Esc>"] = false } },
               list  = { keys = { ["<Esc>"] = false } },

@@ -498,7 +498,7 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **Disabled defaults**: `s`, `S` (substitute — use `cl`/`cc`), `q`, `Q` (macro recording/replay) are mapped to `<Nop>` to prevent accidental triggers.
 
-**File explorer**: `snacks.explorer` (LazyVim default), opened with `<Space>e` / `<Space>E`. Reuses the same picker engine as the fuzzy finder. Git status and diagnostics live elsewhere — see `<Space>gg` (lazygit) and `<Space>xx` (Trouble).
+**File explorer**: `snacks.explorer` (LazyVim default), opened automatically on startup as a 30-column sidebar and reachable on demand with `<Space>e` / `<Space>E` / `<Space>j` (reveal current file). `<Esc>` is disabled inside the panel so it does not close the explorer; use `q` or one of the toggle keys instead. Reuses the same picker engine as the fuzzy finder. Git status and diagnostics live elsewhere — see `<Space>gg` (lazygit) and `<Space>xx` (Trouble).
 
 **Diagnostics** are shown as inline virtual text and gutter signs (LazyVim defaults; `virtual_lines` is explicitly disabled). Trouble.nvim provides a richer panel via `<Space>xx` / `<Space>xX`. Build errors from `:make` populate the quickfix list.
 
