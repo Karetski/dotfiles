@@ -445,66 +445,54 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 ### neovim
 
-Deploys `~/.config/nvim/init.lua`.
+Deploys `~/.config/nvim/` as a [LazyVim](https://www.lazyvim.org/) starter — `init.lua` plus `lua/config/{lazy,options,keymaps,autocmds}.lua` and per-plugin overrides under `lua/plugins/`.
 
-**Plugin manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch).
+**Base distribution**: [LazyVim](https://github.com/LazyVim/LazyVim) on top of [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch). LazyVim provides which-key, conform.nvim (formatting), nvim-lint, trouble.nvim, gitsigns, mini.* utilities, neo-tree, lualine, treesitter, and nvim-lspconfig + mason as defaults.
 
-**Plugins**:
+**LazyVim extras** enabled (in `lua/config/lazy.lua`):
 
-| Plugin | Purpose |
-|--------|---------|
-| `neo-tree.nvim` + `neo-tree-diagnostics.nvim` | File manager sidebar with Files / Git / Issues (diagnostics) tabs |
-| `nvim-treesitter` | Syntax highlighting and indentation; auto-installs parsers for Lua, Vim, Python, JS/TS, Bash, JSON, YAML, TOML, Markdown, Swift, Rust, C/C++/ObjC, Go, GDScript (incl. Godot `.tres`/`.tscn`) |
-| `lualine.nvim` | Single global statusline (`globalstatus`) showing LSP clients, encoding, and filetype |
-| `snacks.nvim` (picker) | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
-| `gitsigns.nvim` | Git diff signs and hunk navigation |
-| `markdown-preview.nvim` | Live Mermaid/Markdown preview in browser (`<Space>mp`) |
-| `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
-| `blink.cmp` | Autocompletion (LSP, path, buffer sources) including command-line mode |
-| `catppuccin` | Colorscheme (latte flavour) |
+| Extra | Effect |
+|-------|--------|
+| `coding.blink` | Replaces nvim-cmp with [blink.cmp](https://github.com/saghen/blink.cmp) for completion |
+| `editor.snacks_picker` | Replaces Telescope with [snacks.nvim](https://github.com/folke/snacks.nvim) picker |
+| `editor.neo-tree` | Brings in [neo-tree](https://github.com/nvim-neo-tree/neo-tree.nvim) (LazyVim's current default file explorer is `snacks.explorer`) |
+| `lang.{rust,go,python,typescript,json,yaml,toml,markdown,clangd}` | Per-language Mason installs, treesitter parsers, and LSP wiring |
 
-**LSP servers** (installed via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` is configured directly (pre-installed on macOS). `gdscript` is also configured directly — Godot ships its own LSP server which Neovim connects to on TCP `127.0.0.1:6005` while the Godot editor is running with a project open.
+**Personal plugin overrides** (in `lua/plugins/`):
 
-**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers), and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. The `neovim` role itself only installs `neovim` and deploys `init.lua`; everything else is resolved on PATH at launch time. Because nvm exposes `node` only through an interactive-zsh shell function, `init.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
+| File | Override |
+|------|----------|
+| `colorscheme.lua` | Pins LazyVim to `catppuccin` (latte flavour) instead of the default tokyonight |
+| `neo-tree.lua` | Adds `neo-tree-diagnostics.nvim`, three-tab winbar (Files / Git / Issues), `before_git_status` performance handler, libuv file watcher, hidden files visible, narrower window |
+| `treesitter.lua` | Adds `swift`, `objc`, `gdscript`, `godot_resource` parsers on top of LazyVim's defaults |
+| `lspconfig.lua` | Adds `sourcekit` (Xcode-shipped) and `gdscript` (Godot's TCP `127.0.0.1:6005`) servers, both `mason = false` |
+| `lualine.lua` | Prepends an attached-LSP-clients segment to `lualine_x` |
+| `snacks.lua` | Custom `<Space>P` command palette aggregating keymaps, LSP actions, and ex-commands |
+| `markdown-preview.lua` | `markdown-preview.nvim` for live Markdown/Mermaid browser preview |
 
-**Key bindings**:
+**LSP servers** (installed by LazyVim's lang extras via Mason): `lua_ls`, `rust_analyzer`, `clangd`, `marksman` (markdown), `bashls` (shell), `jsonls`, `yamlls`, `taplo` (TOML), `pyright` (Python), `ts_ls` (JS/TS), `gopls`. `sourcekit` and `gdscript` are configured directly (no Mason install).
+
+**Runtime dependencies**: `ripgrep` and `fd` (used by `snacks.nvim`'s grep and file pickers) and `node`/`npm` via the `nvm` role (powers `bashls`/`jsonls`/`yamlls`/`pyright`/`ts_ls` Mason installs) are each installed by their own sibling roles. Because nvm exposes `node` only through an interactive-zsh shell function, `lua/config/options.lua` prepends `~/.nvm/versions/node/*/bin` to `PATH` at startup so Node-based LSPs can resolve `#!/usr/bin/env node` regardless of how nvim was launched.
+
+**Personal key bindings** (on top of [LazyVim defaults](https://www.lazyvim.org/keymaps)):
 
 | Key | Action |
 |-----|--------|
-| `<Space>e` | Move cursor to right window |
-| `<Space>E` | Toggle file manager (neo-tree) |
-| `<Space>j` | Reveal current file in neo-tree |
-| `<Space>g` | Open neo-tree Git status panel |
-| `<Space>i` | Open neo-tree Issues (diagnostics) panel |
-| `<Space>v` | Select all (`ggVG`) |
-| `<Space>J` | Join lines (default `J` behaviour) |
-| `<Space>k` | Hover docs (LSP) |
-| `<Space>b` | Build project (`:make`) |
 | `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
-| `Alt+l` / `Alt+h` | Next word / previous word |
+| `Alt+l` / `Alt+h` | Next / previous word |
 | `jk` (insert) | Escape to normal mode |
-| `<Esc>` (normal) | Clear search highlight (`:nohlsearch`) |
-| `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
-| `<Space>p` | Find files in project (snacks picker) |
+| `<Space>v` | Select all (`ggVG`) |
+| `<Space>J` | Join lines (rescue for the remapped `J`) |
+| `<Space>k` | Hover docs (rescue for the remapped `K`) |
+| `<Space>j` | Reveal current file in neo-tree (and focus) |
+| `<Space>cb` | Build project (`:make`) |
+| `<Space>fo` | Open current file in system default app (`vim.ui.open`) |
+| `<Space>fO` | Reveal current file in Finder |
 | `<Space>P` | Command palette (keymaps, LSP actions, commands) |
-| `<Space>o` | Document symbols in current buffer (snacks picker) |
-| `<Space>O` | Workspace symbols across project (snacks picker) |
-| `<Space>f` | Search lines in current buffer (snacks picker) |
-| `<Space>fg` | Live grep (snacks picker) |
-| `<Space>fb` | Buffers (snacks picker) |
-| `]h` / `[h` | Next / previous git hunk |
-| `<Space>gS` | Stage hunk |
-| `<Space>gr` | Reset hunk |
-| `<Space>gp` | Preview hunk |
 | `<Space>mp` | Toggle Markdown/Mermaid browser preview |
-| `gd` | Go to definition (LSP) |
-| `gr` | Find references (LSP) |
-| `gI` | Go to implementation (LSP) |
-| `<Space>r` | Rename symbol (LSP) |
-| `<Space>a` | Code action (LSP) |
-| `<Space>=` | Format buffer or selection (LSP) |
-| `<Space>x` | Open current file in system default app (`vim.ui.open`) |
+
+LazyVim defaults that supersede previous bindings: `<Space>e`/`<Space>fe` (Neo-tree at root), `<Space>E`/`<Space>fE` (Neo-tree at cwd), `<Space>ge` (git explorer), `<Space>be` (buffer explorer), `<Space>cf` (format), `<Space>cr` (rename), `<Space>ca` (code action), `<Space>cd` (line diagnostics), `<Space>xx`/`<Space>xX` (Trouble), `<Space><space>`/`<Space>ff` (find files), `<Space>/`/`<Space>sg` (live grep), `<Space>sb` (buffer lines), `<Space>fb`/`<Space>,` (buffers), `<Space>ss`/`<Space>sS` (LSP symbols), `<Shift>h`/`<Shift>l` (prev/next buffer), `<Space>ghs`/`<Space>ghr`/`<Space>ghp` (gitsigns hunk actions), `]h`/`[h` (hunk navigation), `gd`/`gr`/`gI` (LSP), `K` (LSP hover — but `K` is remapped above; use `<Space>k`).
 
 Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and visual mode. `virtualedit=onemore` allows the cursor to move one position past the end of a line.
 
@@ -512,13 +500,11 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **Disabled defaults**: `s`, `S` (substitute — use `cl`/`cc`), `q`, `Q` (macro recording/replay) are mapped to `<Nop>` to prevent accidental triggers.
 
-**Auto save**: Files are saved automatically on every text change, leaving insert mode, switching buffers, and losing focus. Only applies to named, modified file buffers (skips special buffers like terminals or neo-tree).
+**neo-tree** opens automatically on startup (`VimEnter` autocmd), follows the current file, replaces netrw, and auto-refreshes when files change on disk (libuv watcher). Hidden files are visible by default. The sidebar has three tabs: Files, Git, Issues.
 
-**neo-tree** opens automatically on startup, follows the current file, replaces netrw, and auto-refreshes when files change on disk (libuv watcher). Hidden files are visible by default (`filtered_items.visible = true`). The sidebar has three tabs: Files, Git, and Issues (diagnostics).
+**Diagnostics** are shown as inline virtual text and gutter signs (LazyVim defaults; `virtual_lines` is explicitly disabled). Trouble.nvim provides a richer panel via `<Space>xx` / `<Space>xX`. Build errors from `:make` populate the quickfix list.
 
-**Diagnostics** are shown as inline virtual text (`virtual_text`) and as signs in the gutter. LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
+**Personal option overrides** (everything else inherits from LazyVim's `options.lua`): `scrolloff=8`, `virtualedit=onemore`, `exrc=true`.
 
-**Options**: `relativenumber`, `cursorline`, `scrolloff=8`, `clipboard="unnamedplus"` (system clipboard), `mouse="a"` (mouse support in all modes).
-
-**Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root. Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
+**Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root (subject to Neovim's trust prompt). Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
 
