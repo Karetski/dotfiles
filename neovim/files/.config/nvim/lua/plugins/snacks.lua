@@ -56,5 +56,19 @@ return {
     keys = {
       { "<leader>P", command_palette, desc = "Command palette" },
     },
+    -- Keep <Esc> from closing the file explorer. In the input field it still
+    -- falls back to switching from insert to normal mode (snacks default for i_<Esc>).
+    opts = {
+      picker = {
+        sources = {
+          explorer = {
+            win = {
+              input = { keys = { ["<Esc>"] = false } },
+              list  = { keys = { ["<Esc>"] = false } },
+            },
+          },
+        },
+      },
+    },
   },
 }
