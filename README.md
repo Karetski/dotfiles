@@ -320,7 +320,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
 - **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
-- **Effort level**: Set to `"max"` — maximum reasoning effort on every request.
+- **Effort level**: Set to `"high"` — high reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
