@@ -336,6 +336,8 @@ alias ll='lssplit'
 # NEOVIM
 
 alias nv='nvim'
+alias nvim-normal='NVIM_NORMAL_EDITOR=1 nvim'
+alias nvn='nvim-normal'
 
 
 # LAZYGIT
@@ -364,6 +366,8 @@ bindkey "^[[F"  end-of-line
 # Option+Delete → delete word backward
 bindkey "^[^?"  backward-kill-word
 bindkey "^[^H"  backward-kill-word
+# Allow terminal programs such as nvim to receive Ctrl-S.
+stty -ixon 2>/dev/null || true
 
 
 # --------------------------------------------------------

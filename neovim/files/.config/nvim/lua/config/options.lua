@@ -18,6 +18,27 @@ vim.opt.virtualedit = "onemore"
 vim.opt.exrc = true
 vim.opt.mouse = "a"
 
+vim.g.normal_editor_mode = vim.env.NVIM_NORMAL_EDITOR == "1"
+if vim.g.normal_editor_mode then
+  vim.opt.relativenumber = false
+  vim.opt.showmode = true
+  vim.opt.virtualedit = ""
+
+  local normal_editor_group = vim.api.nvim_create_augroup("NormalEditorMode", { clear = true })
+  vim.api.nvim_create_autocmd({ "VimEnter", "BufEnter", "WinEnter" }, {
+    group = normal_editor_group,
+    callback = function()
+      if vim.bo.buftype == "" and vim.bo.modifiable then
+        vim.schedule(function()
+          if vim.bo.buftype == "" and vim.bo.modifiable then
+            vim.cmd.startinsert()
+          end
+        end)
+      end
+    end,
+  })
+end
+
 vim.diagnostic.config({
   virtual_lines = false,
   virtual_text = true,
