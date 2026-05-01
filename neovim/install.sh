@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Installs neovim and deploys its config (LazyVim base + personal overrides).
-# Runtime dependencies (ripgrep and fd for snacks.nvim pickers; node/npm via nvm
-# for Mason-installed Node LSPs) are installed by their own roles and resolved
-# on PATH at launch time.
+# Installs neovim and deploys its config. Runtime dependencies
+# (ripgrep and fd for snacks.nvim pickers; node/npm via nvm for the
+# Node-based LSPs) are installed by their own roles and resolved on
+# PATH at launch time.
 ensure_brew_formula neovim
 
 NVIM_SRC="$DOTFILES_DIR/neovim/files/.config/nvim"
@@ -30,6 +30,5 @@ done
 _sanitize_bak "$NVIM_DEST/init.lua"
 # sanitize-ignore lists files created by lazy.nvim and other plugins at runtime
 _sanitize_dir "$NVIM_DEST" "$DOTFILES_DIR/neovim/sanitize-ignore" "init.lua"
-# Catch stale .lua files in lua/{config,plugins} dropped by past dotfile revisions
-_sanitize_dir "$NVIM_DEST/lua/config"  "" $(cd "$NVIM_SRC/lua/config"  && ls *.lua)
+_sanitize_dir "$NVIM_DEST/lua/config" "" $(cd "$NVIM_SRC/lua/config" && ls *.lua)
 _sanitize_dir "$NVIM_DEST/lua/plugins" "" $(cd "$NVIM_SRC/lua/plugins" && ls *.lua)

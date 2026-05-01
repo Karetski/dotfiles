@@ -1,21 +1,22 @@
--- Personal highlight overrides applied after any colorscheme load
+vim.api.nvim_create_autocmd({ "TextChanged", "InsertLeave", "BufLeave", "FocusLost" }, {
+  callback = function(ev)
+    if vim.bo[ev.buf].modified and vim.bo[ev.buf].buftype == "" and vim.fn.bufname(ev.buf) ~= "" then
+      vim.api.nvim_buf_call(ev.buf, function()
+        vim.cmd("silent! write")
+      end)
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.cmd("Neotree show")
+  end,
+})
+
 vim.api.nvim_create_autocmd("ColorScheme", {
   callback = function()
     vim.api.nvim_set_hl(0, "MatchParen", { underline = true, bg = "NONE" })
+    vim.api.nvim_set_hl(0, "NeoTreeCursorLine", { bg = "LightGrey" })
   end,
 })
-
--- Open the snacks file explorer on startup. If a file was passed on the command
--- line, hand focus back to it so `nvim foo.txt` still lands the cursor in foo.txt.
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    vim.schedule(function()
-      Snacks.explorer()
-      if vim.fn.argc() > 0 then
-        vim.cmd("wincmd p")
-      end
-    end)
-  end,
-})
-
-vim.api.nvim_create_user_command("Q", "qall!", {})

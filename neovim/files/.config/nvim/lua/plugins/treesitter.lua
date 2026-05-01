@@ -1,11 +1,19 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, {
-        "swift", "objc", "gdscript", "godot_resource",
-      })
-    end,
+    build = ":TSUpdate",
+    opts = {
+      ensure_installed = {
+        "lua", "vim", "vimdoc",
+        "python", "javascript", "typescript",
+        "bash", "json", "yaml", "toml",
+        "markdown", "markdown_inline",
+        "swift", "rust", "c", "cpp", "objc", "go",
+        "gdscript", "godot_resource",
+      },
+      auto_install = true,
+      highlight = { enable = true },
+      indent = { enable = true },
+    },
   },
 }
