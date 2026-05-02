@@ -13,6 +13,9 @@ else
 fi
 # Substitutes $CLAUDE_SANDBOX_ENABLED from vars/main.sh
 deploy_template "$DOTFILES_DIR/claude/templates/settings.json" "$HOME/.claude/settings.json" "0644" '$CLAUDE_SANDBOX_ENABLED'
+# Global instructions deployed as plain markdown (0644) — sourced by Claude on every session
+deploy_file "$DOTFILES_DIR/claude/files/CLAUDE.md" "$HOME/.claude/CLAUDE.md" "0644"
+deploy_file "$DOTFILES_DIR/claude/files/RTK.md" "$HOME/.claude/RTK.md" "0644"
 # Deployed as executable (0755) — invoked by Claude Code's status line harness
 deploy_file "$DOTFILES_DIR/claude/files/statusline.sh" "$HOME/.claude/statusline.sh" "0755"
 ensure_dir "$HOME/.claude/hooks"
@@ -21,6 +24,8 @@ for hook in "$DOTFILES_DIR/claude/files/hooks/"*.sh; do
   deploy_file "$hook" "$HOME/.claude/hooks/$(basename "$hook")" "0755"
 done
 _sanitize_bak "$HOME/.claude/settings.json"
+_sanitize_bak "$HOME/.claude/CLAUDE.md"
+_sanitize_bak "$HOME/.claude/RTK.md"
 _sanitize_bak "$HOME/.claude/statusline.sh"
 # Install Claude Code plugins at user scope
 for _plugin in code-simplifier superpowers; do

@@ -326,6 +326,8 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **Effort level**: Set to `"high"` — high reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
+**`~/.claude/CLAUDE.md`** and **`~/.claude/RTK.md`**: Global Claude Code instruction files. `CLAUDE.md` imports `RTK.md` via `@RTK.md` and adds project-agnostic rules (e.g. never use git worktrees unless explicitly asked). `RTK.md` documents the [Rust Token Killer](https://github.com/stash/rtk) CLI proxy that the `rtk-rewrite.sh` hook funnels Bash commands through.
+
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
 
 | Script | Event | Matcher | Purpose |
