@@ -1,5 +1,3 @@
-@RTK.md
-
 ## Git worktrees
 
 Never use git worktrees unless I explicitly ask for them. This includes:

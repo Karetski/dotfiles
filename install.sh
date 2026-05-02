@@ -28,7 +28,6 @@ ROLES=(
   jq
   ripgrep
   fd
-  rtk
 
   # dev tools
   claude
@@ -65,7 +64,6 @@ _PREV_GROUP=""
 # so we can skip the interactive prompt and just note it.
 _role_is_configured() {
   case "$1" in
-    rtk)            command -v rtk > /dev/null 2>&1 ;;
     bun)            command -v bun > /dev/null 2>&1 ;;
     claude)         command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
     stats)          [ -d "/Applications/Stats.app" ] ;;
@@ -82,7 +80,7 @@ _role_group() {
   case "$1" in
     xcode-select|homebrew)                                   echo "preflight"  ;;
     zsh|zsh-autocomplete|fzf)                                echo "shell"      ;;
-    git|lazygit|jq|ripgrep|fd|rtk)                           echo "cli tools"  ;;
+    git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|stats|linearmouse|macos)                         echo "system"     ;;
     nvm|bun|uv|rustup)                                       echo "toolchains" ;;

@@ -93,7 +93,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 
 - **preflight** — `xcode-select`, `homebrew`
 - **shell** — `zsh`, `zsh-autocomplete`, `fzf`
-- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`, `rtk`
+- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `bun`, `uv`, `rustup`
@@ -301,14 +301,6 @@ Installs [fd](https://github.com/sharkdp/fd) via `ensure_brew_formula fd`. Used 
 
 ---
 
-### rtk
-
-Installs [RTK (Rust Token Killer)](https://github.com/stash/rtk) via `ensure_brew_formula rtk`. RTK proxies shell commands to strip noise from their output before returning results to Claude Code, reducing token consumption by 60–90% on common dev operations.
-
-Initialized globally with `rtk init -g --no-patch` — the `--no-patch` flag skips patching `settings.json` because this repo manages that file via `claude/files/settings.json`. The RTK hook (`rtk-rewrite.sh`) is wired in that file instead.
-
----
-
 ### claude
 
 Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_CLAUDE=1` is set in `vars/local.sh`.
@@ -325,13 +317,12 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **Effort level**: Set to `"high"` — high reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
-**`~/.claude/CLAUDE.md`** and **`~/.claude/RTK.md`**: Global Claude Code instruction files. `CLAUDE.md` imports `RTK.md` via `@RTK.md` and adds project-agnostic rules (e.g. never use git worktrees unless explicitly asked). `RTK.md` documents the [Rust Token Killer](https://github.com/stash/rtk) CLI proxy that the `rtk-rewrite.sh` hook funnels Bash commands through.
+**`~/.claude/CLAUDE.md`**: Global Claude Code instruction file with project-agnostic rules (e.g. never use git worktrees unless explicitly asked, always ask via `AskUserQuestion`).
 
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
 
 | Script | Event | Matcher | Purpose |
 |--------|-------|---------|---------|
-| `rtk-rewrite.sh` | `PreToolUse` | `Bash` | Rewrite shell commands through RTK (Rust Token Killer) to save tokens; passes through unchanged if RTK is not installed |
 | `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands: `rm -rf /` or `~`, `git reset --hard`, force-push, `git clean -fd`, `DROP TABLE/DATABASE`, disk wipe (`> /dev/sda`, `mkfs.`), fork bomb |
 | `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard `vars/local.sh`, `.env`, and `.claude/settings.local.json` from edits and writes |
 | `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |

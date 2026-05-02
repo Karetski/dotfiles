@@ -4,7 +4,6 @@
 
 # Roles that prompt before applying (unless ENABLE_OPTIONAL_<NAME>=1 in local.sh)
 OPTIONAL_ROLES=(
-  rtk
   claude
   stats
   zed
