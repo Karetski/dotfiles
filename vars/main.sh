@@ -6,7 +6,6 @@
 OPTIONAL_ROLES=(
   claude
   stats
-  zed
   docker-desktop
   linearmouse
   bun

@@ -24,7 +24,6 @@ This repo currently treats these roles as optional:
 
 - `claude`
 - `stats`
-- `zed`
 - `docker-desktop`
 - `linearmouse`
 - `bun`
@@ -34,7 +33,6 @@ To auto-apply an optional role without an interactive prompt, set the matching v
 ```bash
 export ENABLE_OPTIONAL_CLAUDE=1
 export ENABLE_OPTIONAL_STATS=1
-export ENABLE_OPTIONAL_ZED=1
 export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 export ENABLE_OPTIONAL_LINEARMOUSE=1
 export ENABLE_OPTIONAL_BUN=1
@@ -97,7 +95,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `bun`, `uv`, `rustup`
-- **editor** — `zed`, `neovim`
+- **editor** — `neovim`
 
 - Each role is sourced from `<role>/install.sh`
 - Optional roles prompt before applying (or skip based on `ENABLE_OPTIONAL_*` variables)
@@ -183,7 +181,6 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
 | `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
-| `ENABLE_OPTIONAL_ZED` | `vars/local.sh` | Auto-apply the optional Zed cask and role instead of prompting |
 | `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
 | `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rustup` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
@@ -418,31 +415,6 @@ Installs [uv](https://docs.astral.sh/uv/) via `ensure_brew_formula uv` — a fas
 uv fetches Python versions on demand per-project, but having a globally managed version is convenient for ad-hoc scripts and `uvx` one-shot tool runs. The role runs an optional prompt (`uv-default-python`, gated by `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON`) that invokes `uv python install` (fetches the latest stable CPython) unless a managed version is already present.
 
 Shell completions are sourced via `eval "$(uv generate-shell-completion zsh)"` from `.zshrc` (deployed by the `zsh` role).
-
----
-
-### zed
-
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_ZED=1` is set in `vars/local.sh`. Zed itself is installed via `ensure_brew_cask zed` at the top of this role's install script, so one override gates both the cask install and the config deploy.
-
-Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
-
-**Fonts**: UI uses `.SystemUIFont` (resolves to SF Pro on macOS) at 16pt. Editor buffer and built-in terminal use `SF Mono Terminal` at 12pt — same family as the Ghostty role, one point larger for the editor viewport. Weights are left at Zed defaults.
-
-**Keymap overrides**:
-
-- `Cmd+Ctrl+Left` → `pane::GoBack`, `Cmd+Ctrl+Right` → `pane::GoForward`. These shadow Zed's default Shrink/Expand Syntax Selection bindings, which remain available on `Ctrl+Shift+Left/Right`.
-- `Cmd+Shift+J` → `pane::RevealInProjectPanel`.
-
-**Theme**: `Catppuccin Latte` / `Catppuccin Mocha` following the system appearance — matches the Catppuccin Latte flavour used by the `neovim` role. Provided by the [`catppuccin`](https://github.com/catppuccin/zed) extension, which is auto-installed via the `auto_install_extensions` setting.
-
-**Keymap**: `VSCode` base keymap.
-
-**Diff view**: Unified style.
-
-**Git panel**: Tree view enabled.
-
-**Outline panel**: Docked on the right.
 
 ---
 

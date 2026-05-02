@@ -46,7 +46,6 @@ ROLES=(
   rustup
 
   # editor
-  zed
   neovim
 )
 # TAG limits the run to a single role (e.g. TAG=git)
@@ -67,7 +66,6 @@ _role_is_configured() {
     bun)            command -v bun > /dev/null 2>&1 ;;
     claude)         command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
     stats)          [ -d "/Applications/Stats.app" ] ;;
-    zed)            [ -d "/Applications/Zed.app" ] ;;
     docker-desktop) [ -d "/Applications/Docker.app" ] ;;
     linearmouse)    [ -d "/Applications/LinearMouse.app" ] ;;
     *)              return 1 ;;
@@ -84,7 +82,7 @@ _role_group() {
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|stats|linearmouse|macos)                         echo "system"     ;;
     nvm|bun|uv|rustup)                                       echo "toolchains" ;;
-    zed|neovim)                                              echo "editor"     ;;
+    neovim)                                                  echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac
 }
