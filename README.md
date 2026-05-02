@@ -314,7 +314,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 - **Effort level**: Set to `"high"` — high reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 
-**`~/.claude/CLAUDE.md`**: Global Claude Code instruction file with project-agnostic rules (e.g. never use git worktrees unless explicitly asked, always ask via `AskUserQuestion`).
+**`~/.claude/CLAUDE.md`**: Global Claude Code instruction file with project-agnostic rules (e.g. never use git worktrees unless explicitly asked, prefer `AskUserQuestion` for substantive decisions).
 
 **`~/.claude/hooks/`**: Tool hook scripts deployed as executables.
 
