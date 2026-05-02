@@ -232,8 +232,8 @@ Deploys `~/.zshrc` as a static file.
 | Option+Delete | Backward kill word |
 
 **Prompt**: Two-line prompt using zsh's `vcs_info` hook.
-- Line 1: Three cascading segments with rounded powerline separators (, ) — path on `#FF9100` (vibrant orange), branch on `#FFD000` (golden yellow), status symbols on `#FFFB00` (pure yellow). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
-- Line 2: Success/failure indicator (● blue on success, red on failure), `%` (`#` for root)
+- Line 1: Three cascading segments with rounded powerline separators (, ) — path on `136` (#af8700, amber), branch on `178` (#d7af00, golden), status symbols on `220` (#ffd700, yellow). Not full-width; bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean.
+- Line 2: Success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root)
 
 Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `↑N` ahead of remote, `↓N` behind remote.
 
@@ -445,7 +445,7 @@ Deploys `~/.config/zed/settings.json` and `~/.config/zed/keymap.json`.
 
 ### neovim
 
-Deploys `~/.config/nvim/init.lua`, local config modules under `lua/config/`, and local plugin specs under `lua/plugins/`. The layout borrows LazyVim's organization without importing the LazyVim distribution.
+Deploys `~/.config/nvim/init.lua`.
 
 **Plugin manager**: [lazy.nvim](https://github.com/folke/lazy.nvim) (auto-bootstrapped on first launch).
 
@@ -458,9 +458,6 @@ Deploys `~/.config/nvim/init.lua`, local config modules under `lua/config/`, and
 | `lualine.nvim` | Single global statusline (`globalstatus`) showing LSP clients, encoding, and filetype |
 | `snacks.nvim` (picker) | Fuzzy finder for files, grep, buffers, LSP symbols, and command palette |
 | `gitsigns.nvim` | Git diff signs and hunk navigation |
-| `which-key.nvim` | Discoverable keymap popups grouped by workflow |
-| `conform.nvim` | Formatter routing with LSP fallback |
-| `trouble.nvim` | Project and buffer diagnostics, symbols, and LSP reference panels |
 | `markdown-preview.nvim` | Live Mermaid/Markdown preview in browser (`<Space>mp`) |
 | `nvim-lspconfig` + `mason.nvim` | LSP support with auto-installed servers |
 | `blink.cmp` | Autocompletion (LSP, path, buffer sources) including command-line mode |
@@ -485,7 +482,7 @@ Deploys `~/.config/nvim/init.lua`, local config modules under `lua/config/`, and
 | `<Space>b` | Build project (`:make`) |
 | `H` / `L` | Start / end of line (past last character) |
 | `J` / `K` | Bottom / top of file |
-| `Alt+l` / `Alt+h` | Next / previous word |
+| `Alt+l` / `Alt+h` | Next word / previous word |
 | `jk` (insert) | Escape to normal mode |
 | `<Esc>` (normal) | Clear search highlight (`:nohlsearch`) |
 | `Alt+Shift+H` / `Alt+Shift+L` | Previous / next buffer |
@@ -500,10 +497,6 @@ Deploys `~/.config/nvim/init.lua`, local config modules under `lua/config/`, and
 | `<Space>gS` | Stage hunk |
 | `<Space>gr` | Reset hunk |
 | `<Space>gp` | Preview hunk |
-| `<Space>xx` | Project diagnostics (Trouble) |
-| `<Space>xX` | Buffer diagnostics (Trouble) |
-| `<Space>cs` | Symbols (Trouble) |
-| `<Space>cl` | LSP definitions/references (Trouble) |
 | `<Space>mp` | Toggle Markdown/Mermaid browser preview |
 | `gd` | Go to definition (LSP) |
 | `gr` | Find references (LSP) |
@@ -523,10 +516,9 @@ Navigation keys (`H`, `L`, `J`, `K`, `Alt+l`, `Alt+h`) work in both normal and v
 
 **neo-tree** opens automatically on startup, follows the current file, replaces netrw, and auto-refreshes when files change on disk (libuv watcher). Hidden files are visible by default (`filtered_items.visible = true`). The sidebar has three tabs: Files, Git, and Issues (diagnostics).
 
-**Formatting** goes through `conform.nvim` on `<Space>=`. It uses configured external formatters when present and falls back to LSP formatting. Format-on-save is disabled; auto-save remains separate.
-
-**Diagnostics** are shown as inline virtual text (`virtual_text`) and as signs in the gutter. LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list. Trouble provides richer project and buffer diagnostic panels on `<Space>xx` and `<Space>xX`.
+**Diagnostics** are shown as inline virtual text (`virtual_text`) and as signs in the gutter. LSP servers provide diagnostics automatically; build errors from `:make` also populate the quickfix list.
 
 **Options**: `relativenumber`, `cursorline`, `scrolloff=8`, `clipboard="unnamedplus"` (system clipboard), `mouse="a"` (mouse support in all modes).
 
 **Per-project config**: `exrc` is enabled, so Neovim loads `.nvim.lua` from the project root. Use this to set `makeprg` per project (e.g., `vim.opt.makeprg = "cargo build"`).
+
