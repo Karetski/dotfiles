@@ -13,4 +13,5 @@ OPTIONAL_ROLES=(
   zed
   docker-desktop
   linearmouse
+  bun
 )

@@ -42,6 +42,7 @@ ROLES=(
 
   # toolchains
   nvm
+  bun
   uv
   rustup
 
@@ -65,6 +66,7 @@ _PREV_GROUP=""
 _role_is_configured() {
   case "$1" in
     rtk)            command -v rtk > /dev/null 2>&1 ;;
+    bun)            command -v bun > /dev/null 2>&1 ;;
     claude)         command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
     stats)          [ -d "/Applications/Stats.app" ] ;;
     zed)            [ -d "/Applications/Zed.app" ] ;;
@@ -83,7 +85,7 @@ _role_group() {
     git|lazygit|jq|ripgrep|fd|rtk)                           echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|stats|linearmouse|macos)                         echo "system"     ;;
-    nvm|uv|rustup)                                           echo "toolchains" ;;
+    nvm|bun|uv|rustup)                                       echo "toolchains" ;;
     zed|neovim)                                              echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac

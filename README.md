@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 20 roles.
+Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 23 roles.
 
 ## Prerequisites
 
@@ -27,6 +27,7 @@ This repo currently treats these roles as optional:
 - `zed`
 - `docker-desktop`
 - `linearmouse`
+- `bun`
 
 To auto-apply an optional role without an interactive prompt, set the matching variable in `vars/local.sh`:
 
@@ -36,6 +37,7 @@ export ENABLE_OPTIONAL_STATS=1
 export ENABLE_OPTIONAL_ZED=1
 export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 export ENABLE_OPTIONAL_LINEARMOUSE=1
+export ENABLE_OPTIONAL_BUN=1
 ```
 
 Because each role now declares its own brew dependencies, a single override gates both the role's config and the Homebrew package that ships with it. For example, `ENABLE_OPTIONAL_STATS=1` covers both installing Stats.app and importing its preferences.
@@ -44,7 +46,7 @@ Because each role now declares its own brew dependencies, a single override gate
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 22 roles prompts before its install script runs.
+- Each of the 23 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -94,7 +96,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`, `rtk`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `stats`, `linearmouse`, `macos`
-- **toolchains** — `nvm`, `uv`, `rustup`
+- **toolchains** — `nvm`, `bun`, `uv`, `rustup`
 - **editor** — `zed`, `neovim`
 
 - Each role is sourced from `<role>/install.sh`
@@ -187,6 +189,7 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
 | `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
 | `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during the `nvm` role instead of prompting |
+| `ENABLE_OPTIONAL_BUN` | `vars/local.sh` | Auto-apply the optional Bun toolchain role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
@@ -397,6 +400,14 @@ Currently managed settings:
 Installs [nvm](https://github.com/nvm-sh/nvm) via `ensure_brew_formula nvm` and ensures `~/.nvm` exists. If no default Node alias is set, the role invokes the shared `_optional_selected` helper to prompt before running `nvm install --lts && nvm alias default 'lts/*'` (gated by `ENABLE_OPTIONAL_NVM_DEFAULT_NODE`). The actual `nvm install` runs inside a `bash -c` subshell so `nvm.sh`'s shell-function layout doesn't collide with the orchestrator's `set -euo pipefail`.
 
 nvm is sourced from `.zshrc` (deployed by the `zsh` role), which is how `node`/`npm` land on PATH for interactive shells and therefore for Mason's Node-based LSP installs (`bashls`, `jsonls`, `yamlls`, `pyright`, `ts_ls`).
+
+---
+
+### bun
+
+Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_BUN=1` is set in `vars/local.sh`.
+
+Installs the [Bun](https://bun.sh/) JavaScript runtime, package manager, and bundler. Bun is distributed via the official [`oven-sh/bun`](https://github.com/oven-sh/homebrew-bun) Homebrew tap rather than homebrew-core, so the role first ensures the tap is added (idempotent) and then installs the formula via `ensure_brew_formula bun`. Globally installed binaries land in `~/.bun/bin`; add that to `PATH` via `vars/local.sh` or `~/.zshrc.local` if you use `bun add -g`.
 
 ---
 
