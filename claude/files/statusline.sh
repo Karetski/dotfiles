@@ -42,12 +42,11 @@ if [ -n "$five_resets_at" ]; then
 fi
 
 # ── Plugins line ─────────────────────────────────────────────────────────────
-# Second line listing installed plugins relevant to this cwd (user-scoped or
-# project-scoped where cwd is under projectPath), each prefixed with + or -
-# based on effective enabled state (local > project > user). Claude Code only
-# treats a plugin as enabled when enabledPlugins[id] === true (or an array of
-# skill names) — anything else, including an absent key, counts as disabled,
-# so that is what the default has to be here.
+# Second line listing enabled plugins relevant to this cwd (user-scoped or
+# project-scoped where cwd is under projectPath). Effective state resolves
+# local > project > user. Claude Code only treats a plugin as enabled when
+# enabledPlugins[id] === true (or a non-empty array of skill names) — anything
+# else, including an absent key, counts as disabled.
 plugins_file="$HOME/.claude/plugins/installed_plugins.json"
 plugins_line=""
 if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
@@ -65,7 +64,6 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
   ' "$plugins_file" 2>/dev/null || true)
 
   enabled_parts=()
-  disabled_parts=()
   while IFS= read -r name; do
     [ -z "$name" ] && continue
     state="false"
@@ -73,9 +71,6 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
              "$current_dir_full/.claude/settings.json" \
              "$HOME/.claude/settings.json"; do
       [ -f "$f" ] || continue
-      # Emit "true" if enabledPlugins[name] is literal true OR a non-empty
-      # array (Claude Code treats both as enabled); "false" if explicitly
-      # false; empty string when the key is unset so the next scope wins.
       v=$(jq -r --arg n "$name" '
         (.enabledPlugins // {})[$n]
         | if . == true or (type == "array" and length > 0) then "true"
@@ -84,17 +79,11 @@ if [ -f "$plugins_file" ] && [ -n "$current_dir_full" ]; then
       ' "$f" 2>/dev/null || true)
       if [ -n "$v" ]; then state="$v"; break; fi
     done
-    short="${name%@*}"
-    if [ "$state" = "true" ]; then
-      enabled_parts+=("+$short")
-    else
-      disabled_parts+=("-$short")
-    fi
+    [ "$state" = "true" ] && enabled_parts+=("${name%@*}")
   done <<< "$relevant"
 
-  plugin_parts=("${enabled_parts[@]}" "${disabled_parts[@]}")
-  if [ "${#plugin_parts[@]}" -gt 0 ]; then
-    plugins_line="plugins: ${plugin_parts[*]}"
+  if [ "${#enabled_parts[@]}" -gt 0 ]; then
+    plugins_line="${enabled_parts[*]}"
   fi
 fi
 

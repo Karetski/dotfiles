@@ -155,7 +155,7 @@ Machine-specific overrides, sourced after `vars/main.sh`. Gitignored — see `va
 
 ### claude/files/statusline.sh
 
-Status line script deployed to `~/.claude/statusline.sh` for the Claude Code terminal UI. Receives JSON on stdin from the Claude Code harness and outputs a pipe-separated status string, optionally followed by a second line listing plugin state:
+Status line script deployed to `~/.claude/statusline.sh` for the Claude Code terminal UI. Receives JSON on stdin from the Claude Code harness and outputs a pipe-separated status string, optionally followed by a second line listing enabled plugins:
 
 | Segment | Source | Example |
 |---------|--------|---------|
@@ -163,9 +163,9 @@ Status line script deployed to `~/.claude/statusline.sh` for the Claude Code ter
 | Model | `model.display_name` (stripped) | `Opus 4.6` |
 | Context | `context_window.used_percentage` | `ctx:42%` |
 | Rate limit | `rate_limits.five_hour` + countdown | `5h:15% \| 3h12m` |
-| Plugins (2nd line) | `~/.claude/plugins/installed_plugins.json` + merged `enabledPlugins` | `plugins: +superpowers -rust-analyzer-lsp` |
+| Plugins (2nd line) | `~/.claude/plugins/installed_plugins.json` + merged `enabledPlugins` | `superpowers code-simplifier` |
 
-The plugins line is only emitted when installed plugins apply to the current `cwd` (user-scoped plugins always, project-scoped plugins only when `cwd` is under their `projectPath`). Each plugin is prefixed with `+` when enabled or `-` when disabled, with effective state resolved in the order `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`, matching Claude Code's own rule that a plugin counts as enabled only when `enabledPlugins[id]` is literal `true` (or a non-empty array of skill names) — everything else, including an absent key, is treated as disabled.
+The plugins line is only emitted when installed plugins apply to the current `cwd` (user-scoped plugins always, project-scoped plugins only when `cwd` is under their `projectPath`). Only enabled plugins are listed, with effective state resolved in the order `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`, matching Claude Code's own rule that a plugin counts as enabled only when `enabledPlugins[id]` is literal `true` (or a non-empty array of skill names) — everything else, including an absent key, is treated as disabled.
 
 ### Role install scripts
 
