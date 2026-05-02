@@ -337,7 +337,7 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 **`~/.claude/statusline.sh`**: Status line script for the Claude Code terminal UI.
 
-**Plugins**: Installs `code-simplifier` from `claude-plugins-official` at user scope. `code-simplifier` refines recently modified code for clarity without changing behaviour.
+**Plugins**: Installs `code-simplifier` and `superpowers` from `claude-plugins-official` at user scope. `code-simplifier` refines recently modified code for clarity without changing behaviour. `superpowers` adds a curated bundle of skills, slash commands, and subagents for deeper engineering workflows (see [obra/superpowers](https://github.com/obra/superpowers)).
 
 ---
 
