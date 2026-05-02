@@ -32,6 +32,7 @@ eval "$(uv generate-shell-completion zsh)"
 lssplit() {
     emulate -L zsh
     setopt local_options null_glob extended_glob
+    zmodload zsh/datetime
 
     local target="${1:-.}"
     if [[ ! -d $target ]]; then
@@ -116,10 +117,13 @@ lssplit() {
 
     local -A info
     local -a names_dir names_file names_link
-    local now=$(date +%s)
+    local now=$EPOCHSECONDS
     local line fpath htype perms size mtime tgt bname kind hidden
+    local -a parts
     for line in "${stats_lines[@]}"; do
-        IFS=$sep read -r fpath htype perms size mtime tgt <<< "$line"
+        parts=( "${(@ps/\x1f/)line}" )
+        fpath=$parts[1] htype=$parts[2] perms=$parts[3]
+        size=$parts[4] mtime=$parts[5] tgt=${parts[6]:-}
         bname=${fpath:t}
         hidden=0
         [[ $bname == .* ]] && hidden=1
@@ -146,45 +150,46 @@ lssplit() {
     )"} )
 
     _lssplit_icon() {
-        local name=$1 kind=$2 hidden=$3
-        (( icons )) || return
-        if [[ -n ${name_icon[$name]:-} ]]; then
-            print -rn -- "${name_icon[$name]}"
-            return
-        fi
-        case $kind in
-            dir)  print -rn -- "$i_dir";  return ;;
-            link) print -rn -- "$i_link"; return ;;
-        esac
-        if [[ $name == *.* ]]; then
-            local e=${(L)name##*.}
-            if [[ -n ${ext_icon[$e]:-} ]]; then
-                print -rn -- "${ext_icon[$e]}"
-                return
+        local __ref=$1 name=$2 kind=$3 hidden=$4 _val=""
+        if (( icons )); then
+            if [[ -n ${name_icon[$name]:-} ]]; then
+                _val=${name_icon[$name]}
+            elif [[ $kind == dir ]]; then
+                _val=$i_dir
+            elif [[ $kind == link ]]; then
+                _val=$i_link
+            else
+                local e=""
+                [[ $name == *.* ]] && e=${(L)name##*.}
+                if [[ -n $e && -n ${ext_icon[$e]:-} ]]; then
+                    _val=${ext_icon[$e]}
+                elif (( hidden )); then
+                    _val=$i_file_hidden
+                else
+                    _val=$i_file
+                fi
             fi
         fi
-        if (( hidden )); then print -rn -- "$i_file_hidden"
-        else                  print -rn -- "$i_file"
-        fi
+        : ${(P)__ref::=$_val}
     }
 
     _lssplit_hsize() {
-        local b=$1
-        if   (( b < 1024 ));       then printf '%4dB' "$b"
-        elif (( b < 102400 ));     then printf '%4.1fK' "$(( b / 1024.0 ))"
-        elif (( b < 1048576 ));    then printf '%4dK' "$(( b / 1024 ))"
-        elif (( b < 104857600 ));  then printf '%4.1fM' "$(( b / 1048576.0 ))"
-        elif (( b < 1073741824 )); then printf '%4dM' "$(( b / 1048576 ))"
-        else                            printf '%4.1fG' "$(( b / 1073741824.0 ))"
+        local __ref=$1 b=$2
+        if   (( b < 1024 ));       then printf -v $__ref '%4dB' $b
+        elif (( b < 102400 ));     then printf -v $__ref '%4.1fK' $(( b / 1024.0 ))
+        elif (( b < 1048576 ));    then printf -v $__ref '%4dK' $(( b / 1024 ))
+        elif (( b < 104857600 ));  then printf -v $__ref '%4.1fM' $(( b / 1048576.0 ))
+        elif (( b < 1073741824 )); then printf -v $__ref '%4dM' $(( b / 1048576 ))
+        else                            printf -v $__ref '%4.1fG' $(( b / 1073741824.0 ))
         fi
     }
 
     _lssplit_hdate() {
-        local mt=$1
+        local __ref=$1 mt=$2
         if (( now - mt > 15768000 )); then
-            date -r "$mt" '+%b %e  %Y'
+            strftime -s $__ref '%b %e  %Y' $mt
         else
-            date -r "$mt" '+%b %e %H:%M'
+            strftime -s $__ref '%b %e %H:%M' $mt
         fi
     }
 
@@ -217,9 +222,10 @@ lssplit() {
 
     _lssplit_render_entry() {
         local name=$1
-        local IFS=$sep
         local fpath kind perms size mtime tgt hidden
-        read -r fpath kind perms size mtime tgt hidden <<< "${info[$name]}"
+        local -a parts=( "${(@ps/\x1f/)info[$name]}" )
+        fpath=$parts[1] kind=$parts[2] perms=$parts[3] size=$parts[4]
+        mtime=$parts[5] tgt=${parts[6]:-} hidden=${parts[7]:-0}
 
         local color=""
         case $kind in
@@ -230,15 +236,16 @@ lssplit() {
         (( hidden )) && color=$c_hidden
         [[ $kind == link && ! -e $fpath ]] && color=$c_broken
 
-        local icon=$(_lssplit_icon "$name" "$kind" "$hidden")
+        local icon=""
+        _lssplit_icon icon "$name" "$kind" "$hidden"
         local icon_sp=""
         [[ -n $icon ]] && icon_sp=" "
 
-        local hsz hdt
+        local hsz="" hdt=""
         if [[ $kind == dir ]]; then hsz="    -"
-        else                        hsz=$(_lssplit_hsize "$size")
+        else                        _lssplit_hsize hsz $size
         fi
-        hdt=$(_lssplit_hdate "$mtime")
+        _lssplit_hdate hdt $mtime
 
         case $mode in
             compact)
@@ -277,10 +284,13 @@ lssplit() {
         (( icons )) && cell=$(( cell + 2 ))
         local cols=$(( width / cell ))
         (( cols < 1 )) && cols=1
-        local i=0 IFS=$sep
+        local i=0
         local fpath kind perms size mtime tgt hidden color icon icon_sp
+        local -a parts
         for nm in "$@"; do
-            read -r fpath kind perms size mtime tgt hidden <<< "${info[$nm]}"
+            parts=( "${(@ps/\x1f/)info[$nm]}" )
+            fpath=$parts[1] kind=$parts[2] perms=$parts[3] size=$parts[4]
+            mtime=$parts[5] tgt=${parts[6]:-} hidden=${parts[7]:-0}
             color=""
             case $kind in
                 dir)  color=$c_dir ;;
@@ -289,7 +299,8 @@ lssplit() {
             esac
             (( hidden )) && color=$c_hidden
             [[ $kind == link && ! -e $fpath ]] && color=$c_broken
-            icon=$(_lssplit_icon "$nm" "$kind" "$hidden")
+            icon=""
+            _lssplit_icon icon "$nm" "$kind" "$hidden"
             icon_sp=""
             [[ -n $icon ]] && icon_sp=" "
             printf '%s%s%s%-*s%s' "$color" "$icon" "$icon_sp" $max "$nm" "$reset"
