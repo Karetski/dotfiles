@@ -149,7 +149,7 @@ Both `deploy_file` and `deploy_template` are idempotent — they skip when the d
 
 ### vars/main.sh
 
-Shared defaults sourced before any role runs. Defines `CLAUDE_SANDBOX_ENABLED` and `OPTIONAL_ROLES`. See [Variables](#variables) for the full list. Homebrew package lists live inside each role's own `install.sh` now, not here.
+Shared defaults sourced before any role runs. Defines `OPTIONAL_ROLES`. See [Variables](#variables) for the full list. Homebrew package lists live inside each role's own `install.sh` now, not here.
 
 ### vars/local.sh
 
@@ -191,7 +191,6 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during the `nvm` role instead of prompting |
 | `ENABLE_OPTIONAL_BUN` | `vars/local.sh` | Auto-apply the optional Bun toolchain role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
-| `CLAUDE_SANDBOX_ENABLED` | `vars/main.sh` | Enables Claude Code sandbox (default: `true`) |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
 
 ## Roles
@@ -306,7 +305,7 @@ Installs [fd](https://github.com/sharkdp/fd) via `ensure_brew_formula fd`. Used 
 
 Installs [RTK (Rust Token Killer)](https://github.com/stash/rtk) via `ensure_brew_formula rtk`. RTK proxies shell commands to strip noise from their output before returning results to Claude Code, reducing token consumption by 60–90% on common dev operations.
 
-Initialized globally with `rtk init -g --no-patch` — the `--no-patch` flag skips patching `settings.json` because this repo manages that file via `claude/templates/settings.json`. The RTK hook (`rtk-rewrite.sh`) is wired in that template instead.
+Initialized globally with `rtk init -g --no-patch` — the `--no-patch` flag skips patching `settings.json` because this repo manages that file via `claude/files/settings.json`. The RTK hook (`rtk-rewrite.sh`) is wired in that file instead.
 
 ---
 
@@ -318,11 +317,11 @@ Deploys Claude Code settings, hook scripts, and a status line script.
 
 **Installation**: Checks for `claude` in PATH; installs via the official install script if missing. Anthropic’s current documented installs are npm or their native installer, so it remains separate from the Homebrew role.
 
-**`~/.claude/settings.json`** (templated via `envsubst`):
+**`~/.claude/settings.json`**:
 
 - **System prompt**: Instructs Claude to be analytical, avoid filler, and — critically — never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
 - **Attribution**: Disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
-- **Sandbox**: Controlled by `CLAUDE_SANDBOX_ENABLED` (default: `true`).
+- **Sandbox**: Enabled.
 - **Effort level**: Set to `"high"` — high reasoning effort on every request.
 - **Hooks**: Wires the scripts below into `PreToolUse` and `PostToolUse`.
 

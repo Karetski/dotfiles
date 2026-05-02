@@ -5,7 +5,7 @@
     "pr": ""
   },
   "sandbox": {
-    "enabled": $CLAUDE_SANDBOX_ENABLED
+    "enabled": true
   },
   "model": "claude-opus-4-7",
   "effortLevel": "high",
