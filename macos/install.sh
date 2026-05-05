@@ -52,6 +52,54 @@ _defaults_string \
   "FXPreferredSortOrder" \
   "kind"
 
+# Finder: keep folders on top when sorting by name.
+_defaults_bool \
+  "Finder — folders on top" \
+  "com.apple.finder" \
+  "_FXSortFoldersFirst" \
+  "true"
+
+# Finder: search current folder by default (SCcf).
+_defaults_string \
+  "Finder — search current folder" \
+  "com.apple.finder" \
+  "FXDefaultSearchScope" \
+  "SCcf"
+
+# Global: apply Finder preferences to Open/Save panels.
+_defaults_string \
+  "Global — column view" \
+  "NSGlobalDomain" \
+  "FXPreferredViewStyle" \
+  "clmv"
+_defaults_string \
+  "Global — group by kind" \
+  "NSGlobalDomain" \
+  "FXPreferredGroupBy" \
+  "Kind"
+
+# Global: expanded save and print panels by default.
+_defaults_bool \
+  "Global — expanded save panel" \
+  "NSGlobalDomain" \
+  "NSNavPanelExpandedStateForSaveMode" \
+  "true"
+_defaults_bool \
+  "Global — expanded save panel (v2)" \
+  "NSGlobalDomain" \
+  "NSNavPanelExpandedStateForSaveMode2" \
+  "true"
+_defaults_bool \
+  "Global — expanded print panel" \
+  "NSGlobalDomain" \
+  "PMPrintingExpandedStateForPrint" \
+  "true"
+_defaults_bool \
+  "Global — expanded print panel (v2)" \
+  "NSGlobalDomain" \
+  "PMPrintingExpandedStateForPrint2" \
+  "true"
+
 # Mission Control: keep Spaces in the user-defined order instead of
 # silently promoting the most-recently-used Space to position 1.
 _defaults_bool \
