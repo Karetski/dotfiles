@@ -87,8 +87,8 @@ Entry point for all operations. Wraps `install.sh` with convenience targets.
 Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaults, and `vars/local.sh` for machine-specific overrides if present. Iterates through the role list in this order, grouped by purpose:
 
 - **preflight** — `xcode-select`, `homebrew`
-- **shell** — `zsh`, `zsh-autocomplete`, `fzf`
-- **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
+- **shell** — `zsh`, `zsh-autocomplete`
+- **cli tools** — `fzf`, `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
 - **system** — `ghostty`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `bun`, `uv`, `rustup`
