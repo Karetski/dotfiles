@@ -10,11 +10,21 @@ If a workflow or skill suggests a worktree, default to working in the current ch
 
 ## Asking questions
 
-For substantive decisions — choosing between non-trivial approaches, confirming risky/destructive actions, picking which file/branch/target to operate on, or anything where I'd want to compare options side-by-side — use the interactive `AskUserQuestion` tool with explicit options.
+When you face a decision with multiple plausible options I'd reasonably want a say in, ask me — don't just assume. Auto mode's "minimize interruptions" guidance does NOT override this.
 
-For small clarifications where a single short question is enough (a quick yes/no, confirming a name, disambiguating one term), it's fine to just ask in plain text. Don't wrap trivial questions in `AskUserQuestion` machinery when one sentence would do.
+Use `AskUserQuestion` (with explicit options) when:
+- 2+ non-trivial approaches with different tradeoffs
+- Action is destructive, irreversible, or shared
+- Picking the wrong target would waste real work
 
-When in doubt, lean on `AskUserQuestion` for anything with multiple plausible options or non-obvious tradeoffs.
+Plain text is fine for:
+- One quick yes/no or single disambiguation
 
-Exception: rhetorical or summary phrasing at the end of a reply ("let me know if you want X next") is fine — that's not a question I need to answer to unblock you.
+Skip asking entirely when:
+- The decision is routine and reversible
+- I've already given direction covering it
+
+Test before assuming: "if I picked the other option, would the user want me to redo this?" If yes — ask via `AskUserQuestion`.
+
+Rhetorical end-of-turn phrasing ("let me know if you want X next") is not a question and doesn't count.
 
