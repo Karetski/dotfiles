@@ -36,18 +36,17 @@ _LOG_COL=44
 _refresh_term_w || true
 trap '_refresh_term_w' WINCH
 
-# ── Colors (light-background safe) ───────────────────────────────────────────
-_C_GRN=$'\033[32m'      # green — ok icon
+# ── Colors (light-background safe) ────────────────────────────────────────────
+# Three hues: green (ok), red (error), yellow (plan/separators). Hierarchy
+# beyond that comes from bold/dim and the icons themselves.
+_C_GRN=$'\033[32m'      # green — ok icon and status text
 _C_GRN_B=$'\033[1;32m'  # bold green — ok status text
-_C_AMB=$'\033[33m'      # yellow — separators, dry-run, warnings
-_C_YLW_B=$'\033[1;33m'  # bold yellow — section/summary separators
+_C_AMB=$'\033[33m'      # yellow — dry-run, optional notes, prompts
+_C_YLW_B=$'\033[1;33m'  # bold yellow — group/summary dividers and bullet
 _C_RED=$'\033[31m'      # red — errors, diff deletes
 _C_DIM=$'\033[2m'       # dim — skips, no-change labels
-_C_BLD=$'\033[1m'       # bold
-_C_REV=$'\033[7m'       # reverse video — group headers
+_C_BLD=$'\033[1m'       # bold — headers and counts
 _C_RST=$'\033[0m'       # reset
-_C_PUR=$'\033[35m'      # purple — accents
-_C_PUR_B=$'\033[1;35m'  # bold purple — section titles, summary counts
 
 # ── Counters ──────────────────────────────────────────────────────────────────
 # Global counters (across all roles) shown in the final summary
@@ -55,12 +54,11 @@ _COUNT_OK=0
 _COUNT_SKIP=0
 _COUNT_DRY=0
 
-# Per-section counters reset at each _log_section call
+# Per-section counter used by roles (e.g. macos) to detect whether
+# anything actually changed in their section. Reset on _log_section.
 _SECTION_OK=0
-_SECTION_SKIP=0
-_SECTION_DRY=0
-_SECTION_OPEN=0
-_SECTION_CHANGED=()  # tracks filenames that changed within the current section
+
+_FIRST_GROUP=1       # tracks whether the next _log_group is the first one
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -83,30 +81,39 @@ _repeat() {
   printf '%0.s'"$1" $(seq 1 "$2")
 }
 
+# Pad a label to _LOG_COL display columns (character count, not bytes), so
+# labels containing multibyte characters like "—" still align in the table.
+# bash's printf "%-Ns" pads by bytes, which would shift any em-dash row
+# left by 2 columns relative to ASCII rows.
+_pad_label() {
+  local label="$1"
+  if [ "${#label}" -gt "$_LOG_COL" ]; then
+    label="${label:0:_LOG_COL}"
+  fi
+  local pad=$(( _LOG_COL - ${#label} ))
+  printf '%s%*s' "$label" "$pad" ''
+}
+
 # ── Log functions ─────────────────────────────────────────────────────────────
 
 _log_ok() {
-  printf "  ${_C_GRN_B}✓${_C_RST} %-${_LOG_COL}.${_LOG_COL}s  ${_C_GRN_B}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_GRN_B}✓${_C_RST} %s  ${_C_GRN_B}%s${_C_RST}\n" "$(_pad_label "$1")" "$2"
   _COUNT_OK=$(( _COUNT_OK + 1 ))
   _SECTION_OK=$(( _SECTION_OK + 1 ))
-  _SECTION_CHANGED+=("$1")
 }
 
 _log_skip() {
-  printf "  ${_C_DIM}· %-${_LOG_COL}.${_LOG_COL}s  %s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_DIM}· %s  %s${_C_RST}\n" "$(_pad_label "$1")" "$2"
   _COUNT_SKIP=$(( _COUNT_SKIP + 1 ))
-  _SECTION_SKIP=$(( _SECTION_SKIP + 1 ))
 }
 
 _log_dry() {
-  printf "  ${_C_AMB}→${_C_RST} %-${_LOG_COL}.${_LOG_COL}s  ${_C_AMB}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_AMB}→${_C_RST} %s  ${_C_AMB}%s${_C_RST}\n" "$(_pad_label "$1")" "$2"
   _COUNT_DRY=$(( _COUNT_DRY + 1 ))
-  _SECTION_DRY=$(( _SECTION_DRY + 1 ))
-  _SECTION_CHANGED+=("$1")
 }
 
 _log_note() {
-  printf "  ${_C_PUR}◆${_C_RST} %-${_LOG_COL}.${_LOG_COL}s  ${_C_DIM}%s${_C_RST}\n" "$1" "$2"
+  printf "  ${_C_AMB}◆${_C_RST} %s  ${_C_DIM}%s${_C_RST}\n" "$(_pad_label "$1")" "$2"
 }
 
 _log_err() {
@@ -115,52 +122,8 @@ _log_err() {
 
 # ── Section layout ────────────────────────────────────────────────────────────
 
-_log_section_end() {
-  [ "$_SECTION_OPEN" = "0" ] && return
-  _SECTION_OPEN=0
-
-  if [ "${#_SECTION_CHANGED[@]}" -gt 0 ]; then
-    local names="" item
-    for item in "${_SECTION_CHANGED[@]}"; do
-      [ -z "$names" ] && names="$item" || names="$names, $item"
-    done
-    printf "  ${_C_DIM}changed: %s${_C_RST}\n" "$names"
-  fi
-
-  local s="" s_plain=""
-  if [ "$DRY_RUN" = "1" ]; then
-    if [ "$_SECTION_DRY" -gt 0 ]; then
-      s="${_C_PUR_B}${_SECTION_DRY} plan${_C_RST}"; s_plain="${_SECTION_DRY} plan"
-    fi
-    if [ "$_SECTION_SKIP" -gt 0 ]; then
-      s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
-      s_plain="${s_plain:+${s_plain}  ·  }${_SECTION_SKIP} skip"
-    fi
-  else
-    if [ "$_SECTION_OK" -gt 0 ]; then
-      s="${_C_PUR_B}${_SECTION_OK} ok${_C_RST}"; s_plain="${_SECTION_OK} ok"
-    fi
-    if [ "$_SECTION_SKIP" -gt 0 ]; then
-      s="${s:+${s}  ${_C_DIM}·${_C_RST}  }${_C_DIM}${_SECTION_SKIP} skip${_C_RST}"
-      s_plain="${s_plain:+${s_plain}  ·  }${_SECTION_SKIP} skip"
-    fi
-  fi
-  if [ -z "$s" ]; then s="${_C_DIM}—${_C_RST}"; s_plain="—"; fi
-
-  # Footer: "--- SUMMARY ---..." (3 + 1 + text + 1 + dashes = _TERM_W)
-  local dashes_len=$(( _TERM_W - 5 - ${#s_plain} ))
-  [ "$dashes_len" -lt 3 ] && dashes_len=3
-  local dashes
-  dashes=$(_repeat "-" "$dashes_len")
-  printf "${_C_YLW_B}---${_C_RST} %s ${_C_YLW_B}%s${_C_RST}\n\n" "$s" "$dashes"
-}
-
 _log_section() {
-  [ "$_SECTION_OPEN" = "1" ] && _log_section_end
-
-  _SECTION_OK=0; _SECTION_SKIP=0; _SECTION_DRY=0
-  _SECTION_OPEN=1
-  _SECTION_CHANGED=()
+  _SECTION_OK=0
 
   local name="$1" index="${2:-}" total="${3:-}"
   local title
@@ -169,45 +132,32 @@ _log_section() {
   else
     title="$name"
   fi
-
-  # Header: "--- TITLE ---..." (3 + 1 + text + 1 + dashes = _TERM_W)
-  local dashes_len=$(( _TERM_W - 5 - ${#title} ))
-  [ "$dashes_len" -lt 3 ] && dashes_len=3
-  local dashes
-  dashes=$(_repeat "-" "$dashes_len")
-  printf "\n${_C_YLW_B}---${_C_RST} ${_C_PUR_B}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$title" "$dashes"
+  printf "%s\n" "$title"
 }
 
-# Group header drawn ABOVE a cluster of related _log_section banners.
-# Rendered as a 3-line reverse-video block: top bar, uppercase bold
-# label with a small left margin, bottom bar. The same style is used
-# for every group so groups read as one unmistakable visual marker.
+# Group header: a single line "═ <name> ═══...═" filling the terminal
+# width. Drawn above each cluster of related sections.
 _log_group() {
-  [ "$_SECTION_OPEN" = "1" ] && _log_section_end
+  local label="$1"
+  # ═ is 1 column wide; subtract the leading "═ " (2) and trailing space (1)
+  local fill_len=$(( _TERM_W - ${#label} - 3 ))
+  [ "$fill_len" -lt 3 ] && fill_len=3
+  local fill
+  fill=$(_repeat "═" "$fill_len")
 
-  local label_upper
-  label_upper=$(printf '%s' "$1" | tr '[:lower:]' '[:upper:]')
-  local pad_line label_pad
-  pad_line=$(_repeat " " "$_TERM_W")
-  local label_pad_len=$(( _TERM_W - ${#label_upper} - 2 ))
-  [ "$label_pad_len" -lt 1 ] && label_pad_len=1
-  label_pad=$(_repeat " " "$label_pad_len")
-
-  printf "${_C_BLD}${_C_REV}%s${_C_RST}\n"     "$pad_line"
-  printf "${_C_BLD}${_C_REV}  %s%s${_C_RST}\n" "$label_upper" "$label_pad"
-  printf "${_C_BLD}${_C_REV}%s${_C_RST}\n"     "$pad_line"
+  if [ "$_FIRST_GROUP" = "1" ]; then
+    _FIRST_GROUP=0
+  else
+    printf '\n'
+  fi
+  printf "${_C_YLW_B}═${_C_RST} ${_C_BLD}%s${_C_RST} ${_C_YLW_B}%s${_C_RST}\n" "$label" "$fill"
 }
 
 _log_summary() {
-  [ "$_SECTION_OPEN" = "1" ] && _log_section_end
-
-  local sep
-  sep=$(_repeat "=" "$_TERM_W")
-  printf "${_C_YLW_B}%s${_C_RST}\n" "$sep"
   if [ "$DRY_RUN" = "1" ]; then
-    printf "${_C_YLW_B}●${_C_RST} ${_C_PUR_B}%d plan${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_DRY" "$_COUNT_SKIP"
+    printf "\n${_C_YLW_B}●${_C_RST} %d plan  ${_C_DIM}·  %d skip${_C_RST}\n" "$_COUNT_DRY" "$_COUNT_SKIP"
   else
-    printf "${_C_YLW_B}●${_C_RST} ${_C_PUR_B}%d ok${_C_RST}  ${_C_DIM}·  %d skip${_C_RST}\n\n" "$_COUNT_OK" "$_COUNT_SKIP"
+    printf "\n${_C_YLW_B}●${_C_RST} %d ok  ${_C_DIM}·  %d skip${_C_RST}\n" "$_COUNT_OK" "$_COUNT_SKIP"
   fi
 }
 
@@ -338,7 +288,7 @@ _optional_selected() {
   return 1
 }
 
-# ── Diff display ─────────────────────────────────────────────────────────────
+# ── Diff display ──────────────────────────────────────────────────────────────
 
 # Print a unified diff between two files, colored and indented.
 # Used by deploy functions to show what changed in an existing file.
