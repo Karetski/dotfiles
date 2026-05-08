@@ -35,7 +35,6 @@ ROLES=(
 
   # system
   ghostty
-  stats
   linearmouse
   macos
 
@@ -65,7 +64,6 @@ _role_is_configured() {
   case "$1" in
     bun)            command -v bun > /dev/null 2>&1 ;;
     claude)         command -v claude > /dev/null 2>&1 || [ -f "$HOME/.claude/settings.json" ] ;;
-    stats)          [ -d "/Applications/Stats.app" ] ;;
     docker-desktop) [ -d "/Applications/Docker.app" ] ;;
     linearmouse)    [ -d "/Applications/LinearMouse.app" ] ;;
     *)              return 1 ;;
@@ -80,7 +78,7 @@ _role_group() {
     zsh|zsh-autocomplete|fzf)                                echo "shell"      ;;
     git|lazygit|jq|ripgrep|fd)                               echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
-    ghostty|stats|linearmouse|macos)                         echo "system"     ;;
+    ghostty|linearmouse|macos)                               echo "system"     ;;
     nvm|bun|uv|rustup)                                       echo "toolchains" ;;
     neovim)                                                  echo "editor"     ;;
     *)                                                       echo ""           ;;

@@ -8,7 +8,6 @@ export GIT_EMAIL="your@email.com"
 # Set to 1 to auto-apply optional components without an interactive prompt.
 # Example:
 # export ENABLE_OPTIONAL_CLAUDE=1
-# export ENABLE_OPTIONAL_STATS=1
 # export ENABLE_OPTIONAL_RUST_TOOLCHAIN=1    # auto-run `rustup default stable`
 # export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 # export ENABLE_OPTIONAL_LINEARMOUSE=1

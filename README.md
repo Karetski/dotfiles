@@ -1,6 +1,6 @@
 # dotfiles
 
-Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 23 roles.
+Plain shell script configuration management for a macOS development environment. Manages shell, CLI tools, Claude Code, terminal and editor configs, and language toolchains via idempotent install scripts organised as 20 roles.
 
 ## Prerequisites
 
@@ -23,7 +23,6 @@ Some roles can be marked optional. During `make install`, optional roles prompt 
 This repo currently treats these roles as optional:
 
 - `claude`
-- `stats`
 - `docker-desktop`
 - `linearmouse`
 - `bun`
@@ -32,19 +31,18 @@ To auto-apply an optional role without an interactive prompt, set the matching v
 
 ```bash
 export ENABLE_OPTIONAL_CLAUDE=1
-export ENABLE_OPTIONAL_STATS=1
 export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 export ENABLE_OPTIONAL_LINEARMOUSE=1
 export ENABLE_OPTIONAL_BUN=1
 ```
 
-Because each role now declares its own brew dependencies, a single override gates both the role's config and the Homebrew package that ships with it. For example, `ENABLE_OPTIONAL_STATS=1` covers both installing Stats.app and importing its preferences.
+Because each role now declares its own brew dependencies, a single override gates both the role's config and the Homebrew package that ships with it. For example, `ENABLE_OPTIONAL_LINEARMOUSE=1` covers installing the LinearMouse cask along with any role-side configuration.
 
 ### Confirm mode
 
 `make install-confirm` (or `CONFIRM_MODE=1 make install`) temporarily treats every role and every Homebrew package as optional, prompting `[y/N]` before each one. Use it on a fresh or unfamiliar machine to walk through the install one step at a time and cherry-pick what runs — without permanently editing `OPTIONAL_ROLES`.
 
-- Each of the 23 roles prompts before its install script runs.
+- Each of the 20 roles prompts before its install script runs.
 - Each Homebrew formula and cask that is not yet installed prompts before `brew install`. Already-installed packages are skipped silently (nothing would change anyway).
 - `ENABLE_OPTIONAL_*` overrides are **ignored** in confirm mode — if you want to confirm everything, existing always-on preferences shouldn't short-circuit the prompt.
 - `_role_is_configured` auto-skip is bypassed — already-configured optional roles still prompt.
@@ -56,7 +54,6 @@ To mark more roles as optional, add their names to `OPTIONAL_ROLES` in `vars/mai
 The corresponding override variable name is derived from the role name:
 
 - `claude` -> `ENABLE_OPTIONAL_CLAUDE`
-- `stats` -> `ENABLE_OPTIONAL_STATS`
 - `some-tool` -> `ENABLE_OPTIONAL_SOME_TOOL`
 
 ## Structure
@@ -93,7 +90,7 @@ Main orchestrator. Sources `lib/utils.sh` for helpers, `vars/main.sh` for defaul
 - **shell** — `zsh`, `zsh-autocomplete`, `fzf`
 - **cli tools** — `git`, `lazygit`, `jq`, `ripgrep`, `fd`
 - **dev tools** — `claude`, `docker-desktop`
-- **system** — `ghostty`, `stats`, `linearmouse`, `macos`
+- **system** — `ghostty`, `linearmouse`, `macos`
 - **toolchains** — `nvm`, `bun`, `uv`, `rustup`
 - **editor** — `neovim`
 
@@ -180,7 +177,6 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_NAME` | `vars/local.sh` | Git commit author name |
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
-| `ENABLE_OPTIONAL_STATS` | `vars/local.sh` | Auto-apply the optional Stats cask and role instead of prompting |
 | `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
 | `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rustup` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
@@ -351,16 +347,6 @@ Ghostty itself is installed via `ensure_brew_cask ghostty` at the top of this ro
 **Shell integration**: Cursor and sudo disabled; title enabled.
 
 **Splits**: Divider color set to `#808080` (mid-gray) for a prominent separator visible on both light and dark themes.
-
----
-
-### stats
-
-Optional role. `make install` prompts before applying it unless `ENABLE_OPTIONAL_STATS=1` is set in `vars/local.sh`. Stats.app itself is installed via `ensure_brew_cask stats` at the top of this role's install script, so one override gates both the cask install and the preference import.
-
-Deploys the [Stats](https://github.com/exelban/stats) menu-bar app's preferences to `~/Library/Preferences/eu.exelban.Stats.plist` via `defaults import`, which routes the write through `cfprefsd` and avoids racing the live app.
-
-The checked-in plist is stored as XML for reviewable diffs. The volatile `NSWindow Frame ...` key is stripped from the live plist before comparison so window-position noise doesn't trigger spurious updates.
 
 ---
 
