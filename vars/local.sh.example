@@ -8,9 +8,9 @@ export GIT_EMAIL="your@email.com"
 # Set to 1 to auto-apply optional components without an interactive prompt.
 # Example:
 # export ENABLE_OPTIONAL_CLAUDE=1
-# export ENABLE_OPTIONAL_RUST_TOOLCHAIN=1    # auto-run `rustup default stable`
 # export ENABLE_OPTIONAL_DOCKER_DESKTOP=1
 # export ENABLE_OPTIONAL_LINEARMOUSE=1
 # export ENABLE_OPTIONAL_NVM_DEFAULT_NODE=1  # auto-run `nvm install --lts`
-# export ENABLE_OPTIONAL_UV_DEFAULT_PYTHON=1 # auto-run `uv python install`
 # export ENABLE_OPTIONAL_BUN=1               # auto-install the optional bun toolchain
+# export ENABLE_OPTIONAL_UV_DEFAULT_PYTHON=1 # auto-run `uv python install`
+# export ENABLE_OPTIONAL_RUST_TOOLCHAIN=1    # auto-run `rustup default stable`

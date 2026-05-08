@@ -177,12 +177,12 @@ Each role has an `install.sh` sourced by the main orchestrator. These scripts us
 | `GIT_NAME` | `vars/local.sh` | Git commit author name |
 | `GIT_EMAIL` | `vars/local.sh` | Git commit author email |
 | `ENABLE_OPTIONAL_CLAUDE` | `vars/local.sh` | Auto-apply the optional Claude role instead of prompting |
-| `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
-| `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rustup` role instead of prompting |
 | `ENABLE_OPTIONAL_DOCKER_DESKTOP` | `vars/local.sh` | Auto-apply the optional Docker Desktop cask role instead of prompting |
 | `ENABLE_OPTIONAL_LINEARMOUSE` | `vars/local.sh` | Auto-apply the optional LinearMouse cask role instead of prompting |
 | `ENABLE_OPTIONAL_NVM_DEFAULT_NODE` | `vars/local.sh` | Auto-run `nvm install --lts` during the `nvm` role instead of prompting |
 | `ENABLE_OPTIONAL_BUN` | `vars/local.sh` | Auto-apply the optional Bun toolchain role instead of prompting |
+| `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON` | `vars/local.sh` | Auto-run `uv python install` during the `uv` role instead of prompting |
+| `ENABLE_OPTIONAL_RUST_TOOLCHAIN` | `vars/local.sh` | Auto-run `rustup default stable` during the `rustup` role instead of prompting |
 | `OPTIONAL_ROLES` | `vars/main.sh` | Roles that should prompt before applying |
 | `CONFIRM_MODE` | inline env var | Set to `1` to prompt before every role and brew package for a single run (also via `make install-confirm`) |
 
@@ -386,14 +386,6 @@ Installs the [Bun](https://bun.sh/) JavaScript runtime, package manager, and bun
 
 ---
 
-### rustup
-
-Installs `rustup` via `ensure_brew_formula rustup`.
-
-`brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs an optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
-
----
-
 ### uv
 
 Installs [uv](https://docs.astral.sh/uv/) via `ensure_brew_formula uv` — a fast Python package and project manager.
@@ -401,6 +393,14 @@ Installs [uv](https://docs.astral.sh/uv/) via `ensure_brew_formula uv` — a fas
 uv fetches Python versions on demand per-project, but having a globally managed version is convenient for ad-hoc scripts and `uvx` one-shot tool runs. The role runs an optional prompt (`uv-default-python`, gated by `ENABLE_OPTIONAL_UV_DEFAULT_PYTHON`) that invokes `uv python install` (fetches the latest stable CPython) unless a managed version is already present.
 
 Shell completions are sourced via `eval "$(uv generate-shell-completion zsh)"` from `.zshrc` (deployed by the `zsh` role).
+
+---
+
+### rustup
+
+Installs `rustup` via `ensure_brew_formula rustup`.
+
+`brew install rustup` only installs the toolchain bootstrapper — `rustc`/`cargo` themselves only materialise once a default toolchain is selected. The role therefore runs an optional prompt (`rust-toolchain`, gated by `ENABLE_OPTIONAL_RUST_TOOLCHAIN`) that invokes `rustup default stable` unless `rustup show active-toolchain` already reports one. Cargo crates are not tracked — install them manually with `cargo install`.
 
 ---
 
