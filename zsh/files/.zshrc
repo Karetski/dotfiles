@@ -421,33 +421,59 @@ function +vi-git-ahead-behind() {
 }
 
 # Rebuild PROMPT before each command.
-# Line 1: three cascading segments with Rounded separators (, ).
+# Cascading segments with Rounded separators ( leading cap,  separator
+# and trailing cap). Segments that don't fit on the current row wrap to the
+# next row as whole components (each with its own caps), instead of letting
+# the terminal break a separator glyph in half.
 #   #FF9100 (Vibrant Orange) path  →  #FFD000 (Golden Yellow) branch  →  #FFFB00 (Pure Yellow) status
-# Line 2: input line.
 _set_prompt() {
     local branch=${vcs_info_msg_0_//\%/%%}
     local status_str=${${vcs_info_msg_1_//\%/%%}## }  # trim hook's leading space
+    local cwd=${(%):-%~}
 
-    # Path segment (with rounded start)
-    local line1="%F{#FF9100}%K{#FF9100}%F{black} %B%~%b %f"
-    
+    # Parallel arrays per segment: prompt text, bg color, visible cell count
+    # of the content (caps and separators are accounted for in layout below).
+    local -a seg_text seg_color seg_width
+    seg_text=( ' %B%~%b ' )
+    seg_color=( '#FF9100' )
+    seg_width=( $(( ${#cwd} + 2 )) )
+
     if [[ -n $branch ]]; then
-        # Transition Path -> Branch
-        line1+="%K{#FFD000}%F{#FF9100}%F{black} ⎇ ${branch} %f"
-        
-        if [[ -n $status_str ]]; then
-            # Transition Branch -> Status
-            line1+="%K{#FFFB00}%F{#FFD000}%F{black} ${status_str} %f%k%F{#FFFB00}%f"
-        else
-            # End Branch segment
-            line1+="%k%F{#FFD000}%f"
-        fi
-    else
-        # End Path segment
-        line1+="%k%F{#FF9100}%f"
+        seg_text+=( " ⎇ ${branch} " )
+        seg_color+=( '#FFD000' )
+        seg_width+=( $(( ${#branch} + 4 )) )
     fi
 
-    PROMPT="${line1}"$'\n'"%(?.%F{blue}●.%F{red}●)%f %# "
+    if [[ -n $status_str ]]; then
+        seg_text+=( " ${status_str} " )
+        seg_color+=( '#FFFB00' )
+        seg_width+=( $(( ${#status_str} + 2 )) )
+    fi
+
+    local width=${COLUMNS:-80}
+    local n=${#seg_text[@]}
+    local out="" last_color="" i row_used=0
+    for (( i=1; i <= n; i++ )); do
+        local cw=${seg_width[$i]} cc=${seg_color[$i]} sc=${seg_text[$i]}
+        if (( row_used == 0 )); then
+            # Start of a row: leading rounded cap + content.
+            out+="%F{${cc}}%K{${cc}}%F{black}${sc}%f"
+            row_used=$(( 1 + cw ))
+        elif (( row_used + 1 + cw + 1 > width )); then
+            # Doesn't fit: close current row, drop to a new line, start fresh.
+            out+="%k%F{${last_color}}%f"$'\n'
+            out+="%F{${cc}}%K{${cc}}%F{black}${sc}%f"
+            row_used=$(( 1 + cw ))
+        else
+            # Same row: powerline transition + content.
+            out+="%K{${cc}}%F{${last_color}}%F{black}${sc}%f"
+            row_used=$(( row_used + 1 + cw ))
+        fi
+        last_color=$cc
+    done
+    (( row_used > 0 )) && out+="%k%F{${last_color}}%f"
+
+    PROMPT="${out}"$'\n'"%(?.%F{blue}●.%F{red}●)%f %# "
 }
 add-zsh-hook precmd _set_prompt
 
