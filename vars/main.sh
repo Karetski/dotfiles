@@ -6,6 +6,5 @@
 OPTIONAL_ROLES=(
   claude
   docker-desktop
-  linearmouse
   bun
 )

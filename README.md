@@ -33,7 +33,6 @@ These prompt before applying unless their override is set:
 
 - `claude` — Claude Code settings, hooks, and status line
 - `docker-desktop` — Docker Desktop cask
-- `linearmouse` — LinearMouse cask
 - `bun` — Bun JavaScript runtime
 
 `make install-confirm` temporarily treats *every* role and brew package as
@@ -57,7 +56,6 @@ runs.
 | [`claude`](claude/README.md) | Claude Code settings, hooks, plugins, status line *(optional)* |
 | `docker-desktop` | Docker Desktop cask *(optional)* |
 | [`ghostty`](ghostty/README.md) | Ghostty terminal config |
-| `linearmouse` | LinearMouse cask *(optional)* |
 | [`macos`](macos/README.md) | macOS system defaults (Dock, Spaces, …) |
 | [`nvm`](nvm/README.md) | Node version manager + optional default LTS install |
 | [`bun`](bun/README.md) | Bun JS runtime via official tap *(optional)* |
