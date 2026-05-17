@@ -55,26 +55,60 @@ each item regardless.
 
 ## Roles
 
+Grouped in the order `install.sh` applies them.
+
+### preflight
+
 | Role | What it does |
 |------|--------------|
 | `xcode-select` | Installs Apple Command Line Tools if missing |
 | `homebrew` | Verifies Homebrew is installed (roles declare their own packages) |
+
+### shell
+
+| Role | What it does |
+|------|--------------|
 | [`zsh`](zsh/README.md) | `.zshrc` — PATH, plugins, aliases, two-line prompt |
 | `zsh-autocomplete` | Real-time completion plugin (sourced by `zsh`) |
+
+### cli tools
+
+| Role | What it does |
+|------|--------------|
 | `fzf` | Fuzzy finder (sourced by `zsh`, used by `nvf` alias and Neovim) |
 | [`git`](git/README.md) | `.gitconfig` and global gitignore |
 | [`lazygit`](lazygit/README.md) | Theme + Quick Look custom commands |
 | `jq` | JSON processor (used by `claude` hooks and status line) |
 | `ripgrep` | Used by Neovim's snacks picker grep |
 | `fd` | Used by Neovim's snacks picker files |
+
+### dev tools
+
+| Role | What it does |
+|------|--------------|
 | [`claude`](claude/README.md) | Claude Code settings, hooks, plugins, status line *(optional)* |
 | `docker-desktop` | Docker Desktop cask *(optional)* |
+
+### system
+
+| Role | What it does |
+|------|--------------|
 | [`ghostty`](ghostty/README.md) | Ghostty terminal config |
 | [`macos`](macos/README.md) | macOS system defaults (Dock, Spaces, …) |
+
+### toolchains
+
+| Role | What it does |
+|------|--------------|
 | [`nvm`](nvm/README.md) | Node version manager + optional default LTS install |
 | [`bun`](bun/README.md) | Bun JS runtime via official tap *(optional)* |
 | [`uv`](uv/README.md) | Fast Python package manager + optional Python install |
 | [`rustup`](rustup/README.md) | Rust toolchain bootstrapper + optional `stable` install |
+
+### editor
+
+| Role | What it does |
+|------|--------------|
 | [`neovim`](neovim/README.md) | `init.lua` — plugins, LSP, keybindings |
 
 ## How it works
