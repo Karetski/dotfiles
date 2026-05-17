@@ -2,6 +2,10 @@ gui:
   theme:
     selectedLineBgColor:
       - white
+git:
+  paging:
+    colorArg: always
+    pager: delta --paging=never --light
 customCommands:
   - key: "p"
     context: "files"
