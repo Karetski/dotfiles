@@ -10,4 +10,4 @@ Installs the Ghostty terminal emulator via `ensure_brew_cask ghostty` and deploy
 | Font | SF Mono Terminal, Medium weight, 11pt |
 | Cursor | Block style |
 | Shell integration | Cursor and sudo disabled; title enabled |
-| Split divider | `#808080` (mid-gray) — visible on both light and dark themes |
+| Split divider | `#FF9100` (vibrant orange) — visible on both light and dark themes |

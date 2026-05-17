@@ -40,10 +40,12 @@ Installs `code-simplifier` from `claude-plugins-official` at user scope. `code-s
 
 | Segment | Source | Example |
 |---------|--------|---------|
-| Directory | `workspace.current_dir` | `dotfiles/neovim` |
-| Model | `model.display_name` (stripped) | `Opus 4.6` |
-| Context | `context_window.used_percentage` | `ctx:42%` |
-| Rate limit | `rate_limits.five_hour` + countdown | `5h:15% \| 3h12m` |
+| Directory | `workspace.current_dir` (parent/basename) | `Developer/dotfiles` |
+| Model | `model.display_name` (stripped of `Claude ` prefix and version/date suffix) | `Opus` |
+| Context | `context_window.used_percentage` | `ctx:8%` |
+| Rate limit | `rate_limits.five_hour` + countdown | `5h:44% \| 3h27m` |
 | Plugins (2nd line) | `~/.claude/plugins/installed_plugins.json` + merged `enabledPlugins` | `code-simplifier` |
+
+Segments are joined with ` │ ` (U+2502 box-drawing vertical), e.g. `Developer/dotfiles │ Opus │ ctx:8% │ 5h:44% | 3h27m`.
 
 The plugins line is only emitted when installed plugins apply to the current `cwd` (user-scoped plugins always; project-scoped plugins only when `cwd` is under their `projectPath`). Only enabled plugins are listed, with effective state resolved in the order `.claude/settings.local.json` → `.claude/settings.json` → `~/.claude/settings.json`, matching Claude Code's own rule that a plugin counts as enabled only when `enabledPlugins[id]` is literal `true` (or a non-empty array of skill names) — everything else, including an absent key, is treated as disabled.

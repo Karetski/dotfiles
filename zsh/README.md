@@ -16,7 +16,9 @@ Sources `zsh-autocomplete` from its Homebrew location for real-time completion, 
 |-------|-----------|-------------|
 | `ll` | `lssplit` | Lists directory contents split into Directories, Files, and Symlinks sections with Nerd Font icons, type-based colors, human-readable sizes, and a layout that adapts to terminal width. Set `LSSPLIT_ICONS=0` to disable glyphs |
 | `nv` | `nvim` | Shortcut for Neovim |
+| `nvim-normal` / `nvn` | `NVIM_NORMAL_EDITOR=1 nvim` | Launch Neovim with the `NVIM_NORMAL_EDITOR` flag set, for per-project config to detect |
 | `nvf` | `nvim $(fzf)` | Open a file in Neovim via fzf |
+| `lg` | `lazygit` | Shortcut for lazygit |
 | `caff` | `caffeinate` | Prevent system sleep |
 | `caffd` | `caffeinate -d` | Prevent display sleep only |
 
@@ -32,8 +34,8 @@ Sources `zsh-autocomplete` from its Homebrew location for real-time completion, 
 
 Two-line prompt using zsh's `vcs_info` hook.
 
-- **Line 1**: three cascading segments with rounded powerline separators — path on `136` (amber), branch on `178` (golden), status symbols on `220` (yellow). Not full-width; the bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean. Segments wrap to the next row when they overflow the terminal width.
-- **Line 2**: success/failure indicator (`❯` green on success, red on failure), `%` (`#` for root).
+- **Line 1**: three cascading segments with rounded powerline separators — path on `#FF9100` (vibrant orange), branch on `#FFD000` (golden yellow), status symbols on `#FFFB00` (pure yellow). Not full-width; the bar ends after the last segment. Branch and status segments are hidden when not in a git repo or when the working tree is clean. Segments wrap to the next row when they overflow the terminal width.
+- **Line 2**: success/failure indicator (`●` blue on success, red on failure), `%` (`#` for root).
 
 Git status symbols: `⎇` branch, `□` unstaged, `■` staged, `↑N` ahead of remote, `↓N` behind remote.
 
