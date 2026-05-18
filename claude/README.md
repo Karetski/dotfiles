@@ -32,7 +32,10 @@ Deployed as executables under `~/.claude/hooks/`.
 
 ## Plugins
 
-Installs `code-simplifier` from `claude-plugins-official` at user scope. `code-simplifier` refines recently modified code for clarity without changing behaviour.
+Installs the following plugins from `claude-plugins-official` at user scope:
+
+- `code-simplifier` — refines recently modified code for clarity without changing behaviour.
+- `code-review` — reviews a pull request or pending changes.
 
 ## Status line
 
