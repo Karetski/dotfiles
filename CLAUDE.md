@@ -6,6 +6,7 @@ The canonical contributor and agent instructions now live in [AGENTS.md](/Users/
 The `claude/` role in this repository still manages local Claude Code configuration, including:
 
 - `~/.claude/settings.json`
+- `~/.claude/CLAUDE.md`
 - `~/.claude/statusline.sh`
 - `~/.claude/hooks/block-dangerous.sh`
 - `~/.claude/hooks/protect-files.sh`
