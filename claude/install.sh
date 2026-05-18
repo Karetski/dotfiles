@@ -5,7 +5,7 @@ if ! command -v claude > /dev/null 2>&1; then
   if [ "$DRY_RUN" = "1" ]; then
     _log_dry "claude" "would install"
   else
-    curl -sSL https://claude.ai/install.sh | sh
+    curl -fsSL https://claude.ai/install.sh | bash
     _log_ok "claude" "installed"
   fi
 else
