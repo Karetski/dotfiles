@@ -7,7 +7,7 @@
   "sandbox": {
     "enabled": true
   },
-  "model": "claude-opus-4-7",
+  "model": "opus",
   "effortLevel": "high",
   "hooks": {
     "PreToolUse": [
