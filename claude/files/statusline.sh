@@ -12,9 +12,9 @@ current_dir="${current_dir_full/#$HOME/\~}"
 current_dir=$(echo "$current_dir" | awk -F/ '{print $(NF-1)"/"$NF}')
 
 # ── Model ────────────────────────────────────────────────────────────────────
-# Strip "Claude " prefix and everything from the first digit (version + date)
-# so "Claude Opus 4.7 20250101" collapses to "Opus".
-model=$(echo "$input" | jq -r '.model.display_name // empty' | sed 's/^Claude //; s/ [0-9].*$//')
+# Strip "Claude " prefix and any trailing date stamp (8+ digits)
+# so "Claude Opus 4.7 20250101" collapses to "Opus 4.7".
+model=$(echo "$input" | jq -r '.model.display_name // empty' | sed 's/^Claude //; s/ [0-9]\{6,\}$//')
 
 # ── Context window usage ─────────────────────────────────────────────────────
 used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
