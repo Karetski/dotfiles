@@ -8,7 +8,7 @@
     "enabled": true
   },
   "model": "opus",
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
   "hooks": {
     "PreToolUse": [
       {
