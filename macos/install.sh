@@ -31,54 +31,6 @@ _defaults_string() {
   fi
 }
 
-# Read a nested plist value (plutil dot-path) from a domain, via cfprefsd.
-_defaults_keypath_read() {
-  defaults export "$1" - 2>/dev/null | plutil -extract "$2" raw -o - - 2>/dev/null || true
-}
-
-# Apply nested plist values that `defaults write` can't target. macOS forbids
-# editing the on-disk plist directly (only cfprefsd may write it), and an app
-# like Finder rewrites these keys while running, so the whole domain is
-# round-tripped through `defaults export`/`import` with the app quit, then the
-# app is relaunched. Args after the domain/app are "keypath=value" pairs.
-_defaults_keypaths_quit() {
-  local label="$1" domain="$2" app="$3"; shift 3
-  local -a pending=()
-  local pair keypath value current
-  # Read-only pass: decide what actually needs changing.
-  for pair in "$@"; do
-    keypath="${pair%%=*}"; value="${pair#*=}"
-    current=$(_defaults_keypath_read "$domain" "$keypath")
-    if [ "$current" = "$value" ]; then
-      _log_skip "$label — ${keypath##*.}" "no change"
-    elif [ "$DRY_RUN" = "1" ]; then
-      _log_dry "$label — ${keypath##*.}" "would set → $value"
-    else
-      pending+=("$pair")
-    fi
-  done
-  [ "${#pending[@]}" -eq 0 ] && return 0
-
-  # Write pass: quit the app so it can't clobber, edit the exported domain in one
-  # transaction, import it back through cfprefsd, then relaunch the app.
-  local tmp
-  tmp=$(mktemp "${TMPDIR:-/tmp}/dotfiles-$domain.XXXXXX") || { _log_err "$label — mktemp failed"; return 1; }
-  killall "$app" 2>/dev/null || true
-  sleep 1
-  defaults export "$domain" - > "$tmp"
-  for pair in "${pending[@]}"; do
-    keypath="${pair%%=*}"; value="${pair#*=}"
-    if plutil -replace "$keypath" -string "$value" "$tmp" 2>/dev/null; then
-      _log_ok "$label — ${keypath##*.}" "set → $value"
-    else
-      _log_note "$label — ${keypath##*.}" "view not yet initialised — open it in $app once, then re-run"
-    fi
-  done
-  defaults import "$domain" "$tmp"
-  rm -f "$tmp"
-  open -a "$app" 2>/dev/null || true
-}
-
 # Finder: use column view by default.
 _defaults_string \
   "Finder — column view" \
@@ -86,16 +38,16 @@ _defaults_string \
   "FXPreferredViewStyle" \
   "clmv"
 
-# Finder: group by kind by default.
+# Finder: prefer grouping by kind. This only chooses what "Use Groups" groups
+# by; it does not force groups on. macOS has no global default for the "Use
+# Groups" toggle (it is per-folder state in each folder's .DS_Store), so that
+# stays a manual View-menu choice. Sorting itself is left at the macOS default
+# (Name) — sort-by-kind splits files by fine-grained type (e.g. .mp4 vs .mov).
 _defaults_string \
   "Finder — group by kind" \
   "com.apple.finder" \
   "FXPreferredGroupBy" \
   "Kind"
-
-# Finder: sort by kind by default. The actual sort/arrange setting lives in
-# nested per-view dictionaries (not the ineffective FXPreferredSortOrder key), so
-# it is applied via _defaults_keypaths_quit near the end, after all finder writes.
 
 # Finder: keep folders on top when sorting by name.
 _defaults_bool \
@@ -153,21 +105,7 @@ _defaults_bool \
   "mru-spaces" \
   "false"
 
-# Finder: sort by kind by default, per view. These are nested keys `defaults
-# write` can't reach, so they go through the export/import + quit/relaunch path.
-# Column view (the default) uses four-char arrange codes (kipl = Kind); list and
-# icon views use plain sort/arrange names.
-_defaults_keypaths_quit \
-  "Finder — sort by kind" \
-  "com.apple.finder" \
-  "Finder" \
-  "StandardViewOptions.ColumnViewOptions.ArrangeBy=kipl" \
-  "StandardViewSettings.ExtendedListViewSettingsV2.sortColumn=kind" \
-  "StandardViewSettings.ListViewSettings.sortColumn=kind" \
-  "StandardViewSettings.IconViewSettings.arrangeBy=kind"
-
-# Restart Finder and Dock to apply the remaining changes. (The sort step above
-# already quits/relaunches Finder when it has work to do.)
+# Restart Finder and Dock to apply changes.
 if [ "$_SECTION_OK" -gt 0 ]; then
   killall Finder 2>/dev/null || true
   killall Dock 2>/dev/null || true
