@@ -15,7 +15,7 @@ fi
 
 if ! bash -n "$file_path" 2>&1; then
   echo "Syntax error in $file_path — fix before continuing." >&2
-  exit 1
+  exit 2
 fi
 
 exit 0

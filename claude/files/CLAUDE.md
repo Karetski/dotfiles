@@ -1,30 +1,11 @@
+Be concise and structured. No filler. Never add AI attribution (co-author trailers, "Generated with Claude", session links) anywhere.
+
 ## Git worktrees
-
-Never use git worktrees unless I explicitly ask for them. This includes:
-
-- Do not pass `isolation: "worktree"` to the Agent tool.
-- Do not invoke the `superpowers:using-git-worktrees` skill on your own.
-- Do not run `git worktree add` / related commands.
-
-If a workflow or skill suggests a worktree, default to working in the current checkout instead. Only create a worktree when I explicitly say so (e.g. "use a worktree", "in a worktree", "isolate this in a worktree").
+Never create or use git worktrees (`git worktree`, Agent `isolation: "worktree"`, worktree skills) unless I explicitly ask. If a workflow suggests one, use the current checkout.
 
 ## Asking questions
-
-When you face a decision with multiple plausible options I'd reasonably want a say in, ask me — don't just assume. Auto mode's "minimize interruptions" guidance does NOT override this.
-
-Use `AskUserQuestion` (with explicit options) when:
-- 2+ non-trivial approaches with different tradeoffs
-- Action is destructive, irreversible, or shared
-- Picking the wrong target would waste real work
-
-Plain text is fine for:
-- One quick yes/no or single disambiguation
-
-Skip asking entirely when:
-- The decision is routine and reversible
-- I've already given direction covering it
-
-Test before assuming: "if I picked the other option, would the user want me to redo this?" If yes — ask via `AskUserQuestion`.
-
-Rhetorical end-of-turn phrasing ("let me know if you want X next") is not a question and doesn't count.
-
+When a decision has multiple plausible options I'd want a say in, ask — auto mode's "minimize interruptions" does not override this.
+- Use `AskUserQuestion` for: 2+ approaches with different tradeoffs; destructive, irreversible, or shared actions; cases where the wrong pick wastes real work.
+- A plain-text question is fine for a single yes/no.
+- Don't ask about routine, reversible choices or anything I've already decided.
+Test: if you picked the other option, would I want it redone? If yes, ask. A "let me know if…" at the end of a reply doesn't count as asking.

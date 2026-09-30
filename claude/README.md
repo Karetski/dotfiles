@@ -10,15 +10,15 @@ Checks for `claude` in PATH and installs via the official install script if miss
 
 ## `~/.claude/settings.json`
 
-- **System prompt** — instructs Claude to be analytical, avoid filler, and never add AI metadata, signatures, or co-authorship markers to git commits, code, or documentation.
-- **Attribution** — disabled for both commits and PRs (empty strings) — prevents Co-Authored-By trailers and PR attribution at the settings level.
+- **Attribution** — disabled for commits and PRs (empty strings) and `sessionUrl: false` — prevents Co-Authored-By trailers, "Generated with Claude Code" lines, and session links at the settings level.
+- **TUI** — `"tui": "default"` plus `env.CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN=1`, which forces the classic renderer even if fullscreen gets toggled on or auto-enabled.
 - **Sandbox** — enabled.
-- **Effort level** — `"high"` — high reasoning effort on every request.
+- **Effort level** — `modelSettings["claude-opus-5-5"].effortLevel = "high"`. Claude Code ignores a top-level user `effortLevel` for newer models (Opus 5.5+), so effort must be set per model; add an entry when the default model changes.
 - **Hooks** — wires the scripts below into `PreToolUse` and `PostToolUse`.
 
 ## `~/.claude/CLAUDE.md`
 
-Global Claude Code instruction file with project-agnostic rules (e.g. never use git worktrees unless explicitly asked; prefer `AskUserQuestion` for substantive decisions).
+Global Claude Code instruction file with project-agnostic rules (e.g. a one-line style/no-attribution note; never use git worktrees unless explicitly asked; prefer `AskUserQuestion` for substantive decisions).
 
 ## Hooks
 
@@ -26,9 +26,9 @@ Deployed as executables under `~/.claude/hooks/`.
 
 | Script | Event | Matcher | Purpose |
 |--------|-------|---------|---------|
-| `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands: `rm -rf /` or `~`, `git reset --hard`, force-push, `git clean -fd`, `DROP TABLE/DATABASE`, disk wipe (`> /dev/sda`, `mkfs.`), fork bomb |
+| `block-dangerous.sh` | `PreToolUse` | `Bash` | Block destructive shell commands: recursive `rm` of `/`, `~`, or `$HOME`, `git reset --hard`, force-push (`-f`, `--force*`, `+refspec`), `git clean -f*`, `DROP TABLE/DATABASE`, disk wipe (`> /dev/sda`, `mkfs.`), fork bomb; `git commit` / `gh pr` / `gh issue` commands carrying AI attribution (Claude Co-Authored-By, "Generated with Claude", `noreply@anthropic.com`) |
 | `protect-files.sh` | `PreToolUse` | `Edit`/`Write` | Guard `vars/local.sh`, `.env`, and `.claude/settings.local.json` from edits and writes |
-| `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; fail the tool call on syntax errors |
+| `check-syntax.sh` | `PostToolUse` | `Edit`/`Write` | Run `bash -n` against edited `.sh` files; exit 2 on syntax errors so the error is fed back to Claude |
 
 ## Plugins
 
