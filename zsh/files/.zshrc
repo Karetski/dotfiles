@@ -6,6 +6,9 @@ export PATH="$HOME/.local/bin:$PATH"
 # --------------------------------------------------------
 
 # zsh-autocomplete
+# Rebuild the completion dump after zsh-autocomplete upgrades; the plugin's own
+# staleness check compares file mtimes, which Homebrew preserves from the tarball.
+[[ /opt/homebrew/Cellar/zsh-autocomplete -nt ~/.cache/zsh/compdump ]] && rm -f ~/.cache/zsh/compdump
 source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 
 # fzf
