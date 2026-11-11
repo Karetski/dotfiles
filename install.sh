@@ -45,6 +45,7 @@ ROLES=(
 
   # editor
   neovim
+  vscode
 )
 # TAG limits the run to a single role (e.g. TAG=git)
 TAG="${TAG:-}"

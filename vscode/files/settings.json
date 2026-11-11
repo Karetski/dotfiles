@@ -1,0 +1,8 @@
+{
+  "workbench.colorTheme": "Light 2026",
+  "editor.minimap.enabled": false,
+  "extensions.ignoreRecommendations": true,
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  }
+}

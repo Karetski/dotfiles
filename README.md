@@ -110,6 +110,7 @@ Grouped in the order `install.sh` applies them.
 | Role | What it does |
 |------|--------------|
 | [`neovim`](neovim/README.md) | `init.lua` — plugins, LSP, keybindings |
+| [`vscode`](vscode/README.md) | VS Code cask + user `settings.json` |
 
 ## How it works
 
