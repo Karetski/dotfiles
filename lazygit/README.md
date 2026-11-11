@@ -4,7 +4,7 @@ Deploys `~/Library/Application Support/lazygit/config.yml`.
 
 ## Theme
 
-White selected-line background. Diffs are routed through `delta` in light mode.
+Default lazygit selection colors. Diffs are routed through `delta` in light mode.
 
 ## Custom commands
 

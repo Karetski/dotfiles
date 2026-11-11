@@ -1,7 +1,3 @@
-gui:
-  theme:
-    selectedLineBgColor:
-      - white
 git:
   diffRenderers:
     - colorArg: always
