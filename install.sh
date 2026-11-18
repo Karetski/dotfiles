@@ -35,6 +35,7 @@ ROLES=(
 
   # system
   ghostty
+  rex
   macos
 
   # toolchains
@@ -77,7 +78,7 @@ _role_group() {
     zsh|zsh-autocomplete)                                    echo "shell"      ;;
     fzf|git|lazygit|jq|ripgrep|fd)                           echo "cli tools"  ;;
     claude|docker-desktop)                                   echo "dev tools"  ;;
-    ghostty|macos)                                           echo "system"     ;;
+    ghostty|rex|macos)                                       echo "system"     ;;
     nvm|bun|uv|rustup)                                       echo "toolchains" ;;
     neovim|vscode)                                           echo "editor"     ;;
     *)                                                       echo ""           ;;

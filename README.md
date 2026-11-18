@@ -94,6 +94,7 @@ Grouped in the order `install.sh` applies them.
 | Role | What it does |
 |------|--------------|
 | [`ghostty`](ghostty/README.md) | Ghostty terminal config |
+| [`rex`](rex/README.md) | Rex terminal `init.lua` |
 | [`macos`](macos/README.md) | macOS system defaults (Dock, Spaces, …) |
 
 ### toolchains

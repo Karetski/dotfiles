@@ -453,3 +453,36 @@ deploy_template() {
   _deploy "$tmp" "$dest" "$mode"
   rm -f "$tmp"
 }
+
+# ── macOS defaults ────────────────────────────────────────────────────────────
+
+# Apply a boolean macOS default; skip if already at the desired value.
+_defaults_bool() {
+  local label="$1" domain="$2" key="$3" value="$4"
+  local expected current
+  [ "$value" = "true" ] && expected="1" || expected="0"
+  current=$(defaults read "$domain" "$key" 2>/dev/null || true)
+  if [ "$current" = "$expected" ]; then
+    _log_skip "$label" "no change"
+  elif [ "$DRY_RUN" = "1" ]; then
+    _log_dry "$label" "would set → $value"
+  else
+    defaults write "$domain" "$key" -bool "$value"
+    _log_ok "$label" "set → $value"
+  fi
+}
+
+# Apply a string macOS default; skip if already at the desired value.
+_defaults_string() {
+  local label="$1" domain="$2" key="$3" value="$4"
+  local current
+  current=$(defaults read "$domain" "$key" 2>/dev/null || true)
+  if [ "$current" = "$value" ]; then
+    _log_skip "$label" "no change"
+  elif [ "$DRY_RUN" = "1" ]; then
+    _log_dry "$label" "would set → $value"
+  else
+    defaults write "$domain" "$key" -string "$value"
+    _log_ok "$label" "set → $value"
+  fi
+}
