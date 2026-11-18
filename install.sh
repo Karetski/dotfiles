@@ -79,7 +79,7 @@ _role_group() {
     claude|docker-desktop)                                   echo "dev tools"  ;;
     ghostty|macos)                                           echo "system"     ;;
     nvm|bun|uv|rustup)                                       echo "toolchains" ;;
-    neovim)                                                  echo "editor"     ;;
+    neovim|vscode)                                           echo "editor"     ;;
     *)                                                       echo ""           ;;
   esac
 }
