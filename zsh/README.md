@@ -6,6 +6,10 @@ Deploys `~/.zshrc` as a static file.
 
 Prepends `~/.local/bin` (where role-deployed scripts live).
 
+## Editor
+
+Sets `EDITOR` and `VISUAL` to `code --wait` (VS Code, from the `vscode` role), so git commit messages, lazygit's edit action, and other `$EDITOR`-aware tools open in VS Code and block until the tab is closed.
+
 ## Plugins
 
 Sources `zsh-autocomplete` from its Homebrew location for real-time completion, `fzf` for fuzzy finding, and `nvm` so `node`/`npm` land on PATH for interactive shells — the latter is how `nvim`-launched processes such as Mason's Node-based LSP installs find them. Each of those tools is installed by its own sibling role (`zsh-autocomplete`, `fzf`, `nvm`); the `zsh` role itself only deploys `.zshrc`.

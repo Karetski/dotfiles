@@ -1,5 +1,9 @@
 export PATH="$HOME/.local/bin:$PATH"
 
+# Default editor for git, lazygit, and anything honoring $VISUAL/$EDITOR
+export EDITOR="code --wait"
+export VISUAL="$EDITOR"
+
 
 # --------------------------------------------------------
 # TOOL CONFIGURATION
